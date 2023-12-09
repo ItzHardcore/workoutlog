@@ -1,12 +1,14 @@
-// Dashboard.js
+// pages/Dashboard.js
 import React from 'react';
 
-const Dashboard = ({ user }) => (
-  <div>
-    <h2>Welcome, {user}!</h2>
-    {/* Other dashboard content goes here */}
-    
-  </div>
-);
+function Dashboard({ token, handleLogout }) {
+  return (
+    <div>
+      <h2>Dashboard</h2>
+      <p>Welcome to the dashboard, {token}!</p>
+      <button onClick={handleLogout}>Logout</button>
+    </div>
+  );
+}
 
 export default Dashboard;

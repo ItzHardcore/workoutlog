@@ -1,9 +1,11 @@
-// LoginForm.js
+// components/Login.js
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Login({ onLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -26,6 +28,7 @@ function Login({ onLogin }) {
 
       const data = await response.json();
       onLogin(data.token);
+      navigate('/dashboard');
     } catch (error) {
       console.error('Login failed:', error);
     }

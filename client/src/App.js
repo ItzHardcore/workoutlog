@@ -1,39 +1,18 @@
 // App.js
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
-import LoginForm from './components/Login';
-import RegisterForm from './components/Register';
-
-const Home = ({ token, handleLogout }) => {
-  return (
-    <div>
-      <h2>Home</h2>
-      {token ? (
-        <button onClick={handleLogout}>Logout</button>
-      ) : (
-        <>
-          <Navigate to="/login" />
-          <Navigate to="/register" />
-        </>
-      )}
-    </div>
-  );
-};
-
-const PrivateRoute = ({ token, component: Component }) => {
-  return token ? <Component /> : <Navigate to="/login" />;
-};
-
-const Dashboard = () => {
-  return <h2>Dashboard</h2>;
-};
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import PrivateRoute from './components/PrivateRoute';
+import Login from './components/Login';
+import Register from './components/Register';
+import Landing from './pages/Landing';
+import Dashboard from './pages/Dashboard';
 
 const App = () => {
   const [token, setToken] = useState('');
 
   const handleLogin = (token) => {
     setToken(token);
-    return <Navigate to="/dashboard" />;
+    // Use Navigate to redirect after login
   };
 
   const handleLogout = () => {
@@ -41,8 +20,8 @@ const App = () => {
   };
 
   const handleRegister = (message) => {
-    console.log(message); // You can handle the registration success message here
-    return <Navigate to="/login" />;
+    console.log(message);
+    // Use Navigate to redirect after registration
   };
 
   return (
@@ -51,7 +30,7 @@ const App = () => {
         <nav>
           <ul>
             <li>
-              <Link to="/">Home</Link>
+              <Link to="/">Landing</Link>
             </li>
             <li>
               <Link to="/dashboard">Dashboard</Link>
@@ -65,19 +44,19 @@ const App = () => {
         <Routes>
           <Route
             path="/"
-            element={<Home token={token} handleLogout={handleLogout} />}
+            element={<Landing token={token} handleLogout={handleLogout} />}
           />
           <Route
             path="/login"
-            element={<LoginForm onLogin={handleLogin} />}
+            element={<Login onLogin={handleLogin} />}
           />
           <Route
             path="/register"
-            element={<RegisterForm onRegister={handleRegister} />}
+            element={<Register onRegister={handleRegister} />}
           />
           <Route
             path="/dashboard"
-            element={<PrivateRoute token={token} component={Dashboard} />}
+            element={<PrivateRoute token={token} component={Dashboard} handleLogout={handleLogout} />}
           />
         </Routes>
       </div>
