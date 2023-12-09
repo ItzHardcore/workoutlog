@@ -9,9 +9,12 @@ import Dashboard from './pages/Dashboard';
 
 const App = () => {
   const [token, setToken] = useState('');
+  const [username, setUsername] = useState('');
 
-  const handleLogin = (token) => {
+  const handleLogin = (token, username) => {
+    console.log(token);
     setToken(token);
+    setUsername(username);
     // Use Navigate to redirect after login
   };
 
@@ -59,7 +62,7 @@ const App = () => {
           />
           <Route
             path="/dashboard"
-            element={<PrivateRoute token={token} component={Dashboard} handleLogout={handleLogout} />}
+            element={<PrivateRoute token={token} username={username} component={Dashboard} handleLogout={handleLogout} />}
           />
         </Routes>
       </div>
