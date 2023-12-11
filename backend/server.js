@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken');
 
 // Schemas
 const User = require('./schemas/User');
+const Workout = require('./schemas/Workout');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -72,7 +73,6 @@ app.post('/login', async (req, res) => {
 // JWT Authentication Middleware
 const authenticateJWT = (req, res, next) => {
     const token = req.header('Authorization');
-
     if (!token) return res.status(401).json({ message: 'Unauthorized' });
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
@@ -82,10 +82,26 @@ const authenticateJWT = (req, res, next) => {
     });
 };
 
-// Protected Dashboard Route
-app.get('/dashboard', authenticateJWT, (req, res) => {
-    res.status(200).json({ message: 'Welcome to the dashboard!', user: req.user });
+app.get('/workouts', authenticateJWT, async (req, res) => {
+    try {
+        // Fetch workouts for the current user
+        const userId = req.user.userId;
+        
+        console.log("UserID:", userId, typeof(userId));
+
+        const workouts = await Workout.find({ userId: userId });
+
+        console.log("Workouts", workouts);
+
+        // Send the workouts to the response
+        res.status(200).json(workouts);
+    } catch (error) {
+        console.error('Error fetching workouts:', error); // Log any errors
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 });
+
+
 
 // Start the server
 app.listen(PORT, () => {
