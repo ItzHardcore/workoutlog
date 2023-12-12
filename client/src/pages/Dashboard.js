@@ -8,6 +8,7 @@ function Dashboard({ token, handleLogout }) {
   const [isWorkoutsVisible, setIsWorkoutsVisible] = useState(true);
   const [isAddWorkoutsVisible, setAddIsWorkoutsVisible] = useState(true);
   const [username, setUsername] = useState('');
+  const [userID, setUserID] = useState('');
   const [sessionEnd, setSessionEnd] = useState(0);
 
   // Function to toggle the visibility
@@ -24,7 +25,7 @@ function Dashboard({ token, handleLogout }) {
     // Decode the token and extract the username and expiration time
     const decodedToken = jwtDecode(token);
     setUsername(decodedToken.username);
-
+    setUserID(decodedToken.userId);
     // Fetch workouts
     fetchWorkouts(token);
 
@@ -114,7 +115,7 @@ function Dashboard({ token, handleLogout }) {
 
       <div style={{ display: isAddWorkoutsVisible ? 'none' : 'block' }}>
         <h2>Add Workout</h2>
-        <WorkoutForm />
+        <WorkoutForm userId={userID} token={token}/>
       </div>
     </div>
   );

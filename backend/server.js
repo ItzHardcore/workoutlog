@@ -64,7 +64,7 @@ app.post('/login', async (req, res) => {
             return res.status(401).json({ message: 'Invalid username or password' });
         }
         // Create and sign a JWT token
-        const token = jwt.sign({ userId: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '60s' });
+        const token = jwt.sign({ userId: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '900s' });
 
         res.status(200).json({ message: 'Login successful', user, token });
     } catch (error) {
@@ -101,7 +101,59 @@ app.get('/workouts', authenticateJWT, async (req, res) => {
     }
 });
 
+app.post('/workouts', authenticateJWT, async (req, res) => {
+    try {
+        const workoutPayload = req.body;
 
+        // Create exercises and series
+        const exercisesPromises = workoutPayload.exercises.map(async (exercise) => {
+          // Create Exercise instance
+          const newExercise = new Exercise({
+            name: exercise.exercise.name,
+          });
+    
+          // Save Exercise to get its ID
+          const savedExercise = await newExercise.save();
+    
+          // Create Series instances
+          const seriesPromises = exercise.series.map(async (series) => {
+            const newSeries = new Series(series);
+            // Save Series to get its ID
+            const savedSeries = await newSeries.save();
+            return savedSeries._id; // Return the Series ID
+          });
+    
+          // Wait for all Series to be saved
+          const seriesIds = await Promise.all(seriesPromises);
+    
+          return {
+            exerciseId: savedExercise._id,
+            seriesIds,
+          };
+        });
+    
+        // Wait for all Exercises to be saved
+        const exercisesData = await Promise.all(exercisesPromises);
+    
+        // Create a new Workout instance
+        const newWorkout = new Workout({
+          name: workoutPayload.name,
+          user: req.user.userId,
+          exercises: exercisesData.map((exerciseData) => ({
+            exercise: exerciseData.exerciseId,
+            series: exerciseData.seriesIds,
+          })),
+        });
+    
+        // Save the Workout to the database
+        await newWorkout.save();
+  
+      res.status(201).json({ message: 'Workout saved successfully' });
+    } catch (error) {
+      console.error('Error saving workout:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
 
 // Start the server
 app.listen(PORT, () => {
