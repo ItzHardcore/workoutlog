@@ -1,5 +1,4 @@
-// App.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import PrivateRoute from './components/PrivateRoute';
 import Login from './components/Login';
@@ -8,18 +7,22 @@ import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
 
 const App = () => {
-  const [token, setToken] = useState('');
-  const [username, setUsername] = useState('');
+  // Initialize token from localStorage if it exists
+  const [token, setToken] = useState(localStorage.getItem('token') || '');
 
-  const handleLogin = (token, username) => {
-    console.log(token);
-    setToken(token);
-    setUsername(username);
+  useEffect(() => {
+    // Save token to localStorage when it changes
+    localStorage.setItem('token', token);
+  }, [token]);
+
+  const handleLogin = (newToken) => {
+    setToken(newToken);
     // Use Navigate to redirect after login
   };
 
   const handleLogout = () => {
     setToken('');
+    localStorage.removeItem('token');
   };
 
   const handleRegister = (message) => {
@@ -62,7 +65,7 @@ const App = () => {
           />
           <Route
             path="/dashboard"
-            element={<PrivateRoute token={token} username={username} component={Dashboard} handleLogout={handleLogout} />}
+            element={<PrivateRoute token={token} component={Dashboard} handleLogout={handleLogout} />}
           />
         </Routes>
       </div>

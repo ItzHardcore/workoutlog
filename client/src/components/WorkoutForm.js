@@ -1,111 +1,214 @@
-import React, { Component } from 'react';
-import ExerciseComponent from './ExerciseComponent';
+import React, { useState } from 'react';
 
-class WorkoutForm extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      workout: {
-        id: '',
-        user_id: '',
-        date: new Date(),
-        notes: '',
-        description: '',
-      },
-      exercises: [],
-    };
+const WorkoutForm = () => {
+  const [workoutName, setWorkoutName] = useState('');
+  const [exercises, setExercises] = useState([]);
+  const [exerciseName, setExerciseName] = useState('');
+  const [seriesReps, setSeriesReps] = useState('');
+  const [seriesWeight, setSeriesWeight] = useState('');
+  const [seriesNotes, setSeriesNotes] = useState('');
+  const [seriesEffort, setSeriesEffort] = useState('');
+  const [seriesInitialPower, setSeriesInitialPower] = useState('');
+  const [seriesExecution, setSeriesExecution] = useState('');
 
-    this.addExercise = this.addExercise.bind(this);
-    this.removeExercise = this.removeExercise.bind(this);
-    this.addSeries = this.addSeries.bind(this);
-    this.removeSeries = this.removeSeries.bind(this);
-  }
-
-  addExercise() {
+  const handleAddExercise = () => {
     const newExercise = {
-      name: '',
-      reps: '',
-      weight: '',
-      numSeries: 1,
-      series: [
-        {
-          reps: '',
-          effort: '',
-          tillFailure: false,
-        },
-      ],
+      name: exerciseName,
+      workoutName,
+      series: [],
     };
 
-    this.state.exercises.push(newExercise);
-    this.setState({ exercises: this.state.exercises });
-  }
+    setExercises([...exercises, newExercise]);
+    setExerciseName('');
+  };
 
-  removeExercise(exerciseID) {
-    this.state.exercises = this.state.exercises.filter(exercise => exercise.name !== exerciseID);
-    this.setState({ exercises: this.state.exercises });
-  }
+  const handleRemoveExercise = (exerciseIndex) => {
+    const newExercises = [...exercises];
+    newExercises.splice(exerciseIndex, 1);
+    setExercises(newExercises);
+  };
 
-  addSeries(exerciseID, exerciseIndex) {
-    if (this.state.exercises.length > 0) {
-      this.state.exercises[exerciseIndex].series.push({
-        reps: '',
-        effort: '',
-        tillFailure: false,
-      });
-      this.setState({ exercises: this.state.exercises });
+  const handleAddSeries = (exerciseIndex) => {
+    const newExercises = [...exercises];
+    const newSeries = {
+      reps: parseInt(seriesReps, 10),
+      weight: parseInt(seriesWeight, 10),
+      notes: seriesNotes,
+      effort: parseInt(seriesEffort, 10),
+      initialPower: parseInt(seriesInitialPower, 10),
+      execution: parseInt(seriesExecution, 10),
+    };
+
+    // Add the series to the last exercise (or create a new one if there are no exercises)
+    if (newExercises.length === 0 || !newExercises[newExercises.length - 1].name) {
+      newExercises.push({ name: exerciseName, workoutName, series: [newSeries] });
+    } else {
+      newExercises[exerciseIndex].series.push(newSeries);
     }
-  }
 
-  removeSeries(exerciseID, seriesIndex, exerciseIndex) {
-    this.state.exercises[exerciseIndex].series = this.state.exercises[exerciseIndex].series.filter(
-      series => series.index !== seriesIndex
-    );
-    this.setState({ exercises: this.state.exercises });
-  }
+    setExercises(newExercises);
+    setSeriesReps('');
+    setSeriesWeight('');
+    setSeriesNotes('');
+    setSeriesEffort('');
+    setSeriesInitialPower('');
+    setSeriesExecution('');
+  };
 
-  render() {
-    return (
-      <div>
-        <h1>Create Workout</h1>
-        <div className="workout-form">
-          <h2>Workout Information</h2>
-          <label>Workout Name:</label>
-          <input type="text" value={this.state.workout.name} onChange={(e) => {
-            this.setState({ workout: { ...this.state.workout, name: e.target.value }});
-          }} />
+  const handleRemoveSeries = (exerciseIndex, seriesIndex) => {
+    const newExercises = [...exercises];
+    newExercises[exerciseIndex].series.splice(seriesIndex, 1);
+    setExercises(newExercises);
+  };
 
-          <label>Notes:</label>
-          <textarea value={this.state.workout.notes} onChange={(e) => {
-            this.setState({ workout: { ...this.state.workout, notes: e.target.value }});
-          }} />
+  const handleSubmit = () => {
+    const workoutPayload = {
+      name: workoutName,
+      user: 'teste',
+      exercises: exercises.map((exercise) => {
+        const { name, series } = exercise;
+        return {
+          name,
+          exercise,
+          series,
+        };
+      }),
+    };
+    console.log(workoutPayload);
+  };
 
-          <label>Description:</label>
-          <textarea value={this.state.workout.description} onChange={(e) => {
-            this.setState({ workout: { ...this.state.workout, description: e.target.value }});
-          }} />
-        </div>
-        <button type="button" onClick={this.addExercise}>Add Exercise</button>
-        <div className="exercise-list">
-          {this.state.exercises.map((exercise, index) => (
-            <ExerciseComponent
-              key={exercise.name}
-              exercise={exercise}
-              addExercise={this.addExercise}
-              removeExercise={() => this.removeExercise(exercise.name)}
-              seriesIndex={0}
-              addSeries={this.addSeries}
-              removeSeries={this.removeSeries}
-            />
+  return (
+    <div>
+      <h2>Workout Form</h2>
+      <label>
+        Workout Name:
+        <input
+          type="text"
+          value={workoutName}
+          onChange={(e) => setWorkoutName(e.target.value)}
+        />
+      </label>
+      <br />
+      <label>
+        Exercise Name:
+        <input
+          type="text"
+          value={exerciseName}
+          onChange={(e) => setExerciseName(e.target.value)}
+        />
+      </label>
+      <br />
+      <button type="button" onClick={handleAddExercise}>
+        Add Exercise
+      </button>
+      <br />
+
+      {/* Display added exercises and series */}
+      {exercises.map((exercise, exerciseIndex) => (
+        <div key={exerciseIndex}>
+          <h4>{exercise.name}</h4>
+          <button type="button" onClick={() => handleRemoveExercise(exerciseIndex)}>
+            Remove Exercise
+          </button><br></br>
+          {/* Display added series */}
+          {exercise.series.map((series, seriesIndex) => (
+            <div key={seriesIndex}>
+              <p>{`Serie ${seriesIndex + 1}`}</p>
+              <p>Reps: {series.reps}</p>
+              <p>Weight: {series.weight}</p>
+              <p>Notes: {series.notes}</p>
+              <p>Effort: {series.effort}</p>
+              <p>Initial Power: {series.initialPower}</p>
+              <p>Execution: {series.execution}</p>
+              <button
+                type="button"
+                onClick={() => handleRemoveSeries(exerciseIndex, seriesIndex)}
+              >
+                Remove Series
+              </button>
+            </div>
           ))}
+          {/* Series Form */}
+          <label>
+            Series Reps:
+            <input
+              type="number"
+              value={seriesReps}
+              onChange={(e) => setSeriesReps(e.target.value)}
+            />
+          </label>
+          <br />
+          <label>
+            Series Weight:
+            <input
+              type="number"
+              value={seriesWeight}
+              onChange={(e) => setSeriesWeight(e.target.value)}
+            />
+          </label>
+          <br />
+          <label>
+            Series Notes:
+            <textarea
+              value={seriesNotes}
+              onChange={(e) => setSeriesNotes(e.target.value)}
+            />
+          </label>
+          <br />
+          <label>
+            Series Effort (1-5):
+            <select
+              value={seriesEffort}
+              onChange={(e) => setSeriesEffort(e.target.value)}
+            >
+              {[1, 2, 3, 4, 5].map((value) => (
+                <option key={value} value={value}>
+                  {value}
+                </option>
+              ))}
+            </select>
+          </label>
+          <br />
+          <label>
+            Series Initial Power (1-5):
+            <select
+              value={seriesInitialPower}
+              onChange={(e) => setSeriesInitialPower(e.target.value)}
+            >
+              {[1, 2, 3, 4, 5].map((value) => (
+                <option key={value} value={value}>
+                  {value}
+                </option>
+              ))}
+            </select>
+          </label>
+          <br />
+          <label>
+            Series Execution (1-5):
+            <select
+              value={seriesExecution}
+              onChange={(e) => setSeriesExecution(e.target.value)}
+            >
+              {[1, 2, 3, 4, 5].map((value) => (
+                <option key={value} value={value}>
+                  {value}
+                </option>
+              ))}
+            </select>
+          </label>
+          <br />
+          <button type="button" onClick={() => handleAddSeries(exerciseIndex)}>
+            Add Series
+          </button>
+          <br />
         </div>
-
-        <button type="button" onClick={() => {
-          // TODO: Implement saving the workout
-          alert('Workout created!');
-        }}>Save Workout</button>
-      </div>
-    );
-  }
-}
+      ))}
+      <br />
+      <button type="button" onClick={handleSubmit}>
+        Submit
+      </button>
+    </div>
+  );
+};
 
 export default WorkoutForm;

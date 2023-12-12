@@ -28,6 +28,7 @@ function Login({ onLogin }) {
 
       const data = await response.json();
       onLogin(data.token, data.user.username);
+      localStorage.setItem("token", data.token);
       navigate('/dashboard');
     } catch (error) {
       console.error('Login failed:', error);

@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const { ObjectId } = require('mongodb');
 const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -9,6 +10,8 @@ const jwt = require('jsonwebtoken');
 // Schemas
 const User = require('./schemas/User');
 const Workout = require('./schemas/Workout');
+const Series = require('./schemas/Series');
+const Exercise = require('./schemas/Exercise');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -61,7 +64,7 @@ app.post('/login', async (req, res) => {
             return res.status(401).json({ message: 'Invalid username or password' });
         }
         // Create and sign a JWT token
-        const token = jwt.sign({ userId: user._id, username: user.username }, process.env.JWT_SECRET);
+        const token = jwt.sign({ userId: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '60s' });
 
         res.status(200).json({ message: 'Login successful', user, token });
     } catch (error) {
@@ -85,15 +88,12 @@ const authenticateJWT = (req, res, next) => {
 app.get('/workouts', authenticateJWT, async (req, res) => {
     try {
         // Fetch workouts for the current user
-        const userId = req.user.userId;
-        
-        console.log("UserID:", userId, typeof(userId));
+        const userId = new ObjectId(req.user.userId);
+        const workouts = await Workout.find({ user: userId })
+            .populate('exercises.exercise') // Populate only the exercise field
+            .populate('exercises.series')
+            .exec();
 
-        const workouts = await Workout.find({ userId: userId });
-
-        console.log("Workouts", workouts);
-
-        // Send the workouts to the response
         res.status(200).json(workouts);
     } catch (error) {
         console.error('Error fetching workouts:', error); // Log any errors
