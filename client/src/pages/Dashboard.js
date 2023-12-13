@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import CreateWorkout from '../components/CreateWorkout';
+import { useNavigate } from 'react-router-dom';
 import WorkoutForm from '../components/WorkoutForm';
 import { jwtDecode } from 'jwt-decode';
 
 function Dashboard({ token, handleLogout }) {
+  const navigate = useNavigate();
   const [workouts, setWorkouts] = useState([]);
   const [isWorkoutsVisible, setIsWorkoutsVisible] = useState(true);
   const [isAddWorkoutsVisible, setAddIsWorkoutsVisible] = useState(true);
@@ -41,6 +42,11 @@ function Dashboard({ token, handleLogout }) {
     return () => clearInterval(interval);
   }, [token]);
 
+  const handleEditWorkout = (workoutId) => {
+    // Navigate to the edit page, you can use React Router for this
+    navigate(`/edit/${workoutId}`);
+  };
+
   async function fetchWorkouts(token) {
     try {
       const response = await fetch('http://localhost:3001/workouts', {
@@ -61,8 +67,29 @@ function Dashboard({ token, handleLogout }) {
       console.error('Login failed:', error);
     }
   }
-
-  const createWorkout = () => <CreateWorkout token={token} handleLogout={handleLogout} />;
+  const removeWorkout = async (workoutId) => {
+    try {
+      const response = await fetch(`http://localhost:3001/workouts/${workoutId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `${token}`,
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to remove workout');
+      }
+      setWorkouts((prevWorkouts) =>
+      prevWorkouts.filter((workout) => workout._id !== workoutId)
+    );
+      console.log('Workout removed successfully');
+      
+      
+    } catch (error) {
+      console.error('Error removing workout:', error);
+      // You can handle errors, e.g., show an error message
+    }
+  };
 
   // Helper function to format time in HH:mm:ss
   const formatTime = (time) => {
@@ -109,6 +136,8 @@ function Dashboard({ token, handleLogout }) {
                 </li>
               ))}
             </ul>
+            <button onClick={() => removeWorkout(workout._id)}>Remove Workout</button>
+            <button onClick={() => handleEditWorkout(workout._id)}>Edit Workout</button>
           </div>
         ))}
       </div>

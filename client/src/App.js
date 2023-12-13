@@ -5,6 +5,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
+import EditWorkout from './pages/EditWorkout';
 
 const App = () => {
   // Initialize token from localStorage if it exists
@@ -67,6 +68,7 @@ const App = () => {
             path="/dashboard"
             element={<PrivateRoute token={token} component={Dashboard} handleLogout={handleLogout} />}
           />
+          <Route path="/edit/:workoutId" element={<EditWorkout token={token} />} />
         </Routes>
       </div>
     </Router>
