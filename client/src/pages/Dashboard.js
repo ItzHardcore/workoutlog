@@ -144,7 +144,7 @@ function Dashboard({ token, handleLogout }) {
 
       <div style={{ display: isAddWorkoutsVisible ? 'none' : 'block' }}>
         <h2>Add Workout</h2>
-        <WorkoutForm userId={userID} token={token}/>
+        <WorkoutForm userId={userID} token={token} onCancel={toggleAddWorkout}/>
       </div>
     </div>
   );

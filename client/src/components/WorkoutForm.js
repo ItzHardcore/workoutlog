@@ -1,50 +1,52 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const WorkoutForm = ({userId,token}) => {
-    const [workoutName, setWorkoutName] = useState('');
-    const [exercises, setExercises] = useState([]);
-    const [exerciseOptions, setExerciseOptions] = useState([]); // New state for exercise options
-    const [selectedExercise, setSelectedExercise] = useState(''); // New state to track selected exercise
-    const [seriesReps, setSeriesReps] = useState('');
-    const [seriesWeight, setSeriesWeight] = useState('');
-    const [seriesNotes, setSeriesNotes] = useState('');
-    const [seriesEffort, setSeriesEffort] = useState(1);
-    const [seriesInitialPower, setSeriesInitialPower] = useState(1);
-    const [seriesExecution, setSeriesExecution] = useState(1);
-  
-    useEffect(() => {
-      // Fetch exercise options from API
-      const fetchExercises = async () => {
-        try {
-          const response = await fetch('http://localhost:3001/exercises', {
-            headers: {
-              'Authorization': `${token}`,
-            },
-          });
-  
-          if (!response.ok) {
-            throw new Error('Failed to fetch exercises');
-          }
-  
-          const data = await response.json();
-          setExerciseOptions(data); // Set exercise options
-        } catch (error) {
-          console.error('Error fetching exercises:', error);
+const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
+  const [workoutName, setWorkoutName] = useState(initialData ? initialData.name : '');
+  const [exercises, setExercises] = useState(initialData ? initialData.exercises : []);
+  const [exerciseOptions, setExerciseOptions] = useState([]); // New state for exercise options
+  const [selectedExercise, setSelectedExercise] = useState(''); // New state to track selected exercise
+  const [seriesReps, setSeriesReps] = useState('');
+  const [seriesWeight, setSeriesWeight] = useState('');
+  const [seriesNotes, setSeriesNotes] = useState('');
+  const [seriesEffort, setSeriesEffort] = useState(1);
+  const [seriesInitialPower, setSeriesInitialPower] = useState(1);
+  const [seriesExecution, setSeriesExecution] = useState(1);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch exercise options from API
+    const fetchExercises = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/exercises', {
+          headers: {
+            'Authorization': `${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch exercises');
         }
-      };
-  
-      fetchExercises();
-    }, [token]);
-  
-    const handleAddExercise = () => {
-      const newExercise = {
-        name: selectedExercise,
-        series: [],
-      };
-  
-      setExercises([...exercises, newExercise]);
-      setSelectedExercise('');
+
+        const data = await response.json();
+        setExerciseOptions(data); // Set exercise options
+      } catch (error) {
+        console.error('Error fetching exercises:', error);
+      }
     };
+
+    fetchExercises();
+  }, [token]);
+
+  const handleAddExercise = () => {
+    const newExercise = {
+      name: selectedExercise,
+      series: [],
+    };
+
+    setExercises([...exercises, newExercise]);
+    setSelectedExercise('');
+  };
 
   const handleRemoveExercise = (exerciseIndex) => {
     const newExercises = [...exercises];
@@ -74,9 +76,9 @@ const WorkoutForm = ({userId,token}) => {
     setSeriesReps('');
     setSeriesWeight('');
     setSeriesNotes('');
-    setSeriesEffort(null);
-    setSeriesInitialPower(null);
-    setSeriesExecution(null);
+    setSeriesEffort(1);
+    setSeriesInitialPower(1);
+    setSeriesExecution(1);
   };
 
   const handleRemoveSeries = (exerciseIndex, seriesIndex) => {
@@ -85,7 +87,7 @@ const WorkoutForm = ({userId,token}) => {
     setExercises(newExercises);
   };
 
-  const handleSubmit = async () => {
+  const handleSave = async () => {
     const workoutPayload = {
       name: workoutName,
       user: userId,
@@ -106,13 +108,13 @@ const WorkoutForm = ({userId,token}) => {
         },
         body: JSON.stringify(workoutPayload),
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to save workout');
       }
-  
+
       console.log('Workout saved successfully');
-  
+
       // Reset form after successful submission
       setWorkoutName('');
       setExercises([]);
@@ -123,13 +125,22 @@ const WorkoutForm = ({userId,token}) => {
       setSeriesEffort(1);
       setSeriesInitialPower(1);
       setSeriesExecution(1);
-  
+
       // You can handle success, e.g., redirect or show a success message
     } catch (error) {
       console.error('Error saving workout:', error);
       // You can handle errors, e.g., show an error message
     }
   };
+
+  const handleCancel = () => {
+    if (onCancel) {
+        onCancel();
+      }else{
+        navigate('/dashboard');
+      }
+  }
+
 
   return (
     <div>
@@ -265,8 +276,11 @@ const WorkoutForm = ({userId,token}) => {
         </div>
       ))}
       <br />
-      <button type="button" onClick={handleSubmit}>
-        Submit
+      <button type="button" onClick={handleSave}>
+        Save
+      </button>
+      <button type="button" onClick={handleCancel}>
+        Cancel
       </button>
     </div>
   );
