@@ -66,7 +66,7 @@ app.post('/login', async (req, res) => {
             return res.status(401).json({ message: 'Invalid username or password' });
         }
         // Create and sign a JWT token
-        const token = jwt.sign({ userId: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '900s' });
+        const token = jwt.sign({ userId: user._id, username: user.username }, process.env.JWT_SECRET);
 
         res.status(200).json({ message: 'Login successful', user, token });
     } catch (error) {
@@ -210,6 +210,76 @@ app.post('/workouts', authenticateJWT, async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   });
+
+  // Update an existing workout
+  app.put('/workouts/:id', authenticateJWT, async (req, res) => {
+    try {
+      const workoutId = req.params.id;
+      console.log('Workout ID:', workoutId);
+  
+      const workoutPayload = req.body;
+      console.log('Received Payload:', workoutPayload);
+  
+      // Update exercises and series
+      const exercisesPromises = workoutPayload.exercises.map(async (exercise) => {
+        console.log('Updating Exercise:', exercise.exercise.name);
+  
+        const existingExercise = await Exercise.findOne({ name: exercise.exercise.name });
+  
+        if (!existingExercise) {
+          console.error('Error finding exercise:', existingExercise);
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
+  
+        console.log('Found Exercise:', existingExercise);
+  
+        // Update Series instances or create new ones if needed
+        const seriesPromises = exercise.series.map(async (series) => {
+          if (series._id) {
+            // If Series has an ID, update existing series
+            await Series.findByIdAndUpdate(series._id, series);
+            console.log('Updated Series:', series._id);
+            return series._id;
+          } else {
+            // If Series doesn't have an ID, create a new series
+            const newSeries = new Series(series);
+            const savedSeries = await newSeries.save();
+            console.log('Saved New Series:', savedSeries._id);
+            return savedSeries._id;
+          }
+        });
+  
+        // Wait for all Series to be updated/created
+        const seriesIds = await Promise.all(seriesPromises);
+        console.log('Series IDs:', seriesIds);
+  
+        return {
+          exerciseId: existingExercise._id,
+          seriesIds,
+        };
+      });
+  
+      // Wait for all Exercises to be updated/created
+      const exercisesData = await Promise.all(exercisesPromises);
+      console.log('Exercises Data:', exercisesData);
+  
+      // Update the existing Workout instance
+      await Workout.findByIdAndUpdate(workoutId, {
+        name: workoutPayload.name,
+        exercises: exercisesData.map((exerciseData) => ({
+          exercise: exerciseData.exerciseId,
+          series: exerciseData.seriesIds,
+        })),
+      });
+  
+      res.status(200).json({ message: 'Workout updated successfully' });
+    } catch (error) {
+      console.error('Error updating workout:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+  
+  
 
 // Start the server
 app.listen(PORT, () => {

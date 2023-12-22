@@ -10,9 +10,8 @@ function Dashboard({ token, handleLogout }) {
   const [isAddWorkoutsVisible, setAddIsWorkoutsVisible] = useState(true);
   const [username, setUsername] = useState('');
   const [userID, setUserID] = useState('');
-  const [sessionEnd, setSessionEnd] = useState(0);
 
-  // Function to toggle the visibility
+  // Function to toggle visibility
   const toggleVisibility = () => {
     fetchWorkouts(token);
     setIsWorkoutsVisible(!isWorkoutsVisible);
@@ -30,16 +29,6 @@ function Dashboard({ token, handleLogout }) {
     // Fetch workouts
     fetchWorkouts(token);
 
-    // Set up session countdown
-    const expirationTime = decodedToken.exp * 1000; // Convert seconds to milliseconds
-    const interval = setInterval(() => {
-      const now = new Date().getTime();
-      const timeRemaining = Math.max(0, expirationTime - now);
-      setSessionEnd(timeRemaining);
-    }, 1000);
-
-    // Clean up countdown on component unmount
-    return () => clearInterval(interval);
   }, [token]);
 
   const handleEditWorkout = (workoutId) => {
@@ -67,84 +56,110 @@ function Dashboard({ token, handleLogout }) {
       console.error('Login failed:', error);
     }
   }
+
   const removeWorkout = async (workoutId) => {
     try {
+      // Display a confirmation dialog
+      const confirmRemove = window.confirm('Are you sure you want to remove this workout?');
+
+      if (!confirmRemove) {
+        // If the user clicks "Cancel" in the confirmation dialog, do nothing
+        return;
+      }
+
       const response = await fetch(`http://localhost:3001/workouts/${workoutId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `${token}`,
         },
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to remove workout');
       }
+
       setWorkouts((prevWorkouts) =>
-      prevWorkouts.filter((workout) => workout._id !== workoutId)
-    );
+        prevWorkouts.filter((workout) => workout._id !== workoutId)
+      );
       console.log('Workout removed successfully');
-      
-      
+
     } catch (error) {
       console.error('Error removing workout:', error);
       // You can handle errors, e.g., show an error message
     }
   };
 
-  // Helper function to format time in HH:mm:ss
-  const formatTime = (time) => {
-    const hours = Math.floor(time / (1000 * 60 * 60));
-    const minutes = Math.floor((time % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((time % (1000 * 60)) / 1000);
-
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  };
 
   return (
-    <div>
+    <div className="container mt-3">
       <h2>Dashboard</h2>
       <p>Welcome to the dashboard, {username}!</p>
-      <p>You have token: {token}</p>
-      <p>Session Ends In: {formatTime(sessionEnd)}</p>
-      <button onClick={handleLogout}>Logout</button>
+      <p className="text-justify">You have token: {token}</p>
 
-      <button onClick={toggleVisibility}>Toggle Workouts</button>
-      <button onClick={toggleAddWorkout}>Add workout</button>
+      <button className="btn btn-primary" onClick={handleLogout}>Logout</button>
 
-      <div style={{ display: isWorkoutsVisible ? 'none' : 'block' }}>
-        <h2>My Workouts</h2>
+      <button className="btn btn-secondary ms-2" onClick={toggleVisibility}>Toggle Workouts</button>
+      <button className="btn btn-success ms-2" onClick={toggleAddWorkout}>Add Workout</button>
 
-        {workouts.map(workout => (
-          <div key={workout._id}>
-            <h3>{workout.name}</h3>
-            {/* Render exercise information */}
-            <ul>
-              {workout.exercises.map(exercise => (
-                <li key={exercise._id}>
-                  <h4>{exercise.exercise.name}</h4>
-                  <p>Primary Muscle: {exercise.exercise.primaryMuscle}</p>
-                  {/* Render series information */}
-                  <ul>
-                    {exercise.series.map(series => (
-                      <li key={series._id}>
-                        <p>Reps: {series.reps}</p>
-                        <p>Weight: {series.weight}</p>
-                        {/* Add more series details as needed */}
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-              ))}
-            </ul>
-            <button onClick={() => removeWorkout(workout._id)}>Remove Workout</button>
-            <button onClick={() => handleEditWorkout(workout._id)}>Edit Workout</button>
-          </div>
-        ))}
+      <div className="mt-3" style={{ display: isWorkoutsVisible ? 'none' : 'block' }}>
+        {workouts.length === 0 ? (
+          <h5 className='text-danger'>No workouts available</h5>
+        ) : (<h2>My Workouts</h2>)}
+
+        <div className='d-flex'>
+
+          {workouts.map(workout => (
+            <div key={workout._id} className="card mt-3 w-25 mx-3">
+              <div className="card-body">
+                <h3 className="card-title">{workout.name}</h3>
+
+                {/* Render exercise information */}
+                {workout.exercises.map(exercise => (
+                  <div key={exercise._id} className="card mt-3">
+                    <div className="card-body">
+                      <h4 className="card-title">{exercise.exercise.name}</h4>
+                      <p className="card-text">Primary Muscle: {exercise.exercise.primaryMuscle}</p>
+
+                      {/* Render series information */}
+                      <ul className="list-group">
+                        {exercise.series.map(series => (
+                          <li key={series._id} className="list-group-item">
+                            <div className="d-flex justify-content-between">
+                              <div>
+                                <p className="mb-1">Reps: {series.reps}</p>
+                                <p className="mb-1">Weight: {series.weight}</p>
+                                <p className="mb-1">Notes: {series.notes}</p>
+                                {/* Add more series details as needed */}
+                              </div>
+                              <div>
+                                <p className="mb-1">Effort: {series.effort}</p>
+                                <p className="mb-1">Initial Power: {series.initialPower}</p>
+                                <p className="mb-1">Execution: {series.execution}</p>
+                                {/* Add more series details as needed */}
+                              </div>
+                            </div>
+                          </li>
+                        ))}
+
+                      </ul>
+                    </div>
+                  </div>
+                ))}
+
+                <div className="mt-3">
+                  <button className="btn btn-danger me-2" onClick={() => removeWorkout(workout._id)}>Remove Workout</button>
+                  <button className="btn btn-warning" onClick={() => handleEditWorkout(workout._id)}>Edit Workout</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
       </div>
 
       <div style={{ display: isAddWorkoutsVisible ? 'none' : 'block' }}>
-        <h2>Add Workout</h2>
-        <WorkoutForm userId={userID} token={token} onCancel={toggleAddWorkout}/>
+        <h2 className="mt-3">Add Workout</h2>
+        <WorkoutForm userId={userID} token={token} onCancel={toggleAddWorkout} />
       </div>
     </div>
   );

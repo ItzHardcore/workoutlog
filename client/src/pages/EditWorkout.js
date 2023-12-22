@@ -43,16 +43,6 @@ const EditWorkout = ({ token }) => {
     fetchWorkoutData();
   }, [token, workoutId, navigate]);
 
-  const handleSave = () => {
-    // Implement the logic to save the edited workout data
-    console.log('Save clicked!');
-  };
-
-  const handleCancel = () => {
-    // Implement the logic to navigate back or handle cancellation
-    console.log('Cancel clicked!');
-  };
-
   if (!isAuthorized) {
     return <div>You can't edit this workout because it's not yours! :)</div>;
   }
