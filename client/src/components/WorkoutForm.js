@@ -6,12 +6,6 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
   const [exercises, setExercises] = useState(initialData ? initialData.exercises : []);
   const [exerciseOptions, setExerciseOptions] = useState([]);
   const [selectedExercise, setSelectedExercise] = useState('');
-  const [seriesReps, setSeriesReps] = useState('');
-  const [seriesWeight, setSeriesWeight] = useState('');
-  const [seriesNotes, setSeriesNotes] = useState('');
-  const [seriesEffort, setSeriesEffort] = useState(1);
-  const [seriesInitialPower, setSeriesInitialPower] = useState(1);
-  const [seriesExecution, setSeriesExecution] = useState(1);
   const [saveloading, setSaveLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -33,14 +27,25 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
         setExerciseOptions(data);
 
         if (initialData) {
+          // Set workout name
           setWorkoutName(initialData.name);
-          setExercises(initialData.exercises.map((exercise) => {
+
+          // Map exercises to set series with default values
+          const mappedExercises = initialData.exercises.map((exercise) => {
             const { exercise: { name }, series } = exercise;
+            const mappedSeries = series.map((s) => ({
+              ...s,
+              reps: s.reps.toString(), // Convert to string to handle number input
+              weight: s.weight.toString(),
+            }));
             return {
               name,
-              series,
+              series: mappedSeries,
             };
-          }));
+          });
+
+          // Set exercises
+          setExercises(mappedExercises);
         }
       } catch (error) {
         console.error('Error fetching exercises:', error);
@@ -58,48 +63,54 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
 
     const newExercise = {
       name: selectedExercise,
-      series: [],
+      series: [{
+        reps: 0,  // You can set default values for the series fields
+        weight: 0,
+        notes: '',
+        effort: 1,
+        initialPower: 1
+      }],
     };
 
     setExercises([...exercises, newExercise]);
     setSelectedExercise('');
   };
 
+  const handleAddSeries = (exerciseIndex) => {
+    const newExercises = [...exercises];
+    const selectedExercise = newExercises[exerciseIndex];
+
+    if (!selectedExercise) {
+      console.error('Invalid exercise index');
+      return;
+    }
+
+    // Create a new series with empty values
+    const newSeries = {
+      reps: 0,
+      weight: 0,
+      notes: '',
+      effort: 1,
+      initialPower: 1
+    };
+
+    // Add the new series to the selected exercise
+    selectedExercise.series.push(newSeries);
+
+    // Update the state
+    setExercises(newExercises);
+  };
+
+  const handleSeriesChange = (exerciseIndex, seriesIndex, key, value) => {
+    const newExercises = [...exercises];
+    newExercises[exerciseIndex].series[seriesIndex][key] = value;
+    setExercises(newExercises);
+  };
+
   const handleRemoveExercise = (exerciseIndex) => {
     const newExercises = [...exercises];
     newExercises.splice(exerciseIndex, 1);
     setExercises(newExercises);
-  };
-
-  const handleAddSeries = (exerciseIndex) => {
-    if (!seriesReps || !seriesWeight || !seriesEffort || !seriesInitialPower || !seriesExecution) {
-      console.error('Please fill in all series fields before adding a series.');
-      return;
-    }
-
-    const newExercises = [...exercises];
-    const newSeries = {
-      reps: parseInt(seriesReps, 10),
-      weight: parseInt(seriesWeight, 10),
-      notes: seriesNotes,
-      effort: parseInt(seriesEffort, 10),
-      initialPower: parseInt(seriesInitialPower, 10),
-      execution: parseInt(seriesExecution, 10),
-    };
-
-    if (newExercises.length === 0 || !newExercises[newExercises.length - 1].name) {
-      newExercises.push({ name: selectedExercise, workoutName, series: [newSeries] });
-    } else {
-      newExercises[exerciseIndex].series.push(newSeries);
-    }
-
-    setExercises(newExercises);
-    setSeriesReps('');
-    setSeriesWeight('');
-    setSeriesNotes('');
-    setSeriesEffort(1);
-    setSeriesInitialPower(1);
-    setSeriesExecution(1);
   };
 
   const handleRemoveSeries = (exerciseIndex, seriesIndex) => {
@@ -115,6 +126,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
     }
 
     setSaveLoading(true);
+
     try {
       if (!workoutName || exercises.length === 0) {
         console.error('Please fill in workout name and add at least one exercise.');
@@ -128,7 +140,17 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
         }
 
         for (const series of exercise.series) {
-          if (!series.reps || !series.weight || !series.effort || !series.initialPower || !series.execution) {
+
+          if (
+            typeof series.reps === 'undefined' ||
+            series.reps === '' ||
+            typeof series.weight === 'undefined' ||
+            series.weight === '' ||
+            typeof series.effort === 'undefined' ||
+            series.effort === '' ||
+            typeof series.initialPower === 'undefined' ||
+            series.initialPower === ''
+          ) {
             console.error('Please fill in all series fields for each exercise.');
             return;
           }
@@ -142,7 +164,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
           const { name, series } = exercise;
           return {
             exercise: { name },
-            series,
+            series: series.map((s) => ({ ...s, reps: parseInt(s.reps), weight: parseInt(s.weight) })),
           };
         }),
       };
@@ -179,12 +201,6 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
         setWorkoutName('');
         setExercises([]);
         setSelectedExercise('');
-        setSeriesReps('');
-        setSeriesWeight('');
-        setSeriesNotes('');
-        setSeriesEffort(1);
-        setSeriesInitialPower(1);
-        setSeriesExecution(1);
       } catch (error) {
         console.error('Error saving workout:', error);
       }
@@ -192,9 +208,9 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
       console.error('Error saving workout:', error);
     } finally {
       setSaveLoading(false);
-    }
-
+    };
   };
+
 
   const handleCancel = () => {
     if (onCancel) {
@@ -233,14 +249,15 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
           ))}
         </select>
       </div>
-      <button type="button" className="btn btn-primary me-2" onClick={handleAddExercise}>
+      <button type="button" className="btn btn-primary me-2 mb-3" onClick={handleAddExercise}>
         Add Exercise
       </button>
 
       {exercises.map((exercise, exerciseIndex) => (
         <div className="card mb-3" key={exerciseIndex}>
-          <div className="card-header">
-            <h4>{exercise.name}</h4>
+
+          <div className="card-header d-flex align-items-center justify-content-between py-2">
+            <h4 className='mb-0'>{exercise.name}</h4>
             <button
               type="button"
               className="btn btn-danger"
@@ -249,16 +266,77 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
               Remove Exercise
             </button>
           </div>
+
+
           <div className="card-body">
             {exercise.series.map((series, seriesIndex) => (
-              <div key={seriesIndex} className="mb-3">
-                <p>{`Serie ${seriesIndex + 1}`}</p>
-                <p>Reps: {series.reps}</p>
-                <p>Weight: {series.weight}</p>
-                <p>Notes: {series.notes}</p>
-                <p>Effort: {series.effort}</p>
-                <p>Initial Power: {series.initialPower}</p>
-                <p>Execution: {series.execution}</p>
+              <div key={seriesIndex} className="mb-4 p-3 border rounded">
+                <div className="d-flex m-auto align-items-baseline mb-3">
+
+                  <div className="w-100">
+                    <label className="form-label">Initial Power:</label>
+                    <select
+                      className="form-select"
+                      value={series.initialPower}
+                      onChange={(e) => handleSeriesChange(exerciseIndex, seriesIndex, 'initialPower', e.target.value)}
+                      required
+                    >
+                      {[1, 2, 3, 4, 5].map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="mx-3">
+                    <label className="form-label">Reps:</label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={series.reps}
+                      onChange={(e) => handleSeriesChange(exerciseIndex, seriesIndex, 'reps', e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="me-3">
+                    <label className="form-label">Weight:</label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={series.weight}
+                      onChange={(e) => handleSeriesChange(exerciseIndex, seriesIndex, 'weight', e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className=" w-100">
+                    <label className="form-label">Till failure:</label>
+                    <select
+                      className="form-select"
+                      value={series.effort}
+                      onChange={(e) => handleSeriesChange(exerciseIndex, seriesIndex, 'effort', e.target.value)}
+                      required
+                    >
+                      {[0, 1, 2, 3, '4+'].map((option) => (
+                        <option key={option} value={option}>
+                          {option === '4+' ? '4+' : option}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Notes:</label>
+                  <textarea
+                    className="form-control"
+                    value={series.notes}
+                    rows="1"
+                    onChange={(e) => handleSeriesChange(exerciseIndex, seriesIndex, 'notes', e.target.value)}
+                  />
+                </div>
                 <button
                   type="button"
                   className="btn btn-warning"
@@ -268,79 +346,6 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
                 </button>
               </div>
             ))}
-            <div className="mb-3">
-              <label className="form-label">Reps:</label>
-              <input
-                type="number"
-                className="form-control"
-                value={seriesReps}
-                onChange={(e) => setSeriesReps(e.target.value)}
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Weight:</label>
-              <input
-                type="number"
-                className="form-control"
-                value={seriesWeight}
-                onChange={(e) => setSeriesWeight(e.target.value)}
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Notes:</label>
-              <textarea
-                className="form-control"
-                value={seriesNotes}
-                onChange={(e) => setSeriesNotes(e.target.value)}
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Effort (1-5):</label>
-              <select
-                className="form-select"
-                value={seriesEffort}
-                onChange={(e) => setSeriesEffort(e.target.value)}
-                required
-              >
-                {[1, 2, 3, 4, 5].map((value) => (
-                  <option key={value} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Initial Power (1-5):</label>
-              <select
-                className="form-select"
-                value={seriesInitialPower}
-                onChange={(e) => setSeriesInitialPower(e.target.value)}
-                required
-              >
-                {[1, 2, 3, 4, 5].map((value) => (
-                  <option key={value} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Execution (1-5):</label>
-              <select
-                className="form-select"
-                value={seriesExecution}
-                onChange={(e) => setSeriesExecution(e.target.value)}
-                required
-              >
-                {[1, 2, 3, 4, 5].map((value) => (
-                  <option key={value} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </select>
-            </div>
             <button
               type="button"
               className="btn btn-success"
@@ -351,18 +356,20 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
           </div>
         </div>
       ))}
+      <div className='mb-3'>
 
-<button
-        type="button"
-        className="btn btn-primary me-2"
-        onClick={handleSave}
-        disabled={saveloading} // Disable the button when loading
-      >
-        {saveloading ? 'Saving...' : 'Save'}
-      </button>
-      <button type="button" className="btn btn-secondary" onClick={handleCancel}>
-        Cancel
-      </button>
+        <button
+          type="button"
+          className="btn btn-primary me-2"
+          onClick={handleSave}
+          disabled={saveloading} // Disable the button when loading
+        >
+          {saveloading ? 'Saving...' : 'Save'}
+        </button>
+        <button type="button" className="btn btn-secondary" onClick={handleCancel}>
+          Cancel
+        </button>
+      </div>
     </div>
   );
 };
