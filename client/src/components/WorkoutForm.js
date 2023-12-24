@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-
 const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
   const [workoutName, setWorkoutName] = useState(initialData ? initialData.name : '');
   const [exercises, setExercises] = useState(initialData ? initialData.exercises : []);
@@ -13,6 +12,8 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
   const [seriesEffort, setSeriesEffort] = useState(1);
   const [seriesInitialPower, setSeriesInitialPower] = useState(1);
   const [seriesExecution, setSeriesExecution] = useState(1);
+  const [saveloading, setSaveLoading] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,16 +24,15 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
             'Authorization': `${token}`,
           },
         });
-  
+
         if (!response.ok) {
           throw new Error('Failed to fetch exercises');
         }
-  
+
         const data = await response.json();
         setExerciseOptions(data);
-  
+
         if (initialData) {
-          // If there is initialData, format it for editing
           setWorkoutName(initialData.name);
           setExercises(initialData.exercises.map((exercise) => {
             const { exercise: { name }, series } = exercise;
@@ -46,24 +46,21 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
         console.error('Error fetching exercises:', error);
       }
     };
-  
+
     fetchExercises();
   }, [token, initialData]);
-  
 
   const handleAddExercise = () => {
-    // Check if an exercise is selected
     if (!selectedExercise) {
-      // Display an error message or handle it in your preferred way
       console.error('Please select an exercise before adding.');
       return;
     }
-  
+
     const newExercise = {
       name: selectedExercise,
       series: [],
     };
-  
+
     setExercises([...exercises, newExercise]);
     setSelectedExercise('');
   };
@@ -75,13 +72,11 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
   };
 
   const handleAddSeries = (exerciseIndex) => {
-    // Check if all required fields are filled
     if (!seriesReps || !seriesWeight || !seriesEffort || !seriesInitialPower || !seriesExecution) {
-      // Display an error message or handle it in your preferred way
       console.error('Please fill in all series fields before adding a series.');
       return;
     }
-  
+
     const newExercises = [...exercises];
     const newSeries = {
       reps: parseInt(seriesReps, 10),
@@ -91,13 +86,13 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
       initialPower: parseInt(seriesInitialPower, 10),
       execution: parseInt(seriesExecution, 10),
     };
-  
+
     if (newExercises.length === 0 || !newExercises[newExercises.length - 1].name) {
       newExercises.push({ name: selectedExercise, workoutName, series: [newSeries] });
     } else {
       newExercises[exerciseIndex].series.push(newSeries);
     }
-  
+
     setExercises(newExercises);
     setSeriesReps('');
     setSeriesWeight('');
@@ -106,7 +101,6 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
     setSeriesInitialPower(1);
     setSeriesExecution(1);
   };
-  
 
   const handleRemoveSeries = (exerciseIndex, seriesIndex) => {
     const newExercises = [...exercises];
@@ -115,79 +109,92 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
   };
 
   const handleSave = async () => {
-    // Validate required fields
-    if (!workoutName || exercises.length === 0) {
-      console.error('Please fill in workout name.');
+    if (saveloading) {
+      // Do nothing if already in the process of saving
       return;
     }
-  
-    // Check if any series has missing required fields
-    for (const exercise of exercises) {
-      for (const series of exercise.series) {
-        if (!series.reps || !series.weight || !series.effort || !series.initialPower || !series.execution) {
-          console.error('Please fill in all series fields.');
+
+    setSaveLoading(true);
+    try {
+      if (!workoutName || exercises.length === 0) {
+        console.error('Please fill in workout name and add at least one exercise.');
+        return;
+      }
+
+      for (const exercise of exercises) {
+        if (exercise.series.length === 0) {
+          console.error('Each exercise must have at least one series.');
           return;
         }
+
+        for (const series of exercise.series) {
+          if (!series.reps || !series.weight || !series.effort || !series.initialPower || !series.execution) {
+            console.error('Please fill in all series fields for each exercise.');
+            return;
+          }
+        }
       }
-    }
-  
-    const workoutPayload = {
-      name: workoutName,
-      user: userId,
-      exercises: exercises.map((exercise) => {
-        const { name, series } = exercise;
-        return {
-          exercise: { name },
-          series,
-        };
-      }),
-    };
-  
-    try {
-      let response;
-  
-      if (initialData) {
-        response = await fetch(`http://localhost:3001/workouts/${initialData._id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `${token}`,
-          },
-          body: JSON.stringify(workoutPayload),
-        });
-      } else {
-        response = await fetch('http://localhost:3001/workouts', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `${token}`,
-          },
-          body: JSON.stringify(workoutPayload),
-        });
+
+      const workoutPayload = {
+        name: workoutName,
+        user: userId,
+        exercises: exercises.map((exercise) => {
+          const { name, series } = exercise;
+          return {
+            exercise: { name },
+            series,
+          };
+        }),
+      };
+
+      try {
+        let response;
+
+        if (initialData) {
+          response = await fetch(`http://localhost:3001/workouts/${initialData._id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `${token}`,
+            },
+            body: JSON.stringify(workoutPayload),
+          });
+        } else {
+          response = await fetch('http://localhost:3001/workouts', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `${token}`,
+            },
+            body: JSON.stringify(workoutPayload),
+          });
+        }
+
+        if (!response.ok) {
+          throw new Error('Failed to save workout');
+        }
+
+        console.log('Workout saved successfully');
+
+        setWorkoutName('');
+        setExercises([]);
+        setSelectedExercise('');
+        setSeriesReps('');
+        setSeriesWeight('');
+        setSeriesNotes('');
+        setSeriesEffort(1);
+        setSeriesInitialPower(1);
+        setSeriesExecution(1);
+      } catch (error) {
+        console.error('Error saving workout:', error);
       }
-  
-      if (!response.ok) {
-        throw new Error('Failed to save workout');
-      }
-  
-      console.log('Workout saved successfully');
-  
-      // Reset form fields
-      setWorkoutName('');
-      setExercises([]);
-      setSelectedExercise('');
-      setSeriesReps('');
-      setSeriesWeight('');
-      setSeriesNotes('');
-      setSeriesEffort(1);
-      setSeriesInitialPower(1);
-      setSeriesExecution(1);
-  
     } catch (error) {
       console.error('Error saving workout:', error);
+    } finally {
+      setSaveLoading(false);
     }
+
   };
-  
 
   const handleCancel = () => {
     if (onCancel) {
@@ -262,7 +269,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
               </div>
             ))}
             <div className="mb-3">
-              <label className="form-label">Series Reps:</label>
+              <label className="form-label">Reps:</label>
               <input
                 type="number"
                 className="form-control"
@@ -272,7 +279,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
               />
             </div>
             <div className="mb-3">
-              <label className="form-label">Series Weight:</label>
+              <label className="form-label">Weight:</label>
               <input
                 type="number"
                 className="form-control"
@@ -282,7 +289,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
               />
             </div>
             <div className="mb-3">
-              <label className="form-label">Series Notes:</label>
+              <label className="form-label">Notes:</label>
               <textarea
                 className="form-control"
                 value={seriesNotes}
@@ -290,7 +297,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
               />
             </div>
             <div className="mb-3">
-              <label className="form-label">Series Effort (1-5):</label>
+              <label className="form-label">Effort (1-5):</label>
               <select
                 className="form-select"
                 value={seriesEffort}
@@ -305,7 +312,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
               </select>
             </div>
             <div className="mb-3">
-              <label className="form-label">Series Initial Power (1-5):</label>
+              <label className="form-label">Initial Power (1-5):</label>
               <select
                 className="form-select"
                 value={seriesInitialPower}
@@ -320,7 +327,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
               </select>
             </div>
             <div className="mb-3">
-              <label className="form-label">Series Execution (1-5):</label>
+              <label className="form-label">Execution (1-5):</label>
               <select
                 className="form-select"
                 value={seriesExecution}
@@ -345,8 +352,13 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
         </div>
       ))}
 
-      <button type="button" className="btn btn-primary me-2" onClick={handleSave}>
-        Save
+<button
+        type="button"
+        className="btn btn-primary me-2"
+        onClick={handleSave}
+        disabled={saveloading} // Disable the button when loading
+      >
+        {saveloading ? 'Saving...' : 'Save'}
       </button>
       <button type="button" className="btn btn-secondary" onClick={handleCancel}>
         Cancel

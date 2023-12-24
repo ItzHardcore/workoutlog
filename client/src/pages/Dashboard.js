@@ -14,11 +14,11 @@ function Dashboard({ token, handleLogout }) {
   // Function to toggle visibility
   const toggleVisibility = () => {
     fetchWorkouts(token);
-    setIsWorkoutsVisible(!isWorkoutsVisible);
+    setIsWorkoutsVisible(prev => !prev);
   };
-
+  
   const toggleAddWorkout = () => {
-    setAddIsWorkoutsVisible(!isAddWorkoutsVisible);
+    setAddIsWorkoutsVisible(prev => !prev);
   };
 
   useEffect(() => {
@@ -59,11 +59,7 @@ function Dashboard({ token, handleLogout }) {
 
   const removeWorkout = async (workoutId) => {
     try {
-      // Display a confirmation dialog
-      const confirmRemove = window.confirm('Are you sure you want to remove this workout?');
-
-      if (!confirmRemove) {
-        // If the user clicks "Cancel" in the confirmation dialog, do nothing
+      if (!window.confirm('Are you sure you want to remove this workout?')) {
         return;
       }
 
@@ -103,8 +99,10 @@ function Dashboard({ token, handleLogout }) {
 
       <div className="mt-3" style={{ display: isWorkoutsVisible ? 'none' : 'block' }}>
         {workouts.length === 0 ? (
-          <h5 className='text-danger'>No workouts available</h5>
-        ) : (<h2>My Workouts</h2>)}
+          <h5 className="text-danger">No workouts available</h5>
+        ) : (
+          <h2>My Workouts</h2>
+        )}
 
         <div className='d-flex'>
 
@@ -146,9 +144,9 @@ function Dashboard({ token, handleLogout }) {
                   </div>
                 ))}
 
-                <div className="mt-3">
-                  <button className="btn btn-danger me-2" onClick={() => removeWorkout(workout._id)}>Remove Workout</button>
-                  <button className="btn btn-warning" onClick={() => handleEditWorkout(workout._id)}>Edit Workout</button>
+                <div className="d-flex mt-3">
+                  <button className="btn btn-warning me-2" onClick={() => handleEditWorkout(workout._id)}>Edit</button>
+                  <button className="btn btn-danger" onClick={() => removeWorkout(workout._id)}>Remove</button>
                 </div>
               </div>
             </div>
