@@ -1,4 +1,3 @@
-// components/Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -27,8 +26,9 @@ function Login({ onLogin }) {
       }
 
       const data = await response.json();
-      onLogin(data.token, data.user.username);
+      onLogin(data.token, data.user); // Pass the entire user object
       localStorage.setItem("token", data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
       navigate('/dashboard');
     } catch (error) {
       console.error('Login failed:', error);
