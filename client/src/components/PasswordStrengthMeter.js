@@ -32,7 +32,7 @@ const PasswordStrengthMeter = ({ password }) => {
           aria-valuemax={100}
         />
       </div>
-      <div className={`strength-message ${strength === 4 ? 'text-success' : strength >= 2 ? 'text-warning' : 'text-danger'}`}>
+      <div className={`${strength === 4 ? 'small text-success' : strength >= 2 ? 'small text-warning' : 'small text-danger'}`}>
         {strength === 4 ? 'Strong Password!' : strength >= 2 ? 'Medium Password' : 'Password is too weak.'}
       </div>
     </div>

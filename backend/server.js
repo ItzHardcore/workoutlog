@@ -75,6 +75,19 @@ app.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'Null values are not allowed' });
     }
 
+    // Validate character limits
+    const maxLength = 30;
+    if (
+      username.length > maxLength ||
+      password.length > maxLength ||
+      name.length > maxLength ||
+      email.length > maxLength ||
+      phoneNumber.length > maxLength ||
+      repeatPassword.length > maxLength
+    ) {
+      return res.status(400).json({ error: 'Field length exceeds the maximum limit of 30 characters' });
+    }
+
     // Validate phone number (only numbers, no strings)
     if (!(/^\d+$/.test(phoneNumber))) {
       return res.status(400).json({ error: 'Phone number must contain only numbers' });
@@ -141,6 +154,7 @@ app.post('/register', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 // Login User and generate JWT
 app.post('/login', async (req, res) => {
