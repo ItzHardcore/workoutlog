@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { ObjectId } = require('mongodb');
 const bcrypt = require('bcrypt');
+const path = require('path');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
@@ -33,7 +34,7 @@ const blockUserDuration = 60 * 60 * 1000; // 60 minutes in milliseconds
 const maxRequestsBeforeBlock = 15;
 
 // Implement user activity tracking middleware
-app.use((req, res, next) => {
+const registerSpamMiddleware = (req, res, next) => {
   const ipAddress = req.ip;
 
   // Track user activity
@@ -42,12 +43,16 @@ app.use((req, res, next) => {
   }
 
   const user = userActivity.get(ipAddress);
+
   // Check if the user should be blocked
+  console.log(user.requests);
   if (user.requests >= maxRequestsBeforeBlock) {
     const timeSinceLastRequest = Date.now() - user.lastRequestTime;
 
     if (timeSinceLastRequest < blockUserDuration) {
-      return res.status(429).json({ error: 'IP is blocked for ' + ((blockUserDuration - timeSinceLastRequest) / 60 / 1000).toFixed(0) + ' min. Please try again later.' });
+      return res.status(429).json({
+        error: 'IP is blocked for ' + ((blockUserDuration - timeSinceLastRequest) / 60 / 1000).toFixed(0) + ' min. Please try again later.'
+      });
     } else {
       // Reset user activity after the blocking duration
       userActivity.set(ipAddress, { requests: 0, lastRequestTime: Date.now() });
@@ -59,9 +64,25 @@ app.use((req, res, next) => {
   user.lastRequestTime = Date.now();
 
   next();
-});
+};
 
-app.post('/register', async (req, res) => {
+// JWT Authentication Middleware
+const authenticateJWT = (req, res, next) => {
+  const token = req.header('Authorization');
+  if (!token) return res.status(401).json({ message: 'Unauthorized' });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ message: 'Invalid token' });
+    req.user = user;
+    next();
+  });
+};
+
+// Serve static files from the 'media' folder
+app.use('/media', express.static(path.join(__dirname, 'media')));
+
+app.post('/register', registerSpamMiddleware, async (req, res) => {
+
   try {
     const { username, password, name, email, phoneNumber, repeatPassword, termsAccepted } = req.body;
 
@@ -135,14 +156,19 @@ app.post('/register', async (req, res) => {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    const defaultPhotoURL = 'http://localhost:3001/media/defaultUser.jpg';
+
     // Create a new user
     const newUser = new User({
+      photo: defaultPhotoURL,
       username,
       password: hashedPassword,
       name,
       email,
       phoneNumber,
       termsAccepted,
+      emailVerified: false,
+      role: 'user',
     });
 
     // Save the user to the database
@@ -176,17 +202,36 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// JWT Authentication Middleware
-const authenticateJWT = (req, res, next) => {
-  const token = req.header('Authorization');
-  if (!token) return res.status(401).json({ message: 'Unauthorized' });
+app.get('/profile', authenticateJWT, async (req, res) => {
+  try {
+    // Fetch user details from the database
+    const userId = req.user.userId; // Assuming req.user has the user ID after authentication
+    const user = await User.findById(userId);
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: 'Invalid token' });
-    req.user = user;
-    next();
-  });
-};
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Only include necessary fields in the response
+    const userProfile = {
+      photo: user.photo,
+      username: user.username,
+      name: user.name,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      termsAccepted: user.termsAccepted,
+      emailVerified: user.emailVerified,
+      role: user.role,
+    };
+
+    res.status(200).json(userProfile);
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 
 app.get('/workouts', authenticateJWT, async (req, res) => {
   try {

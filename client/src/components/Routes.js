@@ -6,7 +6,7 @@ import Dashboard from '../pages/Dashboard';
 import Login from '../components/Login';
 import Register from '../components/Register';
 import EditWorkout from '../pages/EditWorkout';
-import EditProfile from '../pages/EditProfile';
+import Profile from '../pages/Profile';
 
 const AppRoutes = ({ token, handleLogout, handleLogin, handleRegister }) => {
   return (
@@ -15,8 +15,8 @@ const AppRoutes = ({ token, handleLogout, handleLogin, handleRegister }) => {
       <Route path="/login" element={<Login onLogin={handleLogin} />} />
       <Route path="/register" element={<Register onRegister={handleRegister} />} />
       <Route path="/dashboard" element={<PrivateRoute token={token} component={Dashboard} handleLogout={handleLogout} />} />
-      <Route path="/edit/:workoutId" element={<EditWorkout token={token} />} />
-      <Route path="/edit-profile" element={<EditProfile token={token} handleLogin={handleLogin} />} />
+      <Route path="/edit/:workoutId" element={<PrivateRoute token={token} component={EditWorkout} />} />
+      <Route path="/profile" element={<PrivateRoute token={token} handleLogin={handleLogin} component={Profile}/>} />
     </Routes>
   );
 };

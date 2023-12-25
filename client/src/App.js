@@ -31,11 +31,10 @@ const App = () => {
   return (
     <Router>
       <div>
-        <Navbar token={token} handleLogout={handleLogout} />
+        <Navbar token={token} user={user} handleLogout={handleLogout} />
         <div className="container mt-3">
           <AppRoutes
             token={token}
-            user={user}
             handleLogin={handleLogin}
             handleLogout={handleLogout}
             handleRegister={handleRegister}

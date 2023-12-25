@@ -1,16 +1,7 @@
-import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const Navbar = ({ token, handleLogout }) => {
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);
-
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem('user'));
-    if (storedUser) {
-      setUser(storedUser);
-    }
-  }, []);
-
+const Navbar = ({ token,user, handleLogout }) => {
+  
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container">
@@ -46,12 +37,12 @@ const Navbar = ({ token, handleLogout }) => {
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
                   >
-                    {user ? user.name : 'User'}
+                    {user ? user : 'User'}
                   </Link>
                   <ul className="dropdown-menu" aria-labelledby="userDropdown">
                     <li>
-                      <Link className="dropdown-item" to="/edit-profile">
-                        Edit Profile
+                      <Link className="dropdown-item" to="/profile">
+                        Profile
                       </Link>
                     </li>
                     <li>
