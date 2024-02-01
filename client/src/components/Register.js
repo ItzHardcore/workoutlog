@@ -6,11 +6,6 @@ function Register() {
   const [errorMessage, setErrorMessage] = useState('');
   const [buttonHidden, setButtonHidden] = useState(false);
 
-  const handleRegister = (message) => {
-    // Handle success or additional logic for registering
-    console.log(message);
-  };
-
   return (
     <div className="container w-50">
       <div className="row justify-content-center">
@@ -18,7 +13,7 @@ function Register() {
           <h1 className="text-center">Register</h1>
 
           {/* Reuse the RegistrationForm component */}
-          <RegistrationForm onSubmit={handleRegister}
+          <RegistrationForm
             isButtonHidden={buttonHidden}
             errorMessage={errorMessage}
             setErrorMessage={setErrorMessage}

@@ -120,8 +120,6 @@ function RegistrationForm({ onSubmit, isButtonHidden, errorMessage, setErrorMess
                     throw new Error(errorData.error || 'Registration failed');
                 }
             }else{
-                const data = await response.json();
-                onSubmit(data.message);
                 navigate('/login');
             }
 

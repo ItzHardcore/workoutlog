@@ -6,7 +6,6 @@ const seriesSchema = new Schema({
   reps: Number,
   weight: Number,
   effort: Number,
-  initialPower: Number,
   execution: Number,
   type: String,
   // Add any other series-related fields as needed

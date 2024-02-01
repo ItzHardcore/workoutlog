@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+var DateOnly = require('mongoose-dateonly')(mongoose);
 const { ObjectId } = require('mongodb');
 const bcrypt = require('bcrypt');
 const path = require('path');
@@ -13,6 +14,7 @@ const User = require('./schemas/User');
 const Workout = require('./schemas/Workout');
 const Series = require('./schemas/Series');
 const Exercise = require('./schemas/Exercise');
+const Measure = require('./schemas/Measure');
 
 const app = express();
 const router = express.Router();
@@ -304,6 +306,142 @@ app.get('/exercises', authenticateJWT, async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+app.post('/measures', authenticateJWT, async (req, res) => {
+  try {
+    const { weight, steps, sleepHours, energy, hunger, stress, date } = req.body;
+   
+    // Assuming you have a user ID available in req.user
+    const userId = req.user.id;
+
+    // Parse the input date to create the date range
+    const startDate = new Date(date);
+    startDate.setHours(0, 0, 0, 0); // Set time to 00:00:00
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 1); // Adding one day to get the next day
+    endDate.setHours(0, 0, 0, 0); // Set time to 00:00:00
+
+    // Check if a measure with the same date range already exists for the user
+    const existingMeasure = await Measure.findOne({ 
+      user: userId, 
+      date: { $gte: startDate, $lt: endDate } 
+    });
+
+    if (existingMeasure) {
+      // If a measure with the same date already exists, throw an error
+      return res.status(400).json({ error: 'A measure for this date already exists' });
+    }
+
+    // Create a new measure
+    const newMeasure = new Measure({
+      weight,
+      steps,
+      sleepHours,
+      energy,
+      hunger,
+      stress,
+      date,
+      user: userId,
+    });
+
+    // Save the measure to the database
+    const savedMeasure = await newMeasure.save();
+
+    res.status(201).json(savedMeasure);
+  } catch (error) {
+    console.error('Error saving measures:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+app.delete('/measures/:id', authenticateJWT, async (req, res) => {
+  try {
+    const measureId = req.params.id;
+
+    // Find the measure and ensure it belongs to the current user
+    const measure = await Measure.findOne({ _id: measureId, userId: req.user.id });
+
+    if (!measure) {
+      return res.status(404).json({ error: 'Measure not found' });
+    }
+
+    // Delete the measure
+    await Measure.deleteOne({ _id: measureId });
+
+    res.status(200).json({ message: 'Measure deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting measure:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Endpoint to get measures for the current user
+app.get('/measures', authenticateJWT, async (req, res) => {
+  try {
+    // Fetch measures for the current user
+    const userId = req.user.id;
+    const measures = await Measure.find({ user: userId }).sort({ date: -1 });
+
+    res.status(200).json(measures);
+  } catch (error) {
+    console.error('Error fetching measures:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.put('/measures/:measureId', authenticateJWT, async (req, res) => {
+  try {
+    const { measureId } = req.params;
+    const { weight, steps, sleepHours, energy, hunger, stress, date } = req.body;
+
+    // Assuming you have a user ID available in req.user
+    const userId = req.user.id;
+
+    // Parse the input date to create the date range
+    const startDate = new Date(date);
+    startDate.setHours(0, 0, 0, 0); // Set time to 00:00:00
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 1); // Adding one day to get the next day
+    endDate.setHours(0, 0, 0, 0); // Set time to 00:00:00
+
+    // Check if a measure with the same date range already exists for the user
+    const existingMeasure = await Measure.findOne({ 
+      user: userId, 
+      date: { $gte: startDate, $lt: endDate } 
+    });
+
+    if (existingMeasure && existingMeasure._id.toString() !== measureId) {
+      // If a measure with the same date already exists, throw an error
+      return res.status(400).json({ error: 'A measure for this date already exists' });
+    }
+
+    // Find the measure to update
+    const measureToUpdate = await Measure.findById(measureId);
+    if (!measureToUpdate) {
+      return res.status(404).json({ error: 'Measure not found' });
+    }
+
+    // Update the measure fields
+    measureToUpdate.weight = weight;
+    measureToUpdate.steps = steps;
+    measureToUpdate.sleepHours = sleepHours;
+    measureToUpdate.energy = energy;
+    measureToUpdate.hunger = hunger;
+    measureToUpdate.stress = stress;
+    measureToUpdate.date = date;
+
+    // Save the updated measure to the database
+    const updatedMeasure = await measureToUpdate.save();
+
+    res.status(200).json(updatedMeasure);
+  } catch (error) {
+    console.error('Error updating measure:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 
 app.post('/workouts', authenticateJWT, async (req, res) => {
   try {

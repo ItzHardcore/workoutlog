@@ -222,7 +222,6 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
 
   return (
     <div className="w-50 my-4">
-      <h2 className="mb-4">Workout Form</h2>
       <div className="mb-3">
         <label className="form-label">Workout Name:</label>
         <input
