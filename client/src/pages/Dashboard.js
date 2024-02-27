@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import WorkoutForm from '../components/WorkoutForm';
 import MeasuresForm from '../components/MeasuresForm';
 import { jwtDecode } from 'jwt-decode';
 import DatePicker from 'react-datepicker';
+import Chart from 'chart.js/auto';
 
 function Dashboard({ token, handleLogout }) {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ function Dashboard({ token, handleLogout }) {
   const [isMeasuresVisible, setIsMeasuresVisible] = useState(false); // Add state for measures visibility
   const [isAddWorkoutsVisible, setAddIsWorkoutsVisible] = useState(true);
   const [isAddMeasuresVisible, setAddIsMeasuresVisible] = useState(false);
+  const [sessions, setSessions] = useState([]);
   const [username, setUsername] = useState('');
   const [userID, setUserID] = useState('');
   const [saveMeasureError, setSaveMeasureError] = useState('');
@@ -39,7 +41,74 @@ function Dashboard({ token, handleLogout }) {
     // Fetch workouts
     fetchWorkouts(token);
     fetchMeasures(token);
+    fetchSessions(token);
   }, [token]);
+
+  const WeightChart = ({ measures }) => {
+    const chartRef = useRef(null);
+  
+    useEffect(() => {
+      if (!chartRef.current || !measures || measures.length === 0) return;
+  
+      const labels = measures.map((measure) => new Date(measure.date).toLocaleDateString()).reverse(); // Reverse the labels array
+      const weights = measures.map((measure) => measure.weight).reverse(); // Reverse the weights array
+  
+      const ctx = chartRef.current.getContext('2d');
+  
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Weight',
+            data: weights,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1,
+          }],
+        },
+        options: {
+          scales: {
+            x: {
+              type: 'category',
+              labels: labels,
+            },
+            y: {
+              beginAtZero: false,
+              ticks: {
+                callback: function(value) {
+                  return value + ' Kg'; // Add 'Kg' to the tick label
+                }
+              }
+            },
+          },
+        },
+      });
+    }, [measures]);
+  
+    return <canvas ref={chartRef} />;
+  };
+  
+
+  const fetchSessions = async (token) => {
+    try {
+      const response = await fetch('http://localhost:3001/workoutSessions', {
+        method: 'GET',
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch sessions');
+      }
+
+      const data = await response.json();
+      setSessions(data);
+      console.log(data);
+    } catch (error) {
+      console.error('Failed to fetch sessions:', error);
+    }
+  };
 
   const toggleEditMode = (measureId) => {
     // Find the index of the measure to toggle edit mode
@@ -157,6 +226,22 @@ function Dashboard({ token, handleLogout }) {
     }
   };
 
+  const calculateDuration = (startDate, endDate) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    // Calculate the difference in milliseconds
+    const durationMs = end - start;
+
+    // Convert milliseconds to hours, minutes, and seconds
+    const hours = Math.floor(durationMs / (1000 * 60 * 60));
+    const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((durationMs % (1000 * 60)) / 1000);
+
+    // Format the duration as HH:mm:ss
+    return `${hours}h ${minutes}min ${seconds}s`;
+  };
+
   const handleEditWorkout = (workoutId) => {
     // Navigate to the edit page, you can use React Router for this
     navigate(`/edit/${workoutId}`);
@@ -168,6 +253,11 @@ function Dashboard({ token, handleLogout }) {
       await fetchMeasures(token);
     }
     setIsMeasuresVisible((prev) => !prev);
+  };
+
+  const handleStartWorkout = (workoutId) => {
+
+    navigate(`/startsession/${workoutId}`);
   };
 
   // Function to fetch measures
@@ -254,6 +344,32 @@ function Dashboard({ token, handleLogout }) {
       <button className="btn btn-secondary ms-2" onClick={toggleMeasures}>Toggle Measures</button>
       <button className="btn btn-success ms-2" onClick={toggleAddWorkout}>Add Workout</button>
       <button className="btn btn-success ms-2" onClick={toggleAddMeasures}>Add Measures</button>
+      <button className="btn btn-success ms-2" onClick={handleStartWorkout}>Start Workout</button>
+
+      <h3>Sessions</h3>
+      <div className="row row-cols-1 row-cols-md-2 g-4">
+        {sessions.map(session => (
+          <div key={session._id} className="col">
+            <div className="card">
+              <div className="card-body">
+                <h5 className="card-title">Session ID: {session._id}</h5>
+                <p className="card-text">Start Date: {new Date(session.startDate).toLocaleString()}</p>
+                <p className="card-text">End Date: {session.endDate ? new Date(session.endDate).toLocaleString() : 'Not ended yet'}</p>
+                {/* Calculate and display workout duration */}
+                {session.endDate && (
+                  <p className="card-text">Duration: {calculateDuration(session.startDate, session.endDate)}</p>
+                )}
+                <p className="card-text">User ID: {session.user}</p>
+                <p className="card-text">Workout Name: {session.workoutName}</p>
+                {/* Render additional session details */}
+                {/* Example: <p className="card-text">Duration: {session.duration}</p> */}
+                <Link to={`/session/${session._id}`} className="btn btn-primary">View Details</Link>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
 
       <div style={{ display: isAddMeasuresVisible ? 'block' : 'none' }}>
         {/* Display MeasuresForm when isAddMeasuresVisible is true */}
@@ -332,53 +448,53 @@ function Dashboard({ token, handleLogout }) {
                   )}
                 </td>
                 <td>
-  {measure.isEditing ? (
-    <select
-      id={`energy-${measure._id}`}
-      className='form-select'
-      value={measure.energy}
-      onChange={(e) => handleInputChange(measure._id, 'energy', e.target.value)}
-    >
-      {[1, 2, 3, 4, 5].map(value => (
-        <option key={value} value={value}>{value}</option>
-      ))}
-    </select>
-  ) : (
-    `${measure.energy}`
-  )}
-</td>
-<td>
-  {measure.isEditing ? (
-    <select
-      id={`hunger-${measure._id}`}
-      className='form-select'
-      value={measure.hunger}
-      onChange={(e) => handleInputChange(measure._id, 'hunger', e.target.value)}
-    >
-      {[1, 2, 3, 4, 5].map(value => (
-        <option key={value} value={value}>{value}</option>
-      ))}
-    </select>
-  ) : (
-    `${measure.hunger}`
-  )}
-</td>
-<td>
-  {measure.isEditing ? (
-    <select
-      id={`stress-${measure._id}`}
-      className='form-select'
-      value={measure.stress}
-      onChange={(e) => handleInputChange(measure._id, 'stress', e.target.value)}
-    >
-      {[1, 2, 3, 4, 5].map(value => (
-        <option key={value} value={value}>{value}</option>
-      ))}
-    </select>
-  ) : (
-    `${measure.stress}`
-  )}
-</td>
+                  {measure.isEditing ? (
+                    <select
+                      id={`energy-${measure._id}`}
+                      className='form-select'
+                      value={measure.energy}
+                      onChange={(e) => handleInputChange(measure._id, 'energy', e.target.value)}
+                    >
+                      {[1, 2, 3, 4, 5].map(value => (
+                        <option key={value} value={value}>{value}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    `${measure.energy}`
+                  )}
+                </td>
+                <td>
+                  {measure.isEditing ? (
+                    <select
+                      id={`hunger-${measure._id}`}
+                      className='form-select'
+                      value={measure.hunger}
+                      onChange={(e) => handleInputChange(measure._id, 'hunger', e.target.value)}
+                    >
+                      {[1, 2, 3, 4, 5].map(value => (
+                        <option key={value} value={value}>{value}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    `${measure.hunger}`
+                  )}
+                </td>
+                <td>
+                  {measure.isEditing ? (
+                    <select
+                      id={`stress-${measure._id}`}
+                      className='form-select'
+                      value={measure.stress}
+                      onChange={(e) => handleInputChange(measure._id, 'stress', e.target.value)}
+                    >
+                      {[1, 2, 3, 4, 5].map(value => (
+                        <option key={value} value={value}>{value}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    `${measure.stress}`
+                  )}
+                </td>
 
 
                 <td>
@@ -392,12 +508,15 @@ function Dashboard({ token, handleLogout }) {
               </tr>
             ))}
           </tbody>
-          </table>
-            {saveMeasureError && (
-              <div className="alert alert-danger mt-2 d-table-cell" role="alert">
-                {saveMeasureError}
-              </div>
-            )}
+        </table>
+        {saveMeasureError && (
+          <div className="alert alert-danger mt-2 d-table-cell" role="alert">
+            {saveMeasureError}
+          </div>
+        )}
+
+        <WeightChart measures={measures} />
+
       </div>
 
       <div className="mt-3" style={{ display: isWorkoutsVisible ? 'none' : 'block' }}>
@@ -450,6 +569,7 @@ function Dashboard({ token, handleLogout }) {
                 <div className="d-flex mt-3">
                   <button className="btn btn-warning me-2" onClick={() => handleEditWorkout(workout._id)}>Edit</button>
                   <button className="btn btn-danger" onClick={() => removeWorkout(workout._id)}>Remove</button>
+                  <button className="btn btn-success ms-2" onClick={() => handleStartWorkout(workout._id)}>Start Workout</button>
                 </div>
               </div>
             </div>

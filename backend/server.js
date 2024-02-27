@@ -15,6 +15,8 @@ const Workout = require('./schemas/Workout');
 const Series = require('./schemas/Series');
 const Exercise = require('./schemas/Exercise');
 const Measure = require('./schemas/Measure');
+const WorkoutSession = require('./schemas/WorkoutSession');
+
 
 const app = express();
 const router = express.Router();
@@ -292,6 +294,64 @@ router.get('/workouts/:workoutId', authenticateJWT, async (req, res) => {
   } catch (error) {
     console.error('Error fetching workout:', error);
     res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+app.post('/workoutSession', async (req, res) => {
+  try {
+    const { startDate, endDate, user, workoutName, exercises } = req.body;
+
+    // Create a new WorkoutSession instance
+    const workoutSession = new WorkoutSession({
+      startDate,
+      endDate,
+      user,
+      workoutName,
+      exercises,
+    });
+    // Save the WorkoutSession to the database
+    const savedWorkoutSession = await workoutSession.save();
+
+    res.status(201).json(savedWorkoutSession); // Respond with the saved WorkoutSession
+  } catch (error) {
+    console.error('Error saving workout session:', error);
+    res.status(500).json({ error: 'Failed to save workout session' }); // Respond with an error message
+  }
+});
+
+
+app.get('/workoutSessions', authenticateJWT, async (req, res) => {
+  try {
+    // Retrieve workout sessions from the database
+    const sessions = await WorkoutSession.find({ user: req.user.userId });
+      
+
+    res.status(200).json(sessions); // Respond with the fetched workout sessions
+  } catch (error) {
+    console.error('Error fetching workout sessions:', error);
+    res.status(500).json({ error: 'Failed to fetch workout sessions' }); // Respond with an error message
+  }
+});
+
+app.get('/workoutSessions/:id', authenticateJWT, async (req, res) => {
+  const sessionId = req.params.id;
+
+  try {
+    // Retrieve the workout session by its ID
+    const session = await WorkoutSession.findById(sessionId)
+      
+
+    if (!session) {
+      // If session is not found, return a 404 response
+      return res.status(404).json({ error: 'Workout session not found' });
+    }
+
+    // If session is found, return it in the response
+    res.json(session);
+  } catch (error) {
+    console.error('Failed to fetch workout session:', error);
+    res.status(500).json({ error: 'Failed to fetch workout session' });
   }
 });
 

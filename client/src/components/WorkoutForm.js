@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
+const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
   const [workoutName, setWorkoutName] = useState(initialData ? initialData.name : '');
   const [exercises, setExercises] = useState(initialData ? initialData.exercises : []);
   const [exerciseOptions, setExerciseOptions] = useState([]);
@@ -171,7 +171,10 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
 
       try {
         let response;
-
+        onSave(workoutPayload);
+        if(onSave){
+          return;
+        }
         if (initialData) {
           response = await fetch(`http://localhost:3001/workouts/${initialData._id}`, {
             method: 'PUT',
@@ -191,7 +194,8 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
             body: JSON.stringify(workoutPayload),
           });
         }
-
+        
+        
         if (!response.ok) {
           throw new Error('Failed to save workout');
         }
@@ -318,9 +322,9 @@ const WorkoutForm = ({ userId, token, initialData, onCancel }) => {
                       onChange={(e) => handleSeriesChange(exerciseIndex, seriesIndex, 'effort', e.target.value)}
                       required
                     >
-                      {[0, 1, 2, 3, '4+'].map((option) => (
+                      {[0, 1, 2, 3, 4].map((option) => (
                         <option key={option} value={option}>
-                          {option === '4+' ? '4+' : option}
+                          {option === 4 ? '4+' : option}
                         </option>
                       ))}
                     </select>
