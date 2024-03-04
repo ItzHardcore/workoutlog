@@ -32,12 +32,9 @@ const WorkoutSession = ({ token }) => {
         if (fetchedWorkoutData.user === authenticatedUserId) {
           setIsAuthorized(true);
           setWorkoutData(fetchedWorkoutData);
-        } else {
-          navigate('/unauthorized'); // Redirect to unauthorized page
         }
       } catch (error) {
         console.error('Error fetching workout data:', error);
-        navigate('/error'); // Redirect to an error page for better user experience
       }
     };
 
@@ -99,7 +96,7 @@ const WorkoutSession = ({ token }) => {
       const savedWorkoutData = await response.json();
       console.log('Workout saved successfully:', savedWorkoutData);
       navigate('/dashboard');
-      // Handle success (e.g., display a success message or redirect)
+
       alert('Workout saved successfully!');
     } catch (error) {
       console.error('Error saving workout data:', error);
