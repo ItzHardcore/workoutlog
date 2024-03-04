@@ -18,6 +18,7 @@ function Dashboard({ token, handleLogout }) {
   const [username, setUsername] = useState('');
   const [userID, setUserID] = useState('');
   const [saveMeasureError, setSaveMeasureError] = useState('');
+  const [showModal, setShowModal] = useState(false);
 
   // Function to toggle visibility
   const toggleVisibility = () => {
@@ -46,15 +47,15 @@ function Dashboard({ token, handleLogout }) {
 
   const WeightChart = ({ measures }) => {
     const chartRef = useRef(null);
-  
+
     useEffect(() => {
       if (!chartRef.current || !measures || measures.length === 0) return;
-  
+
       const labels = measures.map((measure) => new Date(measure.date).toLocaleDateString()).reverse(); // Reverse the labels array
       const weights = measures.map((measure) => measure.weight).reverse(); // Reverse the weights array
-  
+
       const ctx = chartRef.current.getContext('2d');
-  
+
       new Chart(ctx, {
         type: 'line',
         data: {
@@ -75,7 +76,7 @@ function Dashboard({ token, handleLogout }) {
             y: {
               beginAtZero: false,
               ticks: {
-                callback: function(value) {
+                callback: function (value) {
                   return value + ' Kg'; // Add 'Kg' to the tick label
                 }
               }
@@ -84,10 +85,10 @@ function Dashboard({ token, handleLogout }) {
         },
       });
     }, [measures]);
-  
+
     return <canvas ref={chartRef} />;
   };
-  
+
 
   const fetchSessions = async (token) => {
     try {
@@ -110,6 +111,44 @@ function Dashboard({ token, handleLogout }) {
     }
   };
 
+
+  const Modal = ({ onClose, workouts, handleStartWorkoutFromModal }) => {
+    const [selectedWorkoutId, setSelectedWorkoutId] = useState('');
+  
+    const handleStart = () => {
+      if (selectedWorkoutId) {
+        handleStartWorkout(selectedWorkoutId);
+        onClose();
+      }
+    };
+  
+    return (
+      <div className="modal fade show" style={{ display: "block" }} tabIndex="-1" role="dialog">
+  <div className="modal-dialog" role="document">
+    <div className="modal-content">
+      <div className="modal-header">
+        <h5 className="modal-title">Choose a Workout</h5>
+        <button type="button" className="btn-close" onClick={onClose}></button>
+      </div>
+      <div className="modal-body">
+        <select value={selectedWorkoutId} onChange={(e) => setSelectedWorkoutId(e.target.value)} className="form-select">
+          <option value="">Select a workout</option>
+          {workouts.map(workout => (
+            <option key={workout._id} value={workout._id}>{workout.name}</option>
+          ))}
+        </select>
+      </div>
+      <div className="modal-footer">
+        <button type="button" className="btn btn-secondary" onClick={onClose}>Close</button>
+        <button type="button" className="btn btn-primary" onClick={handleStart}>Start</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    );
+  };
+  
   const toggleEditMode = (measureId) => {
     // Find the index of the measure to toggle edit mode
     const measureIndex = measures.findIndex((measure) => measure._id === measureId);
@@ -256,8 +295,13 @@ function Dashboard({ token, handleLogout }) {
   };
 
   const handleStartWorkout = (workoutId) => {
+    if (workoutId) {
+      navigate(`/startsession/${workoutId}`);
+      setShowModal(false);
+    } else {
+      setShowModal(true);
 
-    navigate(`/startsession/${workoutId}`);
+    }
   };
 
   // Function to fetch measures
@@ -333,7 +377,8 @@ function Dashboard({ token, handleLogout }) {
 
 
   return (
-    <div className="container mt-3">
+    
+    <div className="container mt-3">  
       <h2>Dashboard</h2>
       <p>Welcome to the dashboard, {username}!</p>
       <p className="text-justify">You have token: {token}</p>
@@ -344,8 +389,10 @@ function Dashboard({ token, handleLogout }) {
       <button className="btn btn-secondary ms-2" onClick={toggleMeasures}>Toggle Measures</button>
       <button className="btn btn-success ms-2" onClick={toggleAddWorkout}>Add Workout</button>
       <button className="btn btn-success ms-2" onClick={toggleAddMeasures}>Add Measures</button>
-      <button className="btn btn-success ms-2" onClick={handleStartWorkout}>Start Workout</button>
-
+      <button className="btn btn-success ms-2" onClick={() => handleStartWorkout()}>Start Workout</button>
+{showModal && 
+      <Modal onClose={() => setShowModal(false)} workouts={workouts} handleStartWorkoutFromModal={handleStartWorkout} />
+}
       <h3>Sessions</h3>
       <div className="row row-cols-1 row-cols-md-2 g-4">
         {sessions.map(session => (
@@ -516,7 +563,9 @@ function Dashboard({ token, handleLogout }) {
         )}
 
         <WeightChart measures={measures} />
-
+        
+        
+      
       </div>
 
       <div className="mt-3" style={{ display: isWorkoutsVisible ? 'none' : 'block' }}>
@@ -575,15 +624,16 @@ function Dashboard({ token, handleLogout }) {
             </div>
           ))}
         </div>
-
       </div>
 
       <div style={{ display: isAddWorkoutsVisible ? 'none' : 'block' }}>
         <h2 className="mt-3">Add Workout</h2>
         <WorkoutForm userId={userID} token={token} onCancel={toggleAddWorkout} />
       </div>
+
     </div>
   );
+  
 }
 
 export default Dashboard;
