@@ -11,6 +11,7 @@ function Dashboard({ token, handleLogout }) {
   const [workouts, setWorkouts] = useState([]);
   const [measures, setMeasures] = useState([]); // Add state for measures
   const [isWorkoutsVisible, setIsWorkoutsVisible] = useState(true);
+  const [isSessionsVisible, setIsSessionsVisible] = useState(false);
   const [isMeasuresVisible, setIsMeasuresVisible] = useState(false); // Add state for measures visibility
   const [isAddWorkoutsVisible, setAddIsWorkoutsVisible] = useState(true);
   const [isAddMeasuresVisible, setAddIsMeasuresVisible] = useState(false);
@@ -28,6 +29,9 @@ function Dashboard({ token, handleLogout }) {
 
   const toggleAddWorkout = () => {
     setAddIsWorkoutsVisible(prev => !prev);
+  };
+  const toggleSessions = () => {
+    setIsSessionsVisible(prev => !prev);
   };
 
   const toggleAddMeasures = () => {
@@ -114,41 +118,41 @@ function Dashboard({ token, handleLogout }) {
 
   const Modal = ({ onClose, workouts, handleStartWorkoutFromModal }) => {
     const [selectedWorkoutId, setSelectedWorkoutId] = useState('');
-  
+
     const handleStart = () => {
       if (selectedWorkoutId) {
         handleStartWorkout(selectedWorkoutId);
         onClose();
       }
     };
-  
+
     return (
       <div className="modal fade show" style={{ display: "block" }} tabIndex="-1" role="dialog">
-  <div className="modal-dialog" role="document">
-    <div className="modal-content">
-      <div className="modal-header">
-        <h5 className="modal-title">Choose a Workout</h5>
-        <button type="button" className="btn-close" onClick={onClose}></button>
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Choose a Workout</h5>
+              <button type="button" className="btn-close" onClick={onClose}></button>
+            </div>
+            <div className="modal-body">
+              <select value={selectedWorkoutId} onChange={(e) => setSelectedWorkoutId(e.target.value)} className="form-select">
+                <option value="">Select a workout</option>
+                {workouts.map(workout => (
+                  <option key={workout._id} value={workout._id}>{workout.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" onClick={onClose}>Close</button>
+              <button type="button" className="btn btn-primary" onClick={handleStart}>Start</button>
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="modal-body">
-        <select value={selectedWorkoutId} onChange={(e) => setSelectedWorkoutId(e.target.value)} className="form-select">
-          <option value="">Select a workout</option>
-          {workouts.map(workout => (
-            <option key={workout._id} value={workout._id}>{workout.name}</option>
-          ))}
-        </select>
-      </div>
-      <div className="modal-footer">
-        <button type="button" className="btn btn-secondary" onClick={onClose}>Close</button>
-        <button type="button" className="btn btn-primary" onClick={handleStart}>Start</button>
-      </div>
-    </div>
-  </div>
-</div>
 
     );
   };
-  
+
   const toggleEditMode = (measureId) => {
     // Find the index of the measure to toggle edit mode
     const measureIndex = measures.findIndex((measure) => measure._id === measureId);
@@ -377,44 +381,46 @@ function Dashboard({ token, handleLogout }) {
 
 
   return (
-    
-    <div className="container mt-3">  
+
+    <div className="container mt-3">
       <h2>Dashboard</h2>
       <p>Welcome to the dashboard, {username}!</p>
-      <p className="text-justify">You have token: {token}</p>
 
-      <button className="btn btn-primary" onClick={handleLogout}>Logout</button>
+      <button className="btn btn-primary ms-2 mb-2" onClick={handleLogout}>Logout</button>
 
-      <button className="btn btn-secondary ms-2" onClick={toggleVisibility}>Toggle Workouts</button>
-      <button className="btn btn-secondary ms-2" onClick={toggleMeasures}>Toggle Measures</button>
-      <button className="btn btn-success ms-2" onClick={toggleAddWorkout}>Add Workout</button>
-      <button className="btn btn-success ms-2" onClick={toggleAddMeasures}>Add Measures</button>
-      <button className="btn btn-success ms-2" onClick={() => handleStartWorkout()}>Start Workout</button>
-{showModal && 
-      <Modal onClose={() => setShowModal(false)} workouts={workouts} handleStartWorkoutFromModal={handleStartWorkout} />
-}
-      <h3>Sessions</h3>
-      <div className="row row-cols-1 row-cols-md-2 g-4">
-        {sessions.map(session => (
-          <div key={session._id} className="col">
-            <div className="card">
-              <div className="card-body">
-                <h5 className="card-title">Session ID: {session._id}</h5>
-                <p className="card-text">Start Date: {new Date(session.startDate).toLocaleString()}</p>
-                <p className="card-text">End Date: {session.endDate ? new Date(session.endDate).toLocaleString() : 'Not ended yet'}</p>
-                {/* Calculate and display workout duration */}
-                {session.endDate && (
-                  <p className="card-text">Duration: {calculateDuration(session.startDate, session.endDate)}</p>
-                )}
-                <p className="card-text">User ID: {session.user}</p>
-                <p className="card-text">Workout Name: {session.workoutName}</p>
-                {/* Render additional session details */}
-                {/* Example: <p className="card-text">Duration: {session.duration}</p> */}
-                <Link to={`/session/${session._id}`} className="btn btn-primary">View Details</Link>
+      <button className="btn btn-secondary ms-2 mb-2" onClick={toggleVisibility}>Toggle Workouts</button>
+      <button className="btn btn-secondary ms-2 mb-2" onClick={toggleMeasures}>Toggle Measures</button>
+      <button className="btn btn-secondary ms-2 mb-2" onClick={toggleSessions}>Toggle Sessions</button>
+      <button className="btn btn-success ms-2 mb-2" onClick={toggleAddWorkout}>Add Workout</button>
+      <button className="btn btn-success ms-2 mb-2" onClick={toggleAddMeasures}>Add Measures</button>
+      <button className="btn btn-success ms-2 mb-2" onClick={() => handleStartWorkout()}>Start Workout</button>
+      {showModal &&
+        <Modal onClose={() => setShowModal(false)} workouts={workouts} handleStartWorkoutFromModal={handleStartWorkout} />
+      }
+      <div style={{ display: isSessionsVisible ? 'block' : 'none', overflowX: 'auto' }}>
+        <h3>My Sessions</h3>
+        <div className="row row-cols-1 row-cols-md-2 g-4 d-flex flex-nowrap">
+          {sessions.map(session => (
+            <div key={session._id} className="col">
+              <div className="card">
+                <div className="card-body">
+                  <h5 className="card-title">Session ID: {session._id}</h5>
+                  <p className="card-text">Start Date: {new Date(session.startDate).toLocaleString()}</p>
+                  <p className="card-text">End Date: {session.endDate ? new Date(session.endDate).toLocaleString() : 'Not ended yet'}</p>
+                  {/* Calculate and display workout duration */}
+                  {session.endDate && (
+                    <p className="card-text">Duration: {calculateDuration(session.startDate, session.endDate)}</p>
+                  )}
+                  <p className="card-text">User ID: {session.user}</p>
+                  <p className="card-text">Workout Name: {session.workoutName}</p>
+                  {/* Render additional session details */}
+                  {/* Example: <p className="card-text">Duration: {session.duration}</p> */}
+                  <Link to={`/session/${session._id}`} className="btn btn-primary">View Details</Link>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
 
@@ -563,22 +569,18 @@ function Dashboard({ token, handleLogout }) {
         )}
 
         <WeightChart measures={measures} />
-        
-        
-      
       </div>
 
-      <div className="mt-3" style={{ display: isWorkoutsVisible ? 'none' : 'block' }}>
+      <div className="mt-3" style={{ display: isWorkoutsVisible ? 'none' : 'block', overflowX: 'auto' }}>
         {workouts.length === 0 ? (
           <h5 className="text-danger">No workouts available</h5>
         ) : (
           <h2>My Workouts</h2>
         )}
 
-        <div className='d-flex'>
-
+        <div className='d-flex flex-nowrap'>
           {workouts.map(workout => (
-            <div key={workout._id} className="card mt-3 w-25 mx-3">
+            <div key={workout._id} className="card mt-3 mx-2" style={{ minWidth: '18rem', maxWidth: '18rem' }}>
               <div className="card-body">
                 <h3 className="card-title">{workout.name}</h3>
 
@@ -609,7 +611,6 @@ function Dashboard({ token, handleLogout }) {
                             </div>
                           </li>
                         ))}
-
                       </ul>
                     </div>
                   </div>
@@ -633,7 +634,7 @@ function Dashboard({ token, handleLogout }) {
 
     </div>
   );
-  
+
 }
 
 export default Dashboard;

@@ -170,41 +170,40 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
       };
 
       try {
-        let response;
-        onSave(workoutPayload);
-        if(onSave){
-          return;
-        }
-        if (initialData) {
-          response = await fetch(`http://localhost:3001/workouts/${initialData._id}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `${token}`,
-            },
-            body: JSON.stringify(workoutPayload),
-          });
+        if (!onSave) {
+          let response;
+          if (initialData) {
+            response = await fetch(`http://localhost:3001/workouts/${initialData._id}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `${token}`,
+              },
+              body: JSON.stringify(workoutPayload),
+            });
+          } else {
+            response = await fetch('http://localhost:3001/workouts', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `${token}`,
+              },
+              body: JSON.stringify(workoutPayload),
+            });
+          }
+      
+          if (!response.ok) {
+            throw new Error('Failed to save workout');
+          }
+      
+          console.log('Workout saved successfully');
+      
+          setWorkoutName('');
+          setExercises([]);
+          setSelectedExercise('');
         } else {
-          response = await fetch('http://localhost:3001/workouts', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `${token}`,
-            },
-            body: JSON.stringify(workoutPayload),
-          });
+          onSave(workoutPayload);
         }
-        
-        
-        if (!response.ok) {
-          throw new Error('Failed to save workout');
-        }
-
-        console.log('Workout saved successfully');
-
-        setWorkoutName('');
-        setExercises([]);
-        setSelectedExercise('');
       } catch (error) {
         console.error('Error saving workout:', error);
       }
