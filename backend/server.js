@@ -8,6 +8,9 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
 
 // Schemas
 const User = require('./schemas/User');
@@ -16,6 +19,7 @@ const Series = require('./schemas/Series');
 const Exercise = require('./schemas/Exercise');
 const Measure = require('./schemas/Measure');
 const WorkoutSession = require('./schemas/WorkoutSession');
+const BodyPhoto = require('./schemas/BodyPhoto');
 
 
 const app = express();
@@ -188,6 +192,7 @@ app.post('/register', registerSpamMiddleware, async (req, res) => {
 
 // Login User and generate JWT
 app.post('/login', async (req, res) => {
+  console.log("Login POST");
   try {
     const { username, password } = req.body;
 
@@ -325,7 +330,7 @@ app.get('/workoutSessions', authenticateJWT, async (req, res) => {
   try {
     // Retrieve workout sessions from the database
     const sessions = await WorkoutSession.find({ user: req.user.userId });
-      
+
 
     res.status(200).json(sessions); // Respond with the fetched workout sessions
   } catch (error) {
@@ -340,7 +345,7 @@ app.get('/workoutSessions/:id', authenticateJWT, async (req, res) => {
   try {
     // Retrieve the workout session by its ID
     const session = await WorkoutSession.findById(sessionId)
-      
+
 
     if (!session) {
       // If session is not found, return a 404 response
@@ -370,7 +375,7 @@ app.get('/exercises', authenticateJWT, async (req, res) => {
 app.post('/measures', authenticateJWT, async (req, res) => {
   try {
     const { weight, steps, sleepHours, energy, hunger, stress, date } = req.body;
-   
+
     // Assuming you have a user ID available in req.user
     const userId = req.user.id;
 
@@ -382,9 +387,9 @@ app.post('/measures', authenticateJWT, async (req, res) => {
     endDate.setHours(0, 0, 0, 0); // Set time to 00:00:00
 
     // Check if a measure with the same date range already exists for the user
-    const existingMeasure = await Measure.findOne({ 
-      user: userId, 
-      date: { $gte: startDate, $lt: endDate } 
+    const existingMeasure = await Measure.findOne({
+      user: userId,
+      date: { $gte: startDate, $lt: endDate }
     });
 
     if (existingMeasure) {
@@ -466,9 +471,9 @@ app.put('/measures/:measureId', authenticateJWT, async (req, res) => {
     endDate.setHours(0, 0, 0, 0); // Set time to 00:00:00
 
     // Check if a measure with the same date range already exists for the user
-    const existingMeasure = await Measure.findOne({ 
-      user: userId, 
-      date: { $gte: startDate, $lt: endDate } 
+    const existingMeasure = await Measure.findOne({
+      user: userId,
+      date: { $gte: startDate, $lt: endDate }
     });
 
     if (existingMeasure && existingMeasure._id.toString() !== measureId) {
@@ -622,6 +627,107 @@ app.put('/workouts/:id', authenticateJWT, async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+// Multer configuration for handling file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // Define the destination folder for uploads
+    const uploadDir = './uploads';
+    // Create the uploads directory if it doesn't exist
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir);
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    // Generate a unique filename for each uploaded file
+    const ext = path.extname(file.originalname);
+    const filename = uuidv4() + ext;
+    cb(null, filename);
+  }
+});
+
+const upload = multer({ storage: storage });
+
+// POST route for uploading body photos
+app.post('/upload-body-photos', authenticateJWT, upload.fields([
+  { name: 'frontImage', maxCount: 1 },
+  { name: 'backImage', maxCount: 1 },
+  { name: 'leftImage', maxCount: 1 },
+  { name: 'rightImage', maxCount: 1 }
+]), async (req, res) => {
+  try {
+    const { weight, date } = req.body;
+
+    // Assuming you have a user ID available in req.user
+    const userId = req.user.userId; // Assuming the user ID is stored in req.user.id
+    console.log(userId);
+
+    // Extract file paths from req.files
+    const { frontImage, backImage, leftImage, rightImage } = req.files;
+
+    // Create a new BodyPhoto instance
+    const newBodyPhoto = new BodyPhoto({
+      user: userId,
+      frontImage: frontImage[0].path,
+      backImage: backImage[0].path,
+      leftImage: leftImage[0].path,
+      rightImage: rightImage[0].path,
+      weight,
+      date,
+    });
+
+    // Save the body photos to the database
+    const savedBodyPhoto = await newBodyPhoto.save();
+
+    res.status(201).json(savedBodyPhoto);
+  } catch (error) {
+    console.error('Error saving body photos:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+app.get('/uploads/:filename', (req, res) => {
+  const { filename } = req.params;
+  const filePath = path.join(__dirname, 'uploads', filename);
+
+  // Check if the file exists
+  if (fs.existsSync(filePath)) {
+    // If the file exists, send it in the response
+    res.sendFile(filePath);
+  } else {
+    // If the file doesn't exist, return a 404 error
+    res.status(404).send('File not found');
+  }
+});
+
+app.get('/photos', authenticateJWT, async (req, res) => {
+  try {
+    // Assuming you have a user ID available in req.user
+    const userId = req.user.userId;
+
+    // Find all body photos for the user
+    const photos = await BodyPhoto.find({ user: userId });
+
+    // Extract relevant data for each photo
+    const photosData = photos.map(photo => ({
+      frontImage: photo.frontImage,
+      backImage: photo.backImage,
+      leftImage: photo.leftImage,
+      rightImage: photo.rightImage,
+      weight: photo.weight,
+      date: photo.date
+    }));
+
+    console.log(photosData);
+    res.json(photosData);
+  } catch (error) {
+    console.error('Error fetching photos:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
 
 

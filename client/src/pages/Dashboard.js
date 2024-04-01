@@ -5,6 +5,8 @@ import MeasuresForm from '../components/MeasuresForm';
 import { jwtDecode } from 'jwt-decode';
 import DatePicker from 'react-datepicker';
 import Chart from 'chart.js/auto';
+import BodyPhotosUpload from '../components/BodyPhotosUpload';
+import BodyPhotosGallery from '../components/BodyPhotosGallery';
 
 function Dashboard({ token, handleLogout }) {
   const navigate = useNavigate();
@@ -14,6 +16,7 @@ function Dashboard({ token, handleLogout }) {
   const [isSessionsVisible, setIsSessionsVisible] = useState(false);
   const [isMeasuresVisible, setIsMeasuresVisible] = useState(false); // Add state for measures visibility
   const [isAddWorkoutsVisible, setAddIsWorkoutsVisible] = useState(true);
+  const [isAddPhotosVisible, setAddIsPhotosVisible] = useState(true);
   const [isAddMeasuresVisible, setAddIsMeasuresVisible] = useState(false);
   const [sessions, setSessions] = useState([]);
   const [username, setUsername] = useState('');
@@ -25,6 +28,10 @@ function Dashboard({ token, handleLogout }) {
   const toggleVisibility = () => {
     fetchWorkouts(token);
     setIsWorkoutsVisible(prev => !prev);
+  };
+
+  const toggleVisibilityPhotos = () => {
+    setAddIsPhotosVisible(prev => !prev);
   };
 
   const toggleAddWorkout = () => {
@@ -281,8 +288,42 @@ function Dashboard({ token, handleLogout }) {
     const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((durationMs % (1000 * 60)) / 1000);
 
-    // Format the duration as HH:mm:ss
-    return `${hours}h ${minutes}min ${seconds}s`;
+    // Initialize an empty array to store non-zero duration components
+    const durationComponents = [];
+
+    // Add non-zero components to the array
+    if (hours > 0) {
+      durationComponents.push(`${hours}h`);
+    }
+    if (minutes > 0) {
+      durationComponents.push(`${minutes}min`);
+    }
+    if (seconds > 0) {
+      durationComponents.push(`${seconds}s`);
+    }
+
+    // Join the components with a space separator
+    return durationComponents.join(' ');
+  };
+
+
+  const calculateVolume = (exercise) => {
+    let volume = 0;
+    // Iterate through each series of the exercise and calculate volume
+    exercise.series.forEach(series => {
+      volume += series.reps * series.weight;
+    });
+    return volume;
+  };
+
+  // Function to calculate the total volume for all exercises in a session
+  const calculateTotalVolume = (exercises) => {
+    let totalVolume = 0;
+    // Iterate through each exercise and calculate volume
+    exercises.forEach(exercise => {
+      totalVolume += calculateVolume(exercise);
+    });
+    return totalVolume;
   };
 
   const handleEditWorkout = (workoutId) => {
@@ -393,33 +434,41 @@ function Dashboard({ token, handleLogout }) {
       <button className="btn btn-secondary ms-2 mb-2" onClick={toggleSessions}>Toggle Sessions</button>
       <button className="btn btn-success ms-2 mb-2" onClick={toggleAddWorkout}>Add Workout</button>
       <button className="btn btn-success ms-2 mb-2" onClick={toggleAddMeasures}>Add Measures</button>
+      <button className="btn btn-success ms-2 mb-2" onClick={toggleVisibilityPhotos}>Add Photos</button>
       <button className="btn btn-success ms-2 mb-2" onClick={() => handleStartWorkout()}>Start Workout</button>
       {showModal &&
         <Modal onClose={() => setShowModal(false)} workouts={workouts} handleStartWorkoutFromModal={handleStartWorkout} />
       }
       <div style={{ display: isSessionsVisible ? 'block' : 'none', overflowX: 'auto' }}>
         <h3>My Sessions</h3>
-        <div className="row row-cols-1 row-cols-md-2 g-4 d-flex flex-nowrap">
+        <div className="row row-cols-1 row-cols-sm-2 g-4 d-flex flex-nowrap">
           {sessions.map(session => (
             <div key={session._id} className="col">
               <div className="card">
                 <div className="card-body">
-                  <h5 className="card-title">Session ID: {session._id}</h5>
-                  <p className="card-text">Start Date: {new Date(session.startDate).toLocaleString()}</p>
-                  <p className="card-text">End Date: {session.endDate ? new Date(session.endDate).toLocaleString() : 'Not ended yet'}</p>
-                  {/* Calculate and display workout duration */}
+                  <h4 className="card-title mb-0 text-capitalize">{session.workoutName}</h4>
+                  <p className="card-text">Total volume: {calculateTotalVolume(session.exercises)} Kg</p>
+                  {/* Calculate and display session duration */}
                   {session.endDate && (
-                    <p className="card-text">Duration: {calculateDuration(session.startDate, session.endDate)}</p>
+                    <p className="card-text position-absolute bottom-0 end-0 m-3">Duration: {calculateDuration(session.startDate, session.endDate)}</p>
                   )}
-                  <p className="card-text">User ID: {session.user}</p>
-                  <p className="card-text">Workout Name: {session.workoutName}</p>
-                  {/* Render additional session details */}
-                  {/* Example: <p className="card-text">Duration: {session.duration}</p> */}
+
+
+                  <h5 className="card-title">Exercises:</h5>
+                  <div className='mb-4'>
+                    {session.exercises.slice(0, 3).map((exercise, index) => (
+
+                      <h6 className="card-text mb-2">{exercise.series.length} {exercise.series.length === 1 ? 'set' : 'sets'} of {exercise.name} @ Volume: {calculateVolume(exercise)} Kg</h6>
+
+                    ))}
+                  </div>
+                  {/* Link to view session details */}
                   <Link to={`/session/${session._id}`} className="btn btn-primary">View Details</Link>
                 </div>
               </div>
             </div>
           ))}
+
         </div>
       </div>
 
@@ -433,135 +482,138 @@ function Dashboard({ token, handleLogout }) {
       <div style={{ display: isMeasuresVisible ? 'block' : 'none' }}>
         {/* Display Measures when isMeasuresVisible is true */}
         <h2 className="mt-3">Measures</h2>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Weight</th>
-              <th>Steps</th>
-              <th>Sleep Hours</th>
-              <th>Energy</th>
-              <th>Hunger</th>
-              <th>Stress</th>
-            </tr>
-          </thead>
-          <tbody>
-            {measures.map((measure) => (
-              <tr key={measure._id}>
-                <td>
-                  {measure.isEditing ? (
-                    <DatePicker
-                      id={`date-${measure._id}`}
-                      dateFormat="dd/MM/yyyy"
-                      className='form-control'
-                      selected={new Date(measure.date)}
-                      onChange={(date) => handleInputChange(measure._id, 'date', date)}
-                    />
-                  ) : (
-                    new Date(measure.date).toLocaleDateString()
-                  )}
-                </td>
-                <td>
-                  {measure.isEditing ? (
-                    <input
-                      id={`weight-${measure._id}`}
-                      className='form-control'
-                      type="number"
-                      value={measure.weight}
-                      onChange={(e) => handleInputChange(measure._id, 'weight', e.target.value)}
-                    />
-                  ) : (
-                    `${measure.weight} Kg`
-                  )}
-                </td>
-                <td>
-                  {measure.isEditing ? (
-                    <input
-                      id={`steps-${measure._id}`}
-                      className='form-control'
-                      type="number"
-                      value={measure.steps}
-                      onChange={(e) => handleInputChange(measure._id, 'steps', e.target.value)}
-                    />
-                  ) : (
-                    `${measure.steps}`
-                  )}
-                </td>
-                <td>
-                  {measure.isEditing ? (
-                    <input
-                      id={`sleepHours-${measure._id}`}
-                      className='form-control'
-                      type="number"
-                      value={measure.sleepHours}
-                      onChange={(e) => handleInputChange(measure._id, 'sleepHours', e.target.value)}
-                    />
-                  ) : (
-                    `${measure.sleepHours} Hours`
-                  )}
-                </td>
-                <td>
-                  {measure.isEditing ? (
-                    <select
-                      id={`energy-${measure._id}`}
-                      className='form-select'
-                      value={measure.energy}
-                      onChange={(e) => handleInputChange(measure._id, 'energy', e.target.value)}
-                    >
-                      {[1, 2, 3, 4, 5].map(value => (
-                        <option key={value} value={value}>{value}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    `${measure.energy}`
-                  )}
-                </td>
-                <td>
-                  {measure.isEditing ? (
-                    <select
-                      id={`hunger-${measure._id}`}
-                      className='form-select'
-                      value={measure.hunger}
-                      onChange={(e) => handleInputChange(measure._id, 'hunger', e.target.value)}
-                    >
-                      {[1, 2, 3, 4, 5].map(value => (
-                        <option key={value} value={value}>{value}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    `${measure.hunger}`
-                  )}
-                </td>
-                <td>
-                  {measure.isEditing ? (
-                    <select
-                      id={`stress-${measure._id}`}
-                      className='form-select'
-                      value={measure.stress}
-                      onChange={(e) => handleInputChange(measure._id, 'stress', e.target.value)}
-                    >
-                      {[1, 2, 3, 4, 5].map(value => (
-                        <option key={value} value={value}>{value}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    `${measure.stress}`
-                  )}
-                </td>
-
-
-                <td>
-                  {measure.isEditing ? (
-                    <button className="btn btn-success mb-2 me-2" onClick={() => handleSaveMeasure(measure._id)}>Save</button>
-                  ) : (
-                    <button className="btn btn-warning mb-2 me-2" onClick={() => handleEditMeasure(measure._id)}>Edit</button>
-                  )}
-                  <button className="btn btn-danger mb-2" onClick={() => handleRemoveMeasure(measure._id)}>Delete</button>
-                </td>
+        <div className='table-responsive'>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Weight</th>
+                <th className="d-none d-md-table-cell">Steps</th>
+                <th className="d-none d-md-table-cell">Sleep Hours</th>
+                <th className="d-none d-md-table-cell">Energy</th>
+                <th className="d-none d-md-table-cell">Hunger</th>
+                <th className="d-none d-md-table-cell">Stress</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {measures.map((measure) => (
+                <tr key={measure._id} >
+                  <td>
+                    {measure.isEditing ? (
+                      <DatePicker
+                        id={`date-${measure._id}`}
+                        dateFormat="dd/MM/yyyy"
+                        className='form-control'
+                        selected={new Date(measure.date)}
+                        onChange={(date) => handleInputChange(measure._id, 'date', date)}
+                      />
+                    ) : (
+                      new Date(measure.date).toLocaleDateString()
+                    )}
+                  </td>
+                  <td>
+                    {measure.isEditing ? (
+                      <input
+                        id={`weight-${measure._id}`}
+                        className='form-control'
+                        type="number"
+                        value={measure.weight}
+                        onChange={(e) => handleInputChange(measure._id, 'weight', e.target.value)}
+                      />
+                    ) : (
+                      `${measure.weight} Kg`
+                    )}
+                  </td>
+                  <td className="d-none d-md-table-cell">
+                    {measure.isEditing ? (
+                      <input
+                        id={`steps-${measure._id}`}
+                        className='form-control'
+                        type="number"
+                        value={measure.steps}
+                        onChange={(e) => handleInputChange(measure._id, 'steps', e.target.value)}
+                      />
+                    ) : (
+                      `${measure.steps}`
+                    )}
+                  </td>
+                  <td className="d-none d-md-table-cell">
+                    {measure.isEditing ? (
+                      <input
+                        id={`sleepHours-${measure._id}`}
+                        className='form-control'
+                        type="number"
+                        value={measure.sleepHours}
+                        onChange={(e) => handleInputChange(measure._id, 'sleepHours', e.target.value)}
+                      />
+                    ) : (
+                      `${measure.sleepHours} Hours`
+                    )}
+                  </td>
+                  <td className="d-none d-md-table-cell">
+                    {measure.isEditing ? (
+                      <select
+                        id={`energy-${measure._id}`}
+                        className='form-select'
+                        value={measure.energy}
+                        onChange={(e) => handleInputChange(measure._id, 'energy', e.target.value)}
+                      >
+                        {[1, 2, 3, 4, 5].map(value => (
+                          <option key={value} value={value}>{value}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      `${measure.energy}`
+                    )}
+                  </td>
+                  <td className="d-none d-md-table-cell">
+                    {measure.isEditing ? (
+                      <select
+                        id={`hunger-${measure._id}`}
+                        className='form-select'
+                        value={measure.hunger}
+                        onChange={(e) => handleInputChange(measure._id, 'hunger', e.target.value)}
+                      >
+                        {[1, 2, 3, 4, 5].map(value => (
+                          <option key={value} value={value}>{value}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      `${measure.hunger}`
+                    )}
+                  </td>
+                  <td className="d-none d-md-table-cell">
+                    {measure.isEditing ? (
+                      <select
+                        id={`stress-${measure._id}`}
+                        className='form-select'
+                        value={measure.stress}
+                        onChange={(e) => handleInputChange(measure._id, 'stress', e.target.value)}
+                      >
+                        {[1, 2, 3, 4, 5].map(value => (
+                          <option key={value} value={value}>{value}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      `${measure.stress}`
+                    )}
+                  </td>
+
+
+                  <td>
+                    {measure.isEditing ? (
+                      <button className="btn btn-success mb-2 me-2" onClick={() => handleSaveMeasure(measure._id)}>Save</button>
+                    ) : (
+                      <button className="btn btn-warning mb-2 me-2" onClick={() => handleEditMeasure(measure._id)}>Edit</button>
+                    )}
+                    <button className="btn btn-danger mb-2" onClick={() => handleRemoveMeasure(measure._id)}>Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         {saveMeasureError && (
           <div className="alert alert-danger mt-2 d-table-cell" role="alert">
             {saveMeasureError}
@@ -630,6 +682,12 @@ function Dashboard({ token, handleLogout }) {
       <div style={{ display: isAddWorkoutsVisible ? 'none' : 'block' }}>
         <h2 className="mt-3">Add Workout</h2>
         <WorkoutForm userId={userID} token={token} onCancel={toggleAddWorkout} />
+      </div>
+
+      <div style={{ display: isAddPhotosVisible ? 'none' : 'block' }}>
+        <h2 className="mt-3">My Body</h2>
+        <BodyPhotosUpload token={token} />
+        <BodyPhotosGallery token={token} />
       </div>
 
     </div>
