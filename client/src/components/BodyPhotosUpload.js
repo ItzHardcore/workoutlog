@@ -44,23 +44,23 @@ function BodyPhotosUpload({token}) {
       <div className="row justify-content-center">
         <div className="col-md-8">
           <form onSubmit={handleSubmit}>
-            <div className="form-group">
+            <div className="form-group mb-3">
               <label>Front Image:</label>
               <input type="file" className="form-control" onChange={(e) => handleImageDrop(e.target.files[0], setFrontImage)} />
             </div>
-            <div className="form-group">
+            <div className="form-group mb-3">
               <label>Back Image:</label>
               <input type="file" className="form-control" onChange={(e) => handleImageDrop(e.target.files[0], setBackImage)} />
             </div>
-            <div className="form-group">
+            <div className="form-group mb-3">
               <label>Left Image:</label>
               <input type="file" className="form-control" onChange={(e) => handleImageDrop(e.target.files[0], setLeftImage)} />
             </div>
-            <div className="form-group">
+            <div className="form-group mb-3">
               <label>Right Image:</label>
               <input type="file" className="form-control" onChange={(e) => handleImageDrop(e.target.files[0], setRightImage)} />
             </div>
-            <div className="form-group">
+            <div className="form-group mb-3">
               <label>Weight:</label>
               <input
                 type="number"
@@ -69,7 +69,7 @@ function BodyPhotosUpload({token}) {
                 onChange={(e) => setWeight(e.target.value)}
               />
             </div>
-            <div className="form-group">
+            <div className="form-group mb-3">
               <label>Date:</label>
               <DatePicker className="form-control" selected={date} onChange={(date) => setDate(date)} />
             </div>

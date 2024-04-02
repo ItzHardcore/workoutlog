@@ -39,7 +39,7 @@ function BodyPhotosGallery({ token }) {
                             <img src={`http://localhost:3001/${photoData.leftImage}`} alt={`Left view of body - ${index}`} style={{ width: '300px', marginRight: '10px' }} />
                             <img src={`http://localhost:3001/${photoData.rightImage}`} alt={`Right view of body - ${index}`} style={{ width: '300px' }} />
                         </div>
-                        <div>Weight: {photoData.weight}</div>
+                        <div>Weight: {photoData.weight} Kg</div>
                         <div>Date: {new Date(photoData.date).toLocaleDateString()}</div>
                     </div>
                 ))}

@@ -20,6 +20,7 @@ const Exercise = require('./schemas/Exercise');
 const Measure = require('./schemas/Measure');
 const WorkoutSession = require('./schemas/WorkoutSession');
 const BodyPhoto = require('./schemas/BodyPhoto');
+const BodyMeasure = require('./schemas/BodyMeasure');
 
 
 const app = express();
@@ -506,6 +507,149 @@ app.put('/measures/:measureId', authenticateJWT, async (req, res) => {
   }
 });
 
+// POST /bodymeasures endpoint to add a new body measure
+app.post('/bodymeasures', authenticateJWT, async (req, res) => {
+  try {
+    const { date, fase, kcal, weight, peito, cintura, gluteo, bracoDrt, bracoEsq, coxaDireita, coxaEsquerda } = req.body;
+
+    // Assuming you have a user ID available in req.user
+    const userId = req.user.id;
+
+    // Parse the input date to create the date range
+    const startDate = new Date(date);
+    startDate.setHours(0, 0, 0, 0); // Set time to 00:00:00
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 1); // Adding one day to get the next day
+    endDate.setHours(0, 0, 0, 0); // Set time to 00:00:00
+
+    // Check if a body measure with the same date range already exists for the user
+    const existingBodyMeasure = await BodyMeasure.findOne({
+      user: userId,
+      date: { $gte: startDate, $lt: endDate }
+    });
+
+    if (existingBodyMeasure) {
+      // If a body measure with the same date already exists, throw an error
+      return res.status(400).json({ error: 'A body measure for this date already exists' });
+    }
+
+    // Create a new body measure
+    const newBodyMeasure = new BodyMeasure({
+      date,
+      fase,
+      kcal,
+      weight,
+      peito,
+      cintura,
+      gluteo,
+      bracoDrt,
+      bracoEsq,
+      coxaDireita,
+      coxaEsquerda,
+      user: userId,
+    });
+
+    // Save the body measure to the database
+    const savedBodyMeasure = await newBodyMeasure.save();
+
+    res.status(201).json(savedBodyMeasure);
+  } catch (error) {
+    console.error('Error saving body measure:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// DELETE /bodymeasures/:id endpoint to delete a body measure by ID
+app.delete('/bodymeasures/:id', authenticateJWT, async (req, res) => {
+  try {
+    const bodyMeasureId = req.params.id;
+
+    // Find the body measure and ensure it belongs to the current user
+    const bodyMeasure = await BodyMeasure.findOne({ _id: bodyMeasureId, user: req.user.id });
+
+    if (!bodyMeasure) {
+      return res.status(404).json({ error: 'Body measure not found' });
+    }
+
+    // Delete the body measure
+    await BodyMeasure.deleteOne({ _id: bodyMeasureId });
+
+    res.status(200).json({ message: 'Body measure deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting body measure:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// GET /bodymeasures endpoint to get all body measures for the current user
+app.get('/bodymeasures', authenticateJWT, async (req, res) => {
+  try {
+    // Fetch body measures for the current user
+    const userId = req.user.id;
+    const bodyMeasures = await BodyMeasure.find({ user: userId }).sort({ date: -1 });
+
+    res.status(200).json(bodyMeasures);
+  } catch (error) {
+    console.error('Error fetching body measures:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// PUT /bodymeasures/:bodyMeasureId endpoint to update a body measure by ID
+app.put('/bodymeasures/:bodyMeasureId', authenticateJWT, async (req, res) => {
+  try {
+    const { bodyMeasureId } = req.params;
+    const { date, fase, kcal, weight, peito, cintura, gluteo, bracoDrt, bracoEsq, coxaDireita, coxaEsquerda } = req.body;
+
+    // Assuming you have a user ID available in req.user
+    const userId = req.user.id;
+
+    // Parse the input date to create the date range
+    const startDate = new Date(date);
+    startDate.setHours(0, 0, 0, 0); // Set time to 00:00:00
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 1); // Adding one day to get the next day
+    endDate.setHours(0, 0, 0, 0); // Set time to 00:00:00
+
+    // Check if a body measure with the same date range already exists for the user
+    const existingBodyMeasure = await BodyMeasure.findOne({
+      user: userId,
+      date: { $gte: startDate, $lt: endDate }
+    });
+
+    if (existingBodyMeasure && existingBodyMeasure._id.toString() !== bodyMeasureId) {
+      // If a body measure with the same date already exists, throw an error
+      return res.status(400).json({ error: 'A body measure for this date already exists' });
+    }
+
+    // Find the body measure to update
+    const bodyMeasureToUpdate = await BodyMeasure.findById(bodyMeasureId);
+    if (!bodyMeasureToUpdate) {
+      return res.status(404).json({ error: 'Body measure not found' });
+    }
+
+    // Update the body measure fields
+    bodyMeasureToUpdate.date = date;
+    bodyMeasureToUpdate.fase = fase;
+    bodyMeasureToUpdate.kcal = kcal;
+    bodyMeasureToUpdate.weight = weight;
+    bodyMeasureToUpdate.peito = peito;
+    bodyMeasureToUpdate.cintura = cintura;
+    bodyMeasureToUpdate.gluteo = gluteo;
+    bodyMeasureToUpdate.bracoDrt = bracoDrt;
+    bodyMeasureToUpdate.bracoEsq = bracoEsq;
+    bodyMeasureToUpdate.coxaDireita = coxaDireita;
+    bodyMeasureToUpdate.coxaEsquerda = coxaEsquerda;
+
+    // Save the updated body measure to the database
+    const updatedBodyMeasure = await bodyMeasureToUpdate.save();
+
+    res.status(200).json(updatedBodyMeasure);
+  } catch (error) {
+    console.error('Error updating body measure:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 
 app.post('/workouts', authenticateJWT, async (req, res) => {
