@@ -78,9 +78,9 @@ const SessionsCards = ({ token }) => {
     };
 
     return (
-        <div style={{ display: 'block', overflowX: 'auto' }}>
+        <div className='d-block'>
             <h3>My Sessions</h3>
-            <div className="row row-cols-1 row-cols-sm-2 g-4 d-flex flex-nowrap">
+            <div className="row row-cols-1 row-cols-sm-2 g-4 d-flex flex-nowrap overflow-auto">
                 {sessions.map(session => (
                     <div key={session._id} className="col">
                         <div className="card">
