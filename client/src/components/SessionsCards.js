@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const SessionsComponent = ({ token }) => {
+const SessionsCards = ({ token }) => {
     const [sessions, setSessions] = useState([]);
 
     const fetchSessions = async () => {
@@ -107,4 +107,4 @@ const SessionsComponent = ({ token }) => {
     );
 };
 
-export default SessionsComponent;
+export default SessionsCards;
