@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import WorkoutForm from '../components/WorkoutForm';
 import MeasuresForm from '../components/MeasuresForm';
 import BodyMeasuresForm from '../components/BodyMeasuresForm';
@@ -204,9 +203,8 @@ function Dashboard({ token }) {
       <button className="btn btn-success ms-2 mb-2" onClick={toggleAddMeasures}>Add Measures</button>
       <button className="btn btn-success ms-2 mb-2" onClick={toggleAddMoreMeasures}>Body Measures</button>
       <button className="btn btn-success ms-2 mb-2" onClick={toggleVisibilityPhotos}>Add Photos</button>
-      <MeasuresTable token={token}/>
-     <TimerPopup/>
-     <SessionsCards token={token} />
+      <TimerPopup />
+      <SessionsCards token={token} />
 
       <div style={{ display: isAddMeasuresVisible ? 'block' : 'none' }}>
         {/* Display MeasuresForm when isAddMeasuresVisible is true */}
@@ -219,6 +217,7 @@ function Dashboard({ token }) {
         <h2 className="mt-3">Measures</h2>
         <BodyMeasuresForm token={token} onCancel={toggleAddMoreMeasures} />
       </div>
+
 
       <div style={{ display: isBodyMeasuresVisible ? 'block' : 'none' }}>
         {/* Display Measures when isMeasuresVisible is true */}
@@ -380,8 +379,8 @@ function Dashboard({ token }) {
 
       </div>
 
-      <WorkoutsCards token={token}/>
-
+      <WorkoutsCards token={token} />
+      <MeasuresTable token={token} />
       <div style={{ display: isAddWorkoutsVisible ? 'none' : 'block' }}>
         <h2 className="mt-3">Add Workout</h2>
         <WorkoutForm userId={userID} token={token} onCancel={toggleAddWorkout} />

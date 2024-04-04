@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Chart } from 'chart.js';
+
 
 function MeasuresTable({ token }) {
     const [measures, setMeasures] = useState([]);
@@ -44,49 +44,6 @@ function MeasuresTable({ token }) {
         }
     };
 
-    const WeightChart = ({ measures }) => {
-        const chartRef = useRef(null);
-
-        useEffect(() => {
-            if (!chartRef.current || !measures || measures.length === 0) return;
-
-            const labels = measures.map((measure) => new Date(measure.date).toLocaleDateString()).reverse(); // Reverse the labels array
-            const weights = measures.map((measure) => measure.weight).reverse(); // Reverse the weights array
-
-            const ctx = chartRef.current.getContext('2d');
-
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Weight',
-                        data: weights,
-                        borderColor: 'rgb(75, 192, 192)',
-                        tension: 0.1,
-                    }],
-                },
-                options: {
-                    scales: {
-                        x: {
-                            type: 'category',
-                            labels: labels,
-                        },
-                        y: {
-                            beginAtZero: false,
-                            ticks: {
-                                callback: function (value) {
-                                    return value + ' Kg'; // Add 'Kg' to the tick label
-                                }
-                            }
-                        },
-                    },
-                },
-            });
-        }, [measures]);
-
-        return <canvas ref={chartRef} />;
-    };
 
     const handleSaveMeasure = async (measureId) => {
         // Find the index of the measure to save
@@ -334,8 +291,9 @@ function MeasuresTable({ token }) {
                     )}
                 </div>
                 <div class="col-5">
-                    <WeightChart measures={measures} />
-                </div></div>
+                    CHART
+                </div>
+            </div>
 
         </div>
     );
