@@ -11,3 +11,13 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.timer-icon:hover {
+  color: grey;
+}
+
+@media (max-width: 767.98px) {
+  .timer-icon {
+      font-size: 50px;
+  }
+}

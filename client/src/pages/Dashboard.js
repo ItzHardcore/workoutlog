@@ -11,6 +11,7 @@ import BodyPhotosGallery from '../components/BodyPhotosGallery';
 
 import SessionsCards from '../components/SessionsCards';
 import WorkoutsCards from '../components/WorkoutsCards';
+import TimerPopup from '../components/TimerPopup';
 
 function Dashboard({ token, handleLogout }) {
   const [measures, setMeasures] = useState([]); // Add state for measures
@@ -401,7 +402,7 @@ function Dashboard({ token, handleLogout }) {
       <button className="btn btn-success ms-2 mb-2" onClick={toggleAddMoreMeasures}>Body Measures</button>
       <button className="btn btn-success ms-2 mb-2" onClick={toggleVisibilityPhotos}>Add Photos</button>
       
-     
+     <TimerPopup/>
      <SessionsCards token={token} />
 
       <div style={{ display: isAddMeasuresVisible ? 'block' : 'none' }}>

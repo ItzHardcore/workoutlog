@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import WorkoutForm from '../components/WorkoutForm'; // Assuming WorkoutForm is imported correctly
 import { jwtDecode } from 'jwt-decode';
+import TimerPopup from '../components/TimerPopup';
 
 const WorkoutSession = ({ token }) => {
   const { workoutId } = useParams(); // Extract workout ID from route parameters
@@ -79,7 +80,7 @@ const WorkoutSession = ({ token }) => {
           }))
         }))
       };
-  
+
       const response = await fetch(`http://localhost:3001/workoutSession`, {
         method: 'POST',
         headers: {
@@ -88,11 +89,11 @@ const WorkoutSession = ({ token }) => {
         },
         body: JSON.stringify(updatedWorkout),
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to save workout data');
       }
-  
+
       const savedWorkoutData = await response.json();
       console.log('Workout saved successfully:', savedWorkoutData);
       navigate('/dashboard');
@@ -104,22 +105,23 @@ const WorkoutSession = ({ token }) => {
       alert('An error occurred while saving the workout. Please try again.');
     }
   };
-  
+
 
   return (
-    <div>
+    <>
+      <TimerPopup />
       <h2>Workout {workoutId}</h2>
-      <h4>Duration: {duration}</h4> 
+      <h4>Duration: {duration}</h4>
       {workoutData && (
         <WorkoutForm
           userId={workoutData.user}
           token={token}
           initialData={workoutData} // Assuming 'exercises' is the array name
           onSave={handleSave}
-          
+
         />
       )}
-    </div>
+    </>
   );
 };
 
