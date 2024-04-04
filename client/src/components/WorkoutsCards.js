@@ -66,8 +66,6 @@ const WorkoutsCards = ({ token }) => {
 
     return (
         <div className="mt-3">
-            <button className="btn btn-success ms-2 mb-2" onClick={() => setShowModal(true)}>Start Workout</button>
-            {showModal && <WorkoutsModal onClose={() => setShowModal(false)} workouts={workouts} handleStartWorkoutFromModal={handleStartWorkout} />}
             {workouts.length === 0 ? (
                 <h5 className="text-danger">No workouts available</h5>
             ) : (
@@ -110,7 +108,8 @@ const WorkoutsCards = ({ token }) => {
 
                             <div className="d-flex mt-3">
                                 <button className="btn btn-warning me-2" onClick={() => handleEditWorkout(workout._id)}>Edit</button>
-                                <button className="btn btn-danger" onClick={() => removeWorkout(workout._id)}>Remove</button>
+                                <button className="btn btn-danger me-2" onClick={() => removeWorkout(workout._id)}>Remove</button>
+                                <button className="btn btn-success" onClick={() => handleStartWorkout(workout._id)}>Start Workout</button>
                             </div>
                         </div>
                         </div>

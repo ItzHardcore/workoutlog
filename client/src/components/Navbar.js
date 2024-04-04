@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 
-const Navbar = ({ token,user, handleLogout }) => {
-  
+const Navbar = ({ token, user, handleLogout }) => {
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container">
@@ -24,6 +24,11 @@ const Navbar = ({ token,user, handleLogout }) => {
             {token ? (
               <>
               <li className="nav-item">
+                  <Link className="nav-link" to="/mybody">
+                    My Body
+                  </Link>
+                </li>
+                <li className="nav-item">
                   <Link className="nav-link" to="/dashboard">
                     Dashboard
                   </Link>

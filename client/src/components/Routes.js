@@ -9,6 +9,8 @@ import EditWorkout from '../pages/EditWorkout';
 import Profile from '../pages/Profile';
 import WorkoutSession from '../pages/WorkoutSesson';
 import SessionDetails from '../pages/SessionDetails';
+import MyBody from '../pages/MyBody';
+import ErrorPage from '../pages/ErrorPage';
 
 
 const AppRoutes = ({ token, handleLogout, handleLogin, handleRegister }) => {
@@ -22,7 +24,8 @@ const AppRoutes = ({ token, handleLogout, handleLogin, handleRegister }) => {
       <Route path="/profile" element={<PrivateRoute token={token} handleLogin={handleLogin} component={Profile}/>} />
       <Route path="/startsession/:workoutId" element={<PrivateRoute component={WorkoutSession} token={token} />} />
       <Route path="/session/:sessionId" element={<PrivateRoute component={SessionDetails} token={token} />} />
-
+      <Route path="/mybody" element={<PrivateRoute component={MyBody} token={token} />} />
+      <Route path="*" element={<ErrorPage />} />
     </Routes>
   );
 };

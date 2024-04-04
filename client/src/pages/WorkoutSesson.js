@@ -110,7 +110,7 @@ const WorkoutSession = ({ token }) => {
   return (
     <>
       <TimerPopup />
-      <h2>Workout {workoutId}</h2>
+      <h2>It's training time! 💪</h2>
       <h4>Duration: {duration}</h4>
       {workoutData && (
         <WorkoutForm
