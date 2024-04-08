@@ -120,6 +120,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
   };
 
   const handleSave = async () => {
+    console.log(exercises);
     if (saveloading) {
       // Do nothing if already in the process of saving
       return;
@@ -140,18 +141,21 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
         }
 
         for (const series of exercise.series) {
-
+          console.log(series);
           if (
             typeof series.reps === 'undefined' ||
             series.reps === '' ||
             typeof series.weight === 'undefined' ||
             series.weight === '' ||
             typeof series.effort === 'undefined' ||
-            series.effort === '' ||
-            typeof series.initialPower === 'undefined' ||
-            series.initialPower === ''
+            series.effort === ''
           ) {
             console.error('Please fill in all series fields for each exercise.');
+            return;
+          }
+
+          if (parseFloat(series.reps) === 0 || parseFloat(series.weight) === 0) {
+            console.error('Reps and weight must be greater than 0 for each series.');
             return;
           }
         }
@@ -201,12 +205,14 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
           setWorkoutName('');
           setExercises([]);
           setSelectedExercise('');
+          navigate('/dashboard');
         } else {
           onSave(workoutPayload);
         }
       } catch (error) {
         console.error('Error saving workout:', error);
       }
+      
     } catch (error) {
       console.error('Error saving workout:', error);
     } finally {

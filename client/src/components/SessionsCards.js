@@ -77,6 +77,12 @@ const SessionsCards = ({ token }) => {
         return totalVolume;
     };
 
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const options = { weekday: 'long', month: 'long', day: 'numeric' };
+        return date.toLocaleDateString('en-US', options);
+    }
+
     return (
         <div className='d-block'>
             <h3>My Sessions</h3>
@@ -89,6 +95,7 @@ const SessionsCards = ({ token }) => {
                             <div className="card">
                                 <div className="card-body">
                                     <h4 className="card-title mb-0 text-capitalize">{session.workoutName}</h4>
+                                    <p className="card-text mb-0">{formatDate(session.startDate)}</p>
                                     <p className="card-text">Total volume: {calculateTotalVolume(session.exercises)} Kg</p>
                                     {session.endDate && (
                                         <p className="card-text position-absolute bottom-0 end-0 m-3">Duration: {calculateDuration(session.startDate, session.endDate)}</p>

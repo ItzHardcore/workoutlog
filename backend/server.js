@@ -330,8 +330,9 @@ app.post('/workoutSession', async (req, res) => {
 app.get('/workoutSessions', authenticateJWT, async (req, res) => {
   try {
     // Retrieve workout sessions from the database
-    const sessions = await WorkoutSession.find({ user: req.user.userId });
-
+    const sessions = await WorkoutSession.find({ user: req.user.userId })
+      .sort({ startDate: -1 })
+      .limit(10);
 
     res.status(200).json(sessions); // Respond with the fetched workout sessions
   } catch (error) {
