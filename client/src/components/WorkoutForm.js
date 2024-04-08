@@ -251,22 +251,6 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
           required
         />
       </div>
-      <div className="mb-3">
-        <label className="form-label">Exercise Name:</label>
-        <select
-          className="form-select"
-          value={selectedExercise}
-          onChange={(e) => setSelectedExercise(e.target.value)}
-          required
-        >
-          <option value="" disabled>Select an exercise</option>
-          {exerciseOptions.map((exercise) => (
-            <option key={exercise._id} value={exercise.name}>
-              {exercise.name}
-            </option>
-          ))}
-        </select>
-      </div>
 
       {exercises.map((exercise, exerciseIndex) => (
         <div className="card mb-3" key={exerciseIndex}>
@@ -370,6 +354,22 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
           </div>
         </div>
       ))}
+      <div className="mb-3">
+        <label className="form-label">Exercise Name:</label>
+        <select
+          className="form-select"
+          value={selectedExercise}
+          onChange={(e) => setSelectedExercise(e.target.value)}
+          required
+        >
+          <option value="" disabled>Select an exercise</option>
+          {exerciseOptions.map((exercise) => (
+            <option key={exercise._id} value={exercise.name}>
+              {exercise.name}
+            </option>
+          ))}
+        </select>
+      </div>
       <button type="button" className="btn btn-primary me-2 mb-3" onClick={handleAddExercise}>
         Add Exercise
       </button>

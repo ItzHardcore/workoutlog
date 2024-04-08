@@ -20,8 +20,11 @@ function Dashboard({ token }) {
     <div className="container mt-3">
       <h2>Dashboard</h2>
       <p>Welcome to the dashboard, {username}!</p>
+      <div className='d-flex'>
 
       <ActionButton text="New Workout" backgroundImage="https://prod-ne-cdn-media.puregym.com/media/819394/gym-workout-plan-for-gaining-muscle_header.jpg?quality=80" onClick={() => navigate('/new-workout')} />
+      <ActionButton text="Set Weight" backgroundImage="https://as2.ftcdn.net/v2/jpg/05/80/51/67/1000_F_580516754_4Pgrqwiq1ykLjRXJUqSbIgHN07z0hCFW.jpg"  />
+      </div>
 
       <TimerPopup />
       <SessionsCards token={token} />

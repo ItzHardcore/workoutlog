@@ -10,7 +10,7 @@ const MyBody = ({ token }) => {
 
     return (
     <div className='mt-5'>
-        <ActionButton text="Register Measures" backgroundImage="https://st2.depositphotos.com/1010613/8292/i/450/depositphotos_82921144-stock-photo-man-standing-on-weighing-scale.jpg" onClick={() => navigate('/measures')}/>
+        <ActionButton text="New Measures" backgroundImage="https://st2.depositphotos.com/1010613/8292/i/450/depositphotos_82921144-stock-photo-man-standing-on-weighing-scale.jpg" onClick={() => navigate('/measures')}/>
         <MeasuresTable token={token} />
         <BodyMeasuresTable token={token} />
         <BodyPhotosGallery token={token} />

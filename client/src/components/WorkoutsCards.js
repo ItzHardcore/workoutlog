@@ -76,32 +76,12 @@ const WorkoutsCards = ({ token }) => {
                             <div className='card'>
                                 <div className="card-body">
                                     <h3 className="card-title">{workout.name}</h3>
-
-                                    {workout.exercises.map(exercise => (
-                                        <div key={exercise._id} className="card mt-3">
-                                            <div className="card-body">
-                                                <h4 className="card-title">{exercise.exercise.name}</h4>
-                                                <p className="card-text">Primary Muscle: {exercise.exercise.primaryMuscle}</p>
-                                                <ul className="list-group">
-                                                    {exercise.series.map(series => (
-                                                        <li key={series._id} className="list-group-item">
-                                                            <div className="d-flex justify-content-between">
-                                                                <div>
-                                                                    <p className="mb-1">Reps: {series.reps}</p>
-                                                                    <p className="mb-1">Weight: {series.weight}</p>
-                                                                    <p className="mb-1">Notes: {series.notes}</p>
-                                                                </div>
-                                                                <div>
-                                                                    <p className="mb-1">Effort: {series.effort}</p>
-                                                                    <p className="mb-1">Initial Power: {series.initialPower}</p>
-                                                                    <p className="mb-1">Execution: {series.execution}</p>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        </div>
+                
+                                    {workout.exercises.map((exercise, index) => (
+                                        <React.Fragment key={exercise._id}>
+                                            {index > 0 && ', '}
+                                            {exercise.exercise.name}
+                                        </React.Fragment>
                                     ))}
 
                                     <div className="d-flex mt-3">

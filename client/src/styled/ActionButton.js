@@ -51,7 +51,7 @@ font-size: 25px;
 
 const ActionButton = ({ text, onClick, backgroundImage }) => {
     return (
-        <div className='my-4'>
+        <div className='my-4 me-4'>
             <LargeButtonWithBackgroundImage onClick={onClick} backgroundImage={backgroundImage}>
                 <ButtonText>{text}</ButtonText>
             </LargeButtonWithBackgroundImage>
