@@ -31,17 +31,18 @@ const App = () => {
 
   return (
     <Router>
-
-      <Navbar token={token} user={user} handleLogout={handleLogout} />
-      <div className="container mt-3 mb-5">
-        <AppRoutes
-          token={token}
-          handleLogin={handleLogin}
-          handleLogout={handleLogout}
-          handleRegister={handleRegister}
-        />
+      <div className="d-flex flex-column" style={{ minHeight: '100vh' }}>
+        <Navbar token={token} user={user} handleLogout={handleLogout} />
+        <div className="container flex-grow-1 mb-5">
+          <AppRoutes
+            token={token}
+            handleLogin={handleLogin}
+            handleLogout={handleLogout}
+            handleRegister={handleRegister}
+          />
+        </div>
+        <Footer />
       </div>
-      <Footer />
     </Router>
   );
 };

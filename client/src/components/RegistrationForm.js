@@ -1,9 +1,9 @@
 // RegistrationForm.js
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import PasswordStrengthMeter from './PasswordStrengthMeter';
 
-function RegistrationForm({ onSubmit, isButtonHidden, errorMessage, setErrorMessage,setIsButtonHidden }) {
+function RegistrationForm({ onSubmit, isButtonHidden, errorMessage, setErrorMessage, setIsButtonHidden }) {
     const [name, setName] = useState('');
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
@@ -119,7 +119,7 @@ function RegistrationForm({ onSubmit, isButtonHidden, errorMessage, setErrorMess
                     const errorData = await response.json();
                     throw new Error(errorData.error || 'Registration failed');
                 }
-            }else{
+            } else {
                 navigate('/login');
             }
 
@@ -129,7 +129,7 @@ function RegistrationForm({ onSubmit, isButtonHidden, errorMessage, setErrorMess
         }
     };
 
-    return (
+    return (<>
         <form onSubmit={handleRegister} onChange={() => setErrorMessage('')}>
             <div className="mb-3">
                 <label htmlFor="name" className="form-label">
@@ -233,6 +233,8 @@ function RegistrationForm({ onSubmit, isButtonHidden, errorMessage, setErrorMess
                 </button>
             )}
         </form>
+        <p className="mt-3 text-center">Already a member? <Link to="/login">Login</Link></p>
+    </>
     );
 }
 

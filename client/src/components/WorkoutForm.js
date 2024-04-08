@@ -191,13 +191,13 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
               body: JSON.stringify(workoutPayload),
             });
           }
-      
+
           if (!response.ok) {
             throw new Error('Failed to save workout');
           }
-      
+
           console.log('Workout saved successfully');
-      
+
           setWorkoutName('');
           setExercises([]);
           setSelectedExercise('');
@@ -251,9 +251,6 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
           ))}
         </select>
       </div>
-      <button type="button" className="btn btn-primary me-2 mb-3" onClick={handleAddExercise}>
-        Add Exercise
-      </button>
 
       {exercises.map((exercise, exerciseIndex) => (
         <div className="card mb-3" key={exerciseIndex}>
@@ -274,7 +271,6 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
             {exercise.series.map((series, seriesIndex) => (
               <div key={seriesIndex} className="mb-4 p-3 border rounded">
                 <div className="d-flex m-auto align-items-baseline mb-3">
-
                   <div className="w-100">
                     <label className="form-label">Initial Power:</label>
                     <select
@@ -358,6 +354,9 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
           </div>
         </div>
       ))}
+      <button type="button" className="btn btn-primary me-2 mb-3" onClick={handleAddExercise}>
+        Add Exercise
+      </button>
       <div className='mb-3'>
 
         <button

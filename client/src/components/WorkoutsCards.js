@@ -66,56 +66,57 @@ const WorkoutsCards = ({ token }) => {
 
     return (
         <div className="mt-3">
+            <h2>My Workouts</h2>
             {workouts.length === 0 ? (
                 <h5 className="text-danger">No workouts available</h5>
             ) : (
-                <h2>My Workouts</h2>
-            )}
+                <div className='row row-cols-1 row-cols-sm-4 g-4 d-flex flex-nowrap overflow-auto'>
+                    {workouts.map(workout => (
+                        <div key={workout._id} className="col">
+                            <div className='card'>
+                                <div className="card-body">
+                                    <h3 className="card-title">{workout.name}</h3>
 
-            <div className='row row-cols-1 row-cols-sm-4 g-4 d-flex flex-nowrap overflow-auto'>
-                {workouts.map(workout => (
-                    <div key={workout._id} className="col">
-                        <div className='card'>
-                        <div className="card-body">
-                            <h3 className="card-title">{workout.name}</h3>
+                                    {workout.exercises.map(exercise => (
+                                        <div key={exercise._id} className="card mt-3">
+                                            <div className="card-body">
+                                                <h4 className="card-title">{exercise.exercise.name}</h4>
+                                                <p className="card-text">Primary Muscle: {exercise.exercise.primaryMuscle}</p>
+                                                <ul className="list-group">
+                                                    {exercise.series.map(series => (
+                                                        <li key={series._id} className="list-group-item">
+                                                            <div className="d-flex justify-content-between">
+                                                                <div>
+                                                                    <p className="mb-1">Reps: {series.reps}</p>
+                                                                    <p className="mb-1">Weight: {series.weight}</p>
+                                                                    <p className="mb-1">Notes: {series.notes}</p>
+                                                                </div>
+                                                                <div>
+                                                                    <p className="mb-1">Effort: {series.effort}</p>
+                                                                    <p className="mb-1">Initial Power: {series.initialPower}</p>
+                                                                    <p className="mb-1">Execution: {series.execution}</p>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    ))}
 
-                            {workout.exercises.map(exercise => (
-                                <div key={exercise._id} className="card mt-3">
-                                    <div className="card-body">
-                                        <h4 className="card-title">{exercise.exercise.name}</h4>
-                                        <p className="card-text">Primary Muscle: {exercise.exercise.primaryMuscle}</p>
-                                        <ul className="list-group">
-                                            {exercise.series.map(series => (
-                                                <li key={series._id} className="list-group-item">
-                                                    <div className="d-flex justify-content-between">
-                                                        <div>
-                                                            <p className="mb-1">Reps: {series.reps}</p>
-                                                            <p className="mb-1">Weight: {series.weight}</p>
-                                                            <p className="mb-1">Notes: {series.notes}</p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="mb-1">Effort: {series.effort}</p>
-                                                            <p className="mb-1">Initial Power: {series.initialPower}</p>
-                                                            <p className="mb-1">Execution: {series.execution}</p>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            ))}
-                                        </ul>
+                                    <div className="d-flex mt-3">
+                                        <button className="btn btn-warning me-2" onClick={() => handleEditWorkout(workout._id)}>Edit</button>
+                                        <button className="btn btn-danger me-2" onClick={() => removeWorkout(workout._id)}>Remove</button>
+                                        <button className="btn btn-success" onClick={() => handleStartWorkout(workout._id)}>Start Workout</button>
                                     </div>
                                 </div>
-                            ))}
-
-                            <div className="d-flex mt-3">
-                                <button className="btn btn-warning me-2" onClick={() => handleEditWorkout(workout._id)}>Edit</button>
-                                <button className="btn btn-danger me-2" onClick={() => removeWorkout(workout._id)}>Remove</button>
-                                <button className="btn btn-success" onClick={() => handleStartWorkout(workout._id)}>Start Workout</button>
                             </div>
                         </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            )}
+
+
         </div>
     );
 };

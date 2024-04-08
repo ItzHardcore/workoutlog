@@ -12,7 +12,6 @@ function Register() {
         <div className="col-md-6 mt-5">
           <h1 className="text-center">Register</h1>
 
-          {/* Reuse the RegistrationForm component */}
           <RegistrationForm
             isButtonHidden={buttonHidden}
             errorMessage={errorMessage}

@@ -207,7 +207,7 @@ function Dashboard({ token }) {
       <SessionsCards token={token} />
 
       <div style={{ display: isAddMeasuresVisible ? 'block' : 'none' }}>
-        {/* Display MeasuresForm when isAddMeasuresVisible is true */}
+        
         <h2 className="mt-3">Add Daily Measures</h2>
         <MeasuresForm token={token} onCancel={toggleAddMeasures} />
       </div>

@@ -6,7 +6,7 @@ const Navbar = ({ token, user, handleLogout }) => {
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container">
         <Link className="navbar-brand" to="/">
-          GYM TRACKER
+          WORKOUT LOGGER
         </Link>
         <button
           className="navbar-toggler"

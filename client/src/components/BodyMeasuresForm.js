@@ -70,7 +70,6 @@ function BodyMeasuresForm({ token, onCancel }) {
 
     return (
         <form onSubmit={handleAddMeasures} >
-            {/* OPTIONALS */}
             <div className="row g-3 mb-3">
                 <div className="col-md-2">
                     <label htmlFor="date" className="form-label">Date:</label>

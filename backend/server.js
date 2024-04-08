@@ -378,7 +378,7 @@ app.post('/measures', authenticateJWT, async (req, res) => {
     const { weight, steps, sleepHours, energy, hunger, stress, date } = req.body;
 
     // Assuming you have a user ID available in req.user
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     // Parse the input date to create the date range
     const startDate = new Date(date);
@@ -424,10 +424,9 @@ app.post('/measures', authenticateJWT, async (req, res) => {
 app.delete('/measures/:id', authenticateJWT, async (req, res) => {
   try {
     const measureId = req.params.id;
-
     // Find the measure and ensure it belongs to the current user
-    const measure = await Measure.findOne({ _id: measureId, userId: req.user.id });
-
+    const measure = await Measure.findOne({ _id: measureId, user: req.user.userId });
+    
     if (!measure) {
       return res.status(404).json({ error: 'Measure not found' });
     }
@@ -446,7 +445,7 @@ app.delete('/measures/:id', authenticateJWT, async (req, res) => {
 app.get('/measures', authenticateJWT, async (req, res) => {
   try {
     // Fetch measures for the current user
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const measures = await Measure.find({ user: userId }).sort({ date: -1 });
 
     res.status(200).json(measures);
@@ -462,7 +461,7 @@ app.put('/measures/:measureId', authenticateJWT, async (req, res) => {
     const { weight, steps, sleepHours, energy, hunger, stress, date } = req.body;
 
     // Assuming you have a user ID available in req.user
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     // Parse the input date to create the date range
     const startDate = new Date(date);
@@ -513,7 +512,7 @@ app.post('/bodymeasures', authenticateJWT, async (req, res) => {
     const { date, fase, kcal, weight, peito, cintura, gluteo, bracoDrt, bracoEsq, coxaDireita, coxaEsquerda } = req.body;
 
     // Assuming you have a user ID available in req.user
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     // Parse the input date to create the date range
     const startDate = new Date(date);
@@ -565,7 +564,7 @@ app.delete('/bodymeasures/:id', authenticateJWT, async (req, res) => {
     const bodyMeasureId = req.params.id;
 
     // Find the body measure and ensure it belongs to the current user
-    const bodyMeasure = await BodyMeasure.findOne({ _id: bodyMeasureId, user: req.user.id });
+    const bodyMeasure = await BodyMeasure.findOne({ _id: bodyMeasureId, user: req.user.userId });
 
     if (!bodyMeasure) {
       return res.status(404).json({ error: 'Body measure not found' });
@@ -585,7 +584,7 @@ app.delete('/bodymeasures/:id', authenticateJWT, async (req, res) => {
 app.get('/bodymeasures', authenticateJWT, async (req, res) => {
   try {
     // Fetch body measures for the current user
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const bodyMeasures = await BodyMeasure.find({ user: userId }).sort({ date: -1 });
 
     res.status(200).json(bodyMeasures);
@@ -602,7 +601,7 @@ app.put('/bodymeasures/:bodyMeasureId', authenticateJWT, async (req, res) => {
     const { date, fase, kcal, weight, peito, cintura, gluteo, bracoDrt, bracoEsq, coxaDireita, coxaEsquerda } = req.body;
 
     // Assuming you have a user ID available in req.user
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     // Parse the input date to create the date range
     const startDate = new Date(date);
@@ -804,7 +803,7 @@ app.post('/upload-body-photos', authenticateJWT, upload.fields([
     const { weight, date } = req.body;
 
     // Assuming you have a user ID available in req.user
-    const userId = req.user.userId; // Assuming the user ID is stored in req.user.id
+    const userId = req.user.userId; // Assuming the user ID is stored in req.user.userId
     console.log(userId);
 
     // Extract file paths from req.files

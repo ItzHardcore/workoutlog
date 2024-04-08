@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Login({ onLogin }) {
   const [username, setUsername] = useState('');
@@ -66,6 +66,7 @@ function Login({ onLogin }) {
             </div>
             <button type="submit" className="btn btn-primary">Log In</button>
           </form>
+          <p className="mt-3 text-center">Not a member? <Link to="/register">Register</Link></p>
         </div>
       </div>
     </div>

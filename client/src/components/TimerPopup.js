@@ -49,7 +49,7 @@ function TimerPopup() {
     };
 
     return (
-        <div>
+        <>
             <div className="position-fixed bottom-0 end-0 pe-3 p-md-5 p-1" style={{ zIndex: 1000 }}>
                 {!isOpen && (
                     <span style={{ fontSize: '80px' }} >
@@ -57,7 +57,7 @@ function TimerPopup() {
                     </span>
                 )}
             </div>
-            {isOpen && (
+            {isOpen && ( 
                 <div className="modal fade show d-flex align-items-center justify-content-center" tabIndex="-1" style={{ display: 'block', zIndex: '1050', backdropFilter: 'blur(5px)' }} onClick={closeModal}>
                     <div className="modal-dialog modal-dialog-centered modal-circle">
                         <div className="modal-content" style={{ width: '180px', height: '180px', borderRadius: '100%' }} onClick={(e) => e.stopPropagation()}>
@@ -72,8 +72,8 @@ function TimerPopup() {
                         </div>
                     </div>
                 </div>
-            )}
-        </div>
+                      )}
+        </>
     );
 }
 
