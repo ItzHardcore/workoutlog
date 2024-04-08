@@ -7,6 +7,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
   const [exerciseOptions, setExerciseOptions] = useState([]);
   const [selectedExercise, setSelectedExercise] = useState('');
   const [saveloading, setSaveLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const navigate = useNavigate();
 
@@ -20,7 +21,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch exercises');
+          setErrorMessage('Failed to fetch exercises');
         }
 
         const data = await response.json();
@@ -49,6 +50,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
         }
       } catch (error) {
         console.error('Error fetching exercises:', error);
+        setErrorMessage('Error fetching exercises:', error);
       }
     };
 
@@ -58,6 +60,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
   const handleAddExercise = () => {
     if (!selectedExercise) {
       console.error('Please select an exercise before adding.');
+      setErrorMessage('Please select an exercise before adding.');
       return;
     }
 
@@ -82,6 +85,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
 
     if (!selectedExercise) {
       console.error('Invalid exercise index');
+      setErrorMessage('Invalid exercise index');
       return;
     }
 
@@ -131,12 +135,14 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
     try {
       if (!workoutName || exercises.length === 0) {
         console.error('Please fill in workout name and add at least one exercise.');
+        setErrorMessage('Please fill in workout name and add at least one exercise.');
         return;
       }
 
       for (const exercise of exercises) {
         if (exercise.series.length === 0) {
           console.error('Each exercise must have at least one series.');
+          setErrorMessage('Each exercise must have at least one series.');
           return;
         }
 
@@ -151,11 +157,13 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
             series.effort === ''
           ) {
             console.error('Please fill in all series fields for each exercise.');
+            setErrorMessage('Please fill in all series fields for each exercise.');
             return;
           }
 
           if (parseFloat(series.reps) === 0 || parseFloat(series.weight) === 0) {
             console.error('Reps and weight must be greater than 0 for each series.');
+            setErrorMessage('Reps and weight must be greater than 0 for each series.');
             return;
           }
         }
@@ -197,7 +205,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
           }
 
           if (!response.ok) {
-            throw new Error('Failed to save workout');
+            setErrorMessage('Failed to save workout');
           }
 
           console.log('Workout saved successfully');
@@ -211,10 +219,12 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
         }
       } catch (error) {
         console.error('Error saving workout:', error);
+        setErrorMessage('Error saving workout:', error);
       }
-      
+
     } catch (error) {
       console.error('Error saving workout:', error);
+      setErrorMessage('Error saving workout:', error);
     } finally {
       setSaveLoading(false);
     };
@@ -364,7 +374,11 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
         Add Exercise
       </button>
       <div className='mb-3'>
-
+        {errorMessage && (
+          <div className="alert alert-danger" role="alert">
+            {errorMessage}
+          </div>
+        )}
         <button
           type="button"
           className="btn btn-primary me-2"

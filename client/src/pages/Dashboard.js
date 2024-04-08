@@ -4,42 +4,29 @@ import SessionsCards from '../components/SessionsCards';
 import WorkoutsCards from '../components/WorkoutsCards';
 import TimerPopup from '../components/TimerPopup';
 import MeasuresTable from '../components/MeasuresTable';
-import WorkoutForm from '../components/WorkoutForm';
+import ActionButton from '../styled/ActionButton';
+import { useNavigate } from 'react-router-dom';
 
 function Dashboard({ token }) {
   const [username, setUsername] = useState('');
-  const [userID, setUserID] = useState('');
-  const [isAddWorkoutsVisible, setIsAddWorkoutsVisible] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const decodedToken = jwtDecode(token);
     setUsername(decodedToken.username);
-    setUserID(decodedToken.userId);
   }, [token]);
-
-  const toggleAddWorkout = () => {
-    setIsAddWorkoutsVisible(prev => !prev);
-  };
 
   return (
     <div className="container mt-3">
       <h2>Dashboard</h2>
       <p>Welcome to the dashboard, {username}!</p>
 
-      <button className="btn btn-success ms-2 mb-2" onClick={toggleAddWorkout}>
-        {isAddWorkoutsVisible ? 'Hide' : 'Add'} Workout
-      </button>
+      <ActionButton text="New Workout" backgroundImage="https://prod-ne-cdn-media.puregym.com/media/819394/gym-workout-plan-for-gaining-muscle_header.jpg?quality=80" onClick={() => navigate('/new-workout')} />
+
       <TimerPopup />
       <SessionsCards token={token} />
       <WorkoutsCards token={token} />
       <MeasuresTable token={token} />
-
-      {!isAddWorkoutsVisible && (
-        <div className="mt-3">
-          <h2>Add Workout</h2>
-          <WorkoutForm userId={userID} token={token} onCancel={toggleAddWorkout} />
-        </div>
-      )}
     </div>
   );
 }
