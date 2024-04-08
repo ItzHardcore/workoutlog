@@ -1,14 +1,18 @@
 import React from 'react'
 import MeasuresTable from '../components/MeasuresTable'
-import BodyMeasuresForm from '../components/BodyMeasuresForm'
 import BodyPhotosGallery from '../components/BodyPhotosGallery'
-
+import BodyMeasuresTable from '../components/BodyMeasuresTable'
+import { useNavigate } from 'react-router-dom';
 const MyBody = ({ token }) => {
-    return (<>
+    const navigate = useNavigate();
+
+    return (
+    <div className='mt-5'>
+        <button className='btn btn-primary' onClick={() => navigate('/measures')}>Add Measures or Photos</button>
         <MeasuresTable token={token} />
-        <BodyMeasuresForm token={token} />
+        <BodyMeasuresTable token={token} />
         <BodyPhotosGallery token={token} />
-    </>
+    </div>
     )
 }
 

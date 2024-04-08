@@ -161,7 +161,7 @@ function MeasuresTable({ token }) {
 
     return (
         <div style={{ display: 'block' }}>
-            <h2 className="mt-3">My Measures</h2>
+            <h2 className="mt-3">My Daily Measures</h2>
             {measures.length === 0 ? (
                 <h5 className="text-danger">You have no measures</h5>
             ) : (

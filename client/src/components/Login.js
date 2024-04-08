@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 function Login({ onLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -31,6 +32,7 @@ function Login({ onLogin }) {
       navigate('/dashboard');
     } catch (error) {
       console.error('Login failed:', error);
+      setError('Invalid username or password. Please try again.');
     }
   };
 
@@ -39,6 +41,7 @@ function Login({ onLogin }) {
       <div className="row justify-content-center">
         <div className="col-md-6 mt-5">
           <h1 className="text-center">Login</h1>
+          
           <form onSubmit={handleLogin}>
             <div className="mb-3">
               <label htmlFor="username" className="form-label">
@@ -64,6 +67,7 @@ function Login({ onLogin }) {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
+            {error && <div className="alert alert-danger">{error}</div>}
             <button type="submit" className="btn btn-primary">Log In</button>
           </form>
           <p className="mt-3 text-center">Not a member? <Link to="/register">Register</Link></p>

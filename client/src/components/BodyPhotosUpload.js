@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useNavigate } from 'react-router-dom';
 
 function BodyPhotosUpload({token}) {
   const [frontImage, setFrontImage] = useState(null);
@@ -9,6 +10,7 @@ function BodyPhotosUpload({token}) {
   const [rightImage, setRightImage] = useState(null);
   const [weight, setWeight] = useState('');
   const [date, setDate] = useState(new Date());
+  const navigate = useNavigate();
 
   const handleImageDrop = (file, setter) => {
     setter(file);
@@ -16,6 +18,11 @@ function BodyPhotosUpload({token}) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (!frontImage || !backImage || !leftImage || !rightImage || !weight) {
+      alert('Please provide all four photos and weight.');
+      return;
+    }
 
     const formData = new FormData();
     formData.append('frontImage', frontImage);
@@ -33,14 +40,15 @@ function BodyPhotosUpload({token}) {
               'Authorization': `${token}`,
             },
           });
-          // Handle success
+          navigate('/mybody');
     } catch (error) {
       // Handle error
     }
   };
 
   return (
-    <div className="container">
+    <div className="my-5">
+      <h2>Add Photos</h2>
       <div className="row justify-content-center">
         <div className="col-md-8">
           <form onSubmit={handleSubmit}>

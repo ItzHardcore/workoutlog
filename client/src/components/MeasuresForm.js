@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useNavigate } from 'react-router-dom';
 
 function MeasuresForm({ token, onCancel }) {
   const [weight, setWeight] = useState('');
@@ -11,6 +12,8 @@ function MeasuresForm({ token, onCancel }) {
   const [stress, setStress] = useState(3);
   const [date, setDate] = useState(new Date());
   const [errorMessage, setErrorMessage] = useState('');
+
+  const navigate = useNavigate();
 
   const handleAddMeasures = async (e) => {
     e.preventDefault();
@@ -52,7 +55,7 @@ function MeasuresForm({ token, onCancel }) {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'Failed to save measures. Please try again.');
+        setErrorMessage(data.error || 'Failed to save measures. Please try again.');
       }
 
       // After successfully submitting the data, you can also reset the form fields
@@ -63,7 +66,8 @@ function MeasuresForm({ token, onCancel }) {
       setHunger(3);
       setStress(3);
       setDate(new Date());
-      console.log("Measure created!");
+
+      navigate('/mybody');
       // Optionally, you can handle success actions here
     } catch (error) {
       // Handle any errors that occur during the submission
@@ -72,7 +76,8 @@ function MeasuresForm({ token, onCancel }) {
   };
 
   return (
-    <form onSubmit={handleAddMeasures} className="row g-3">
+    <form onSubmit={handleAddMeasures} className="row g-3 ">
+      <h2>Add Daily Measures</h2>
       <div className="col-md-3">
         <label htmlFor="date" className="form-label">Date:</label>
         <br />
