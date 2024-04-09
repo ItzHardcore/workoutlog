@@ -3,7 +3,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigate } from 'react-router-dom';
 
-function MeasuresForm({ token, onCancel }) {
+function MeasuresForm({ token, onClose }) {
   const [weight, setWeight] = useState('');
   const [steps, setSteps] = useState(10000);
   const [sleepHours, setSleepHours] = useState(8);
@@ -14,6 +14,11 @@ function MeasuresForm({ token, onCancel }) {
   const [errorMessage, setErrorMessage] = useState('');
 
   const navigate = useNavigate();
+
+  const handleCancel = () => {
+    // Call the onClose function passed from the FormModal component
+    onClose();
+  };
 
   const handleAddMeasures = async (e) => {
     e.preventDefault();
@@ -186,7 +191,7 @@ function MeasuresForm({ token, onCancel }) {
           </div>
         )}
         <button type="submit" className="btn btn-primary">Add Measures</button>
-        <button type="button" className="btn btn-secondary ms-2" onClick={onCancel}>Cancel</button>
+        <button type="button" className="btn btn-secondary ms-2" onClick={handleCancel}>Cancel</button>
       </div>
     </form>
   );
