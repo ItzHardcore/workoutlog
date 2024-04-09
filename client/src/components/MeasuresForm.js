@@ -61,6 +61,7 @@ function MeasuresForm({ token, onClose }) {
       if (!response.ok) {
         const data = await response.json();
         setErrorMessage(data.error || 'Failed to save measures. Please try again.');
+        return;
       }
 
       // After successfully submitting the data, you can also reset the form fields
@@ -72,7 +73,12 @@ function MeasuresForm({ token, onClose }) {
       setStress(3);
       setDate(new Date());
 
-      navigate('/mybody');
+      if(onClose){
+        handleCancel();
+      }else{
+
+        navigate('/mybody')
+      }
       // Optionally, you can handle success actions here
     } catch (error) {
       // Handle any errors that occur during the submission
