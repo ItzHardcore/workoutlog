@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
+const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankSession = false }) => {
   const [workoutName, setWorkoutName] = useState(initialData ? initialData.name : '');
   const [exercises, setExercises] = useState(initialData ? initialData.exercises : []);
   const [exerciseOptions, setExerciseOptions] = useState([]);
@@ -124,7 +124,6 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
   };
 
   const handleSave = async () => {
-    console.log(exercises);
     if (saveloading) {
       // Do nothing if already in the process of saving
       return;
@@ -161,7 +160,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
             return;
           }
 
-          if (parseFloat(series.reps) === 0 || parseFloat(series.weight) === 0) {
+          if (parseFloat(series.reps) <= 0 || parseFloat(series.weight) <= 0) {
             console.error('Reps and weight must be greater than 0 for each series.');
             setErrorMessage('Reps and weight must be greater than 0 for each series.');
             return;
@@ -215,7 +214,27 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave }) => {
           setSelectedExercise('');
           navigate('/dashboard');
         } else {
-          onSave(workoutPayload);
+          if(startBlankSession){
+            let responsee;
+            responsee = await fetch('http://localhost:3001/workouts', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `${token}`,
+              },
+              body: JSON.stringify(workoutPayload),
+            });
+          
+
+          if (!responsee.ok) {
+            setErrorMessage('Failed to save workout');
+          }
+
+          console.log('Workout created successfully');
+            onSave(workoutPayload);
+          }else{
+            onSave(workoutPayload);
+          }
         }
       } catch (error) {
         console.error('Error saving workout:', error);

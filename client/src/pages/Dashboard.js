@@ -22,7 +22,8 @@ function Dashboard({ token }) {
       <p>Welcome to the dashboard, {username}!</p>
       <div className='d-flex'>
 
-      <ActionButton text="New Workout" backgroundImage="https://prod-ne-cdn-media.puregym.com/media/819394/gym-workout-plan-for-gaining-muscle_header.jpg?quality=80" onClick={() => navigate('/new-workout')} />
+      <ActionButton text="New Workout" backgroundImage="https://blogs.nottingham.ac.uk/sport/files/2020/04/Workout-Plan_6x4_Blog.jpg" onClick={() => navigate('/new-workout')} />
+      <ActionButton text="Start Workout" backgroundImage="https://i.shgcdn.com/059ec0a7-74c9-43a9-9b3f-47808a5410bd/-/format/auto/-/preview/3000x3000/-/quality/lighter/" onClick={() => navigate('/start-session')} />
       <ActionButton text="Set Weight" backgroundImage="https://as2.ftcdn.net/v2/jpg/05/80/51/67/1000_F_580516754_4Pgrqwiq1ykLjRXJUqSbIgHN07z0hCFW.jpg"  />
       </div>
 

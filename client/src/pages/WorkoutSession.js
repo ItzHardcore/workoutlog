@@ -10,6 +10,7 @@ const WorkoutSession = ({ token }) => {
   const [workoutData, setWorkoutData] = useState(null);
   const [seconds, setSeconds] = useState(0); // Initialize timer state
   const [duration, setDuration] = useState(''); // Initialize duration state
+  const [username, setUsername] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,7 +39,8 @@ const WorkoutSession = ({ token }) => {
         console.error('Error fetching workout data:', error);
       }
     };
-
+    const decodedToken = jwtDecode(token);
+    setUsername(decodedToken.userId);
     fetchWorkoutData();
   }, [token, workoutId, navigate]);
 
@@ -57,9 +59,6 @@ const WorkoutSession = ({ token }) => {
     return () => clearInterval(intervalId);
   }, [seconds]); // Run timer effect only once
 
-  if (!isAuthorized) {
-    return <div>You are not authorized to view this workout.</div>;
-  }
 
   const handleSave = async (toBeSavedWorkout) => {
     try {
@@ -121,6 +120,12 @@ const WorkoutSession = ({ token }) => {
 
         />
       )}
+      {!isAuthorized && (<WorkoutForm
+        userId={username}
+        token={token}
+        onSave={handleSave}
+        startBlankSession={true}
+      />)}
     </>
   );
 };
