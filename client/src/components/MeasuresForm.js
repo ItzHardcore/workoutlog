@@ -16,8 +16,11 @@ function MeasuresForm({ token, onClose }) {
   const navigate = useNavigate();
 
   const handleCancel = () => {
-    // Call the onClose function passed from the FormModal component
-    onClose();
+    if (onClose) {
+      onClose(); // Call onClose if defined
+    } else {
+      navigate('/mybody'); // Navigate to '/mybody' if onClose is not defined
+    }
   };
 
   const handleAddMeasures = async (e) => {
@@ -76,7 +79,6 @@ function MeasuresForm({ token, onClose }) {
       if(onClose){
         handleCancel();
       }else{
-
         navigate('/mybody')
       }
       // Optionally, you can handle success actions here

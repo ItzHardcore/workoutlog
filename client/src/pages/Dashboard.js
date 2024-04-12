@@ -22,7 +22,7 @@ function Dashboard({ token }) {
     <div className="container mt-3">
       <h2>Dashboard</h2>
       <p>Welcome to the dashboard, {username}!</p>
-      <div className='d-flex'>
+      <div className='d-flex overflow-auto'>
 
       <ActionButton text="New Workout" backgroundImage="https://blogs.nottingham.ac.uk/sport/files/2020/04/Workout-Plan_6x4_Blog.jpg" onClick={() => navigate('/new-workout')} />
       <ActionButton text="Start Workout" backgroundImage="https://i.shgcdn.com/059ec0a7-74c9-43a9-9b3f-47808a5410bd/-/format/auto/-/preview/3000x3000/-/quality/lighter/" onClick={() => navigate('/start-session')} />

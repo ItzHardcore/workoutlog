@@ -3,7 +3,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigate } from 'react-router-dom';
 
-function BodyMeasuresForm({ token, onCancel }) {
+function BodyMeasuresForm({ token , onClose }) {
     const [weight, setWeight] = useState('');
     const [date, setDate] = useState(new Date());
     const [fase, setFase] = useState('Maintenance');
@@ -26,6 +26,14 @@ function BodyMeasuresForm({ token, onCancel }) {
         }
         return true;
     };
+
+    const handleCancel = () => {
+        if (onClose) {
+          onClose(); // Call onClose if defined
+        } else {
+          navigate('/mybody'); // Navigate to '/mybody' if onClose is not defined
+        }
+      };
 
     const handleAddMeasures = async (e) => {
         e.preventDefault();
@@ -91,9 +99,13 @@ function BodyMeasuresForm({ token, onCancel }) {
             setCoxaDireita('');
             setCoxaEsquerda('');
 
-            console.log("Measure created!");
+            console.log("Body Measure created!");
 
-            navigate('/mybody');
+            if(onClose){
+                handleCancel();
+              }else{
+                navigate('/mybody')
+              }
 
             // Optionally, you can handle success actions here
         } catch (error) {
@@ -102,7 +114,7 @@ function BodyMeasuresForm({ token, onCancel }) {
     };
 
     return (
-        <div className='my-5'>
+        <>
             <h2>Add Body Measures</h2>
             <form onSubmit={handleAddMeasures} >
                 <div className="row g-3 mb-3">
@@ -251,9 +263,9 @@ function BodyMeasuresForm({ token, onCancel }) {
                     </div>
                 )}
                 <button type="submit" className="btn btn-primary">Add Measures</button>
-                <button type="button" className="btn btn-secondary ms-2" onClick={onCancel}>Cancel</button>
+                <button type="button" className="btn btn-secondary ms-2" onClick={handleCancel}>Cancel</button>
             </form>
-        </div>
+        </>
     );
 }
 

@@ -51,7 +51,7 @@ function WeightChart({ measures }) {
         chartInstance.current.destroy(); // Cleanup: destroy the chart when the component unmounts
       }
     };
-  }, [measures]);
+  }); // Empty dependency array
 
   return <canvas ref={chartRef} />;
 }

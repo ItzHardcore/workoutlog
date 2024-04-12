@@ -32,6 +32,7 @@ function MeasuresTable({ token }) {
         fetchMeasures(token);
     }, [token]);
 
+
     const handleInputChange = (measureId, field, value, setter) => {
         const measureIndex = measures.findIndex((measure) => measure._id === measureId);
         if (measureIndex !== -1) {

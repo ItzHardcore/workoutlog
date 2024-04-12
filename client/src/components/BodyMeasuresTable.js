@@ -4,7 +4,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 function BodyMeasuresTable({ token }) {
     const [Bodymeasures, setBodyMeasures] = useState([]);
-    const [saveMeasureError, setSaveMeasureError] = useState(null);
     const [saveBodyMeasureError, setSaveBodyMeasureError] = useState('');
 
     const fetchBodyMeasures = async (token) => {

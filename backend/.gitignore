@@ -17,6 +17,7 @@ vendor/
 # Server-specific
 dist/
 tmp/
+/uploads
 
 # OS generated files
 .DS_Store

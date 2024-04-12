@@ -32,7 +32,7 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true 
 
 // Middleware
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
 app.use(router);
 
 // Dummy in-memory storage for tracking user activity
@@ -772,64 +772,50 @@ app.put('/workouts/:id', authenticateJWT, async (req, res) => {
   }
 });
 
-// Multer configuration for handling file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // Define the destination folder for uploads
-    const uploadDir = './uploads';
-    // Create the uploads directory if it doesn't exist
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir);
-    }
-    cb(null, uploadDir);
+    cb(null, 'uploads/'); // Use relative path for destination
   },
   filename: function (req, file, cb) {
-    // Generate a unique filename for each uploaded file
-    const ext = path.extname(file.originalname);
-    const filename = uuidv4() + ext;
-    cb(null, filename);
+    const fileName = uuidv4(); // Generate a random filename
+    const fileExtension = file.originalname.split('.').pop(); // Get the file extension
+    cb(null, `${fileName}.${fileExtension}`); // Set the filename with the extension
   }
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+});
 
-// POST route for uploading body photos
-app.post('/upload-body-photos', authenticateJWT, upload.fields([
-  { name: 'frontImage', maxCount: 1 },
-  { name: 'backImage', maxCount: 1 },
-  { name: 'leftImage', maxCount: 1 },
-  { name: 'rightImage', maxCount: 1 }
-]), async (req, res) => {
+app.post('/upload-body-photos', upload.fields([{ name: 'photoStep1', maxCount: 1 }, { name: 'photoStep2', maxCount: 1 }]), async (req, res) => {
   try {
-    const { weight, date } = req.body;
+    if (!req.files || Object.keys(req.files).length === 0) {
+      return res.status(400).json({ error: 'No files were uploaded.' });
+    }
 
-    // Assuming you have a user ID available in req.user
-    const userId = req.user.userId; // Assuming the user ID is stored in req.user.userId
-    console.log(userId);
+    // Extract filenames from request
+    const frontImageFileName = req.files['photoStep1'][0].filename;
+    const backImageFileName = req.files['photoStep2'][0].filename;
 
-    // Extract file paths from req.files
-    const { frontImage, backImage, leftImage, rightImage } = req.files;
-
-    // Create a new BodyPhoto instance
-    const newBodyPhoto = new BodyPhoto({
-      user: userId,
-      frontImage: frontImage[0].path,
-      backImage: backImage[0].path,
-      leftImage: leftImage[0].path,
-      rightImage: rightImage[0].path,
-      weight,
-      date,
+    // Create a new BodyPhoto instance with only the filenames
+    const bodyPhoto = new BodyPhoto({
+      user: "6589ed3b87e91c30e529448c", // Assuming the userId is extracted from the JWT token
+      frontImage: frontImageFileName,
+      backImage: backImageFileName,
+      weight: parseFloat("10"), // Convert weight to number
+      date: new Date() // Convert date to Date object
     });
 
-    // Save the body photos to the database
-    const savedBodyPhoto = await newBodyPhoto.save();
-
-    res.status(201).json(savedBodyPhoto);
+    // Save the BodyPhoto to the database
+    const savedBodyPhoto = await bodyPhoto.save();
+    res.status(201).json(savedBodyPhoto); // Respond with the saved BodyPhoto
   } catch (error) {
-    console.error('Error saving body photos:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error saving body photo:', error);
+    res.status(500).json({ error: 'Failed to save body photo' }); // Respond with an error message
   }
 });
+
 
 
 app.get('/uploads/:filename', (req, res) => {

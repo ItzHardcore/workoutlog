@@ -10,8 +10,7 @@ const FormModal = ({ buttonComponent, formComponent }) => {
   return (
     <>
       {React.cloneElement(buttonComponent, { onClick: handleShow })}
-
-      <Modal show={showModal} onHide={handleClose}>
+      <Modal show={showModal} onHide={handleClose} size="lg">
         <Modal.Body>
           {React.cloneElement(formComponent, { onClose: handleClose })}
         </Modal.Body>

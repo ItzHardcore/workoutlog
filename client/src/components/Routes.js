@@ -11,8 +11,8 @@ import WorkoutSession from '../pages/WorkoutSession';
 import SessionDetails from '../pages/SessionDetails';
 import MyBody from '../pages/MyBody';
 import ErrorPage from '../pages/ErrorPage';
-import AddMeasuresPhotos from '../pages/AddMeasures';
 import NewWorkout from '../pages/NewWorkout';
+//import AddMeasuresPhotos from '../pages/AddMeasures';
 
 
 const AppRoutes = ({ token, handleLogout, handleLogin, handleRegister }) => {
@@ -28,7 +28,7 @@ const AppRoutes = ({ token, handleLogout, handleLogin, handleRegister }) => {
       <Route path="/start-session/" element={<PrivateRoute component={WorkoutSession} token={token} />} />
       <Route path="/session/:sessionId" element={<PrivateRoute component={SessionDetails} token={token} />} />
       <Route path="/mybody" element={<PrivateRoute component={MyBody} token={token} />} />
-      <Route path="/measures" element={<PrivateRoute component={AddMeasuresPhotos} token={token} />} />
+      {/* <Route path="/measures" element={<PrivateRoute component={AddMeasuresPhotos} token={token} />} /> */}
       <Route path="/new-workout" element={<PrivateRoute component={NewWorkout} token={token} />} />
       <Route path="*" element={<ErrorPage />} />
     </Routes>
