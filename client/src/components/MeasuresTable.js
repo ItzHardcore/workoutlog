@@ -166,8 +166,8 @@ function MeasuresTable({ token }) {
             {measures.length === 0 ? (
                 <h5 className="text-danger">You have no measures</h5>
             ) : (
-                <div class="row gap-5">
-                    <div class="col">
+                <div className="row gap-5">
+                    <div className="col">
                         <div className='table-responsive'>
                             <table className="table">
                                 <thead>
@@ -310,7 +310,7 @@ function MeasuresTable({ token }) {
                             </div>
                         )}
                     </div>
-                    <div class="col-4">
+                    <div className="col-4">
                         <WeightChart measures={measures} />
                     </div>
                 </div>

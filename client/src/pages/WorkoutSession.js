@@ -97,7 +97,7 @@ const WorkoutSession = ({ token }) => {
       console.log('Workout saved successfully:', savedWorkoutData);
       navigate('/dashboard');
 
-      alert('Workout saved successfully!');
+      alert('Session saved successfully!');
     } catch (error) {
       console.error('Error saving workout data:', error);
       // Handle error (e.g., display an error message)

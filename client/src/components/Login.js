@@ -52,7 +52,7 @@ function Login({ onLogin }) {
                 id="username"
                 className="form-control"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) => setUsername(e.target.value.trim())}
               />
             </div>
             <div className="mb-3">

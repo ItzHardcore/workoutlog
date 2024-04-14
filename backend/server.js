@@ -774,7 +774,7 @@ app.put('/workouts/:id', authenticateJWT, async (req, res) => {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // Use relative path for destination
+    cb(null, path.join(__dirname, 'uploads/')); // Use relative path for destination
   },
   filename: function (req, file, cb) {
     const fileName = uuidv4(); // Generate a random filename
@@ -788,31 +788,49 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
 
-app.post('/upload-body-photos', upload.fields([{ name: 'photoStep1', maxCount: 1 }, { name: 'photoStep2', maxCount: 1 }]), async (req, res) => {
+app.post('/upload-body-photo',authenticateJWT , upload.single('photoFile'), async (req, res) => {
+  console.log(req);
   try {
-    if (!req.files || Object.keys(req.files).length === 0) {
-      return res.status(400).json({ error: 'No files were uploaded.' });
+    // Attempt to handle file upload
+    if (req.file) {
+      const fileName = req.file.filename;
+
+      const bodyPhoto = new BodyPhoto({
+        user: req.user.userId, // Assuming the userId is extracted from the JWT token
+        frontImage: fileName,
+        weight: req.body.weight, // Convert weight to number
+        date: req.body.date // Convert date to Date object
+      });
+
+      const savedBodyPhoto = await bodyPhoto.save();
+      return res.status(201).json(savedBodyPhoto);
     }
 
-    // Extract filenames from request
-    const frontImageFileName = req.files['photoStep1'][0].filename;
-    const backImageFileName = req.files['photoStep2'][0].filename;
+    // Attempt to handle base64 data upload
+    if (req.body.photo) {
+      const base64Data = req.body.photo;
+      const decodedImage = Buffer.from(base64Data, 'base64');
+      const fileName = uuidv4() + '.jpg';
+      const filePath = path.join(__dirname, 'uploads', fileName);
 
-    // Create a new BodyPhoto instance with only the filenames
-    const bodyPhoto = new BodyPhoto({
-      user: "6589ed3b87e91c30e529448c", // Assuming the userId is extracted from the JWT token
-      frontImage: frontImageFileName,
-      backImage: backImageFileName,
-      weight: parseFloat("10"), // Convert weight to number
-      date: new Date() // Convert date to Date object
-    });
+      fs.writeFileSync(filePath, decodedImage);
 
-    // Save the BodyPhoto to the database
-    const savedBodyPhoto = await bodyPhoto.save();
-    res.status(201).json(savedBodyPhoto); // Respond with the saved BodyPhoto
+      const bodyPhoto = new BodyPhoto({
+        user: req.user.userId, // Assuming the userId is extracted from the JWT token
+        frontImage: fileName,
+        weight: req.body.weight, // Convert weight to number
+        date: req.body.date // Convert date to Date object
+      });
+
+      const savedBodyPhoto = await bodyPhoto.save();
+      return res.status(201).json(savedBodyPhoto);
+    }
+
+    // If neither file nor base64 data was provided
+    return res.status(400).json({ error: 'No photo file or data was provided.' });
   } catch (error) {
-    console.error('Error saving body photo:', error);
-    res.status(500).json({ error: 'Failed to save body photo' }); // Respond with an error message
+    console.error('Error uploading photo:', error);
+    return res.status(500).json({ error: 'Failed to upload photo.' });
   }
 });
 
