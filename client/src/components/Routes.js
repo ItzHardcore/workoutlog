@@ -12,6 +12,8 @@ import SessionDetails from '../pages/SessionDetails';
 import MyBody from '../pages/MyBody';
 import ErrorPage from '../pages/ErrorPage';
 import NewWorkout from '../pages/NewWorkout';
+import Terms from './Terms';
+import BMRCalculator from './BMRCalculator';
 //import AddMeasuresPhotos from '../pages/AddMeasures';
 
 
@@ -21,6 +23,8 @@ const AppRoutes = ({ token, handleLogout, handleLogin, handleRegister }) => {
       <Route path="/" element={<LandingPage/>} />
       <Route path="/login" element={<Login onLogin={handleLogin} />} />
       <Route path="/register" element={<Register onRegister={handleRegister} />} />
+      <Route path="/terms" element={<Terms />} />
+      <Route path="/calculator" element={<BMRCalculator />} />
       <Route path="/dashboard" element={<PrivateRoute token={token} component={Dashboard} handleLogout={handleLogout} />} />
       <Route path="/edit/:workoutId" element={<PrivateRoute token={token} component={EditWorkout} />} />
       <Route path="/profile" element={<PrivateRoute token={token} handleLogin={handleLogin} component={Profile}/>} />

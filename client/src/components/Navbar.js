@@ -23,7 +23,7 @@ const Navbar = ({ token, user, handleLogout }) => {
           <ul className="navbar-nav ms-auto">
             {token ? (
               <>
-              <li className="nav-item">
+                <li className="nav-item">
                   <Link className="nav-link" to="/mybody">
                     My Body
                   </Link>
@@ -31,6 +31,11 @@ const Navbar = ({ token, user, handleLogout }) => {
                 <li className="nav-item">
                   <Link className="nav-link" to="/dashboard">
                     Dashboard
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/calculator">
+                    BMR Calculator
                   </Link>
                 </li>
                 <li className="nav-item dropdown">
@@ -60,6 +65,11 @@ const Navbar = ({ token, user, handleLogout }) => {
               </>
             ) : (
               <>
+              <li className="nav-item">
+                  <Link className="nav-link" to="/calculator">
+                    BMR Calculator
+                  </Link>
+                </li>
                 <li className="nav-item">
                   <Link className="nav-link" to="/login">
                     Login

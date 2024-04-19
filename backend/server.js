@@ -54,7 +54,6 @@ const registerSpamMiddleware = (req, res, next) => {
   const user = userActivity.get(ipAddress);
 
   // Check if the user should be blocked
-  console.log(user.requests);
   if (user.requests >= maxRequestsBeforeBlock) {
     const timeSinceLastRequest = Date.now() - user.lastRequestTime;
 
@@ -193,7 +192,6 @@ app.post('/register', registerSpamMiddleware, async (req, res) => {
 
 // Login User and generate JWT
 app.post('/login', async (req, res) => {
-  console.log("Login POST");
   try {
     const { username, password } = req.body;
 
@@ -427,7 +425,7 @@ app.delete('/measures/:id', authenticateJWT, async (req, res) => {
     const measureId = req.params.id;
     // Find the measure and ensure it belongs to the current user
     const measure = await Measure.findOne({ _id: measureId, user: req.user.userId });
-    
+
     if (!measure) {
       return res.status(404).json({ error: 'Measure not found' });
     }
@@ -708,14 +706,11 @@ app.post('/workouts', authenticateJWT, async (req, res) => {
 app.put('/workouts/:id', authenticateJWT, async (req, res) => {
   try {
     const workoutId = req.params.id;
-    console.log('Workout ID:', workoutId);
 
     const workoutPayload = req.body;
-    console.log('Received Payload:', workoutPayload);
 
     // Update exercises and series
     const exercisesPromises = workoutPayload.exercises.map(async (exercise) => {
-      console.log('Updating Exercise:', exercise.exercise.name);
 
       const existingExercise = await Exercise.findOne({ name: exercise.exercise.name });
 
@@ -724,27 +719,23 @@ app.put('/workouts/:id', authenticateJWT, async (req, res) => {
         return res.status(500).json({ error: 'Internal Server Error' });
       }
 
-      console.log('Found Exercise:', existingExercise);
 
       // Update Series instances or create new ones if needed
       const seriesPromises = exercise.series.map(async (series) => {
         if (series._id) {
           // If Series has an ID, update existing series
           await Series.findByIdAndUpdate(series._id, series);
-          console.log('Updated Series:', series._id);
           return series._id;
         } else {
           // If Series doesn't have an ID, create a new series
           const newSeries = new Series(series);
           const savedSeries = await newSeries.save();
-          console.log('Saved New Series:', savedSeries._id);
           return savedSeries._id;
         }
       });
 
       // Wait for all Series to be updated/created
       const seriesIds = await Promise.all(seriesPromises);
-      console.log('Series IDs:', seriesIds);
 
       return {
         exerciseId: existingExercise._id,
@@ -754,7 +745,6 @@ app.put('/workouts/:id', authenticateJWT, async (req, res) => {
 
     // Wait for all Exercises to be updated/created
     const exercisesData = await Promise.all(exercisesPromises);
-    console.log('Exercises Data:', exercisesData);
 
     // Update the existing Workout instance
     await Workout.findByIdAndUpdate(workoutId, {
@@ -783,56 +773,51 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ 
+const upload = multer({
   storage: storage,
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
 
-app.post('/upload-body-photo',authenticateJWT , upload.single('photoFile'), async (req, res) => {
-  console.log(req);
+app.post('/upload-body-photos', authenticateJWT, upload.fields([
+  { name: 'photoFileStep1' },
+  { name: 'photoFileStep2' },
+  { name: 'photoFileStep3' },
+  { name: 'photoFileStep4' }
+]), async (req, res) => {
   try {
-    // Attempt to handle file upload
-    if (req.file) {
-      const fileName = req.file.filename;
+    const imageFiles = ['photoFileStep1', 'photoFileStep2', 'photoFileStep3', 'photoFileStep4'];
+    const imageNames = ['frontImage', 'backImage', 'leftImage', 'rightImage'];
+    let images = {};
 
-      const bodyPhoto = new BodyPhoto({
-        user: req.user.userId, // Assuming the userId is extracted from the JWT token
-        frontImage: fileName,
-        weight: req.body.weight, // Convert weight to number
-        date: req.body.date // Convert date to Date object
-      });
-
-      const savedBodyPhoto = await bodyPhoto.save();
-      return res.status(201).json(savedBodyPhoto);
+    for (let i = 0; i < 4; i++) {
+      const files = req.files[imageFiles[i]];
+      const base64Data = req.body[`photoFileStep${i + 1}`];
+      if (files && files.length > 0) {
+        images[imageNames[i]] = files[0].filename;
+      } else if (base64Data) {
+        const decodedImage = Buffer.from(base64Data, 'base64');
+        images[imageNames[i]] = uuidv4() + '.jpg';
+        const filePath = path.join(__dirname, 'uploads', images[imageNames[i]]);
+        fs.writeFileSync(filePath, decodedImage);
+      }
     }
 
-    // Attempt to handle base64 data upload
-    if (req.body.photo) {
-      const base64Data = req.body.photo;
-      const decodedImage = Buffer.from(base64Data, 'base64');
-      const fileName = uuidv4() + '.jpg';
-      const filePath = path.join(__dirname, 'uploads', fileName);
+    const bodyPhoto = new BodyPhoto({
+      user: req.user.userId,
+      ...images,
+      weight: req.body.weight,
+      date: req.body.date
+    });
 
-      fs.writeFileSync(filePath, decodedImage);
-
-      const bodyPhoto = new BodyPhoto({
-        user: req.user.userId, // Assuming the userId is extracted from the JWT token
-        frontImage: fileName,
-        weight: req.body.weight, // Convert weight to number
-        date: req.body.date // Convert date to Date object
-      });
-
-      const savedBodyPhoto = await bodyPhoto.save();
-      return res.status(201).json(savedBodyPhoto);
-    }
-
-    // If neither file nor base64 data was provided
-    return res.status(400).json({ error: 'No photo file or data was provided.' });
+    const savedBodyPhoto = await bodyPhoto.save();
+    return res.status(201).json(savedBodyPhoto);
   } catch (error) {
-    console.error('Error uploading photo:', error);
-    return res.status(500).json({ error: 'Failed to upload photo.' });
+    console.error('Error uploading photos:', error);
+    return res.status(500).json({ error: 'Failed to upload photos.' });
   }
 });
+
+
 
 
 
@@ -867,8 +852,6 @@ app.get('/photos', authenticateJWT, async (req, res) => {
       weight: photo.weight,
       date: photo.date
     }));
-
-    console.log(photosData);
     res.json(photosData);
   } catch (error) {
     console.error('Error fetching photos:', error);

@@ -118,7 +118,7 @@ function BodyMeasuresForm({ token , onClose }) {
             <h2>Add Body Measures</h2>
             <form onSubmit={handleAddMeasures} >
                 <div className="row g-3 mb-3">
-                    <div className="col-md-2">
+                    <div className="col-4">
                         <label htmlFor="date" className="form-label">Date:</label>
                         <br />
                         <DatePicker
@@ -128,9 +128,8 @@ function BodyMeasuresForm({ token , onClose }) {
                             onChange={(selectedDate) => setDate(selectedDate)}
                             className="form-control"
                         />
-
                     </div>
-                    <div className="col-md-2">
+                    <div className="col-4">
                         <label htmlFor="fase" className="form-label">Fase:</label>
                         <select
                             id="fase"
@@ -143,9 +142,9 @@ function BodyMeasuresForm({ token , onClose }) {
                             <option value="Maintenance">Maintenance</option>
                         </select>
                     </div>
-                    <div className="col-md-8">
+                    <div className="col-4">
                         <label htmlFor="weight" className="form-label">Weight:</label>
-                        <div className="input-group w-25">
+                        <div className="input-group">
                             <input
                                 type="number"
                                 id="weight"
@@ -155,7 +154,7 @@ function BodyMeasuresForm({ token , onClose }) {
                             />
                             <span className="input-group-text">Kg</span></div>
                     </div>
-                    <div className="col-md">
+                    <div className="col-3">
                         <label htmlFor="kcal" className="form-label">Kcal:</label>
                         <input
                             type="number"
@@ -166,7 +165,7 @@ function BodyMeasuresForm({ token , onClose }) {
                         />
 
                     </div>
-                    <div className="col-md">
+                    <div className="col-3">
                         <label htmlFor="peito" className="form-label">Peito:</label>
                         <div className="input-group">
                             <input
@@ -178,7 +177,7 @@ function BodyMeasuresForm({ token , onClose }) {
                             />
                             <span className="input-group-text">Cm</span></div>
                     </div>
-                    <div className="col-md">
+                    <div className="col-3">
                         <label htmlFor="cintura" className="form-label">Cintura:</label>
                         <div className="input-group">
                             <input
@@ -191,7 +190,7 @@ function BodyMeasuresForm({ token , onClose }) {
                             <span className="input-group-text">Cm</span></div>
 
                     </div>
-                    <div className="col-md">
+                    <div className="col-3">
                         <label htmlFor="gluteo" className="form-label">Gluteo:</label>
                         <div className="input-group">
                             <input
@@ -204,7 +203,7 @@ function BodyMeasuresForm({ token , onClose }) {
                             <span className="input-group-text">Cm</span></div>
 
                     </div>
-                    <div className="col-md">
+                    <div className="col-3">
                         <label htmlFor="bracoDrt" className="form-label">Braco Direito:</label>
                         <div className="input-group">
                             <input
@@ -217,7 +216,7 @@ function BodyMeasuresForm({ token , onClose }) {
                             <span className="input-group-text">Cm</span></div>
 
                     </div>
-                    <div className="col-md">
+                    <div className="col-3">
                         <label htmlFor="bracoEsq" className="form-label">Braco Esquerdo:</label>
                         <div className="input-group">
                             <input
@@ -230,7 +229,7 @@ function BodyMeasuresForm({ token , onClose }) {
                             <span className="input-group-text">Cm</span></div>
 
                     </div>
-                    <div className="col-md">
+                    <div className="col-3">
                         <label htmlFor="coxaDireita" className="form-label">Coxa Direita:</label>
                         <div className="input-group">
                             <input
@@ -243,7 +242,7 @@ function BodyMeasuresForm({ token , onClose }) {
                             <span className="input-group-text">Cm</span></div>
 
                     </div>
-                    <div className="col-md">
+                    <div className="col-3">
                         <label htmlFor="coxaEsquerda" className="form-label">Coxa Esquerda:</label>
                         <div className="input-group">
                             <input

@@ -215,7 +215,7 @@ function RegistrationForm({ onSubmit, isButtonHidden, errorMessage, setErrorMess
                     }}
                 />
                 <label className="form-check-label" htmlFor="termsAccepted">
-                    I accept the Terms of Service
+                    I accept the <a href='/terms'>Terms of Service</a>
                 </label>
             </div>
 

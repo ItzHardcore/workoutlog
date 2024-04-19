@@ -11,7 +11,7 @@ const FormModal = ({ buttonComponent, formComponent }) => {
     <>
       {React.cloneElement(buttonComponent, { onClick: handleShow })}
       <Modal show={showModal} onHide={handleClose} size="lg" centered> {/* Add centered prop to center horizontally */}
-        <Modal.Body className="d-flex justify-content-center align-items-center"> {/* Center vertically */}
+        <Modal.Body className="justify-content-center align-items-center"> {/* Center vertically */}
           {React.cloneElement(formComponent, { onClose: handleClose })}
         </Modal.Body>
       </Modal>
