@@ -41,21 +41,21 @@ function BodyPhotosGallery({ token }) {
                                 <h6>Date: {new Date(photoData.date).toLocaleDateString()}</h6>
                             </div>
                             <div className='text-center'>
-                                <div className="d-flex justify-content-center">
+                                <div className="d-lg-flex justify-content-center">
                                     <div className="m-2">
-                                        <img src={`http://localhost:3001/uploads/${photoData.frontImage}`} alt={`Front view of body - ${index}`} style={{ height: '200px' }} />
+                                        <img src={`http://localhost:3001/uploads/${photoData.frontImage}`} alt={`Front view of body - ${index}`} style={{ height: '150px' }} />
                                         <p className='mb-1'>Front Photo</p>
                                     </div>
                                     <div className="m-2">
-                                        <img src={`http://localhost:3001/uploads/${photoData.backImage}`} alt={`Back view of body - ${index}`} style={{ height: '200px' }} />
+                                        <img src={`http://localhost:3001/uploads/${photoData.backImage}`} alt={`Back view of body - ${index}`} style={{ height: '150px' }} />
                                         <p className='mb-1'>Back Photo</p>
                                     </div>
                                     <div className="m-2">
-                                        <img src={`http://localhost:3001/uploads/${photoData.leftImage}`} alt={`Left view of body - ${index}`} style={{ height: '200px' }} />
+                                        <img src={`http://localhost:3001/uploads/${photoData.leftImage}`} alt={`Left view of body - ${index}`} style={{ height: '150px' }} />
                                         <p className='mb-1'>Left Photo</p>
                                     </div>
                                     <div className="m-2">
-                                        <img src={`http://localhost:3001/uploads/${photoData.rightImage}`} alt={`Right view of body - ${index}`} style={{ height: '200px' }} />
+                                        <img src={`http://localhost:3001/uploads/${photoData.rightImage}`} alt={`Right view of body - ${index}`} style={{ height: '150px' }} />
                                         <p className='mb-1'>Right Photo</p>
                                     </div>
                                 </div>

@@ -310,7 +310,7 @@ function MeasuresTable({ token }) {
                             </div>
                         )}
                     </div>
-                    <div className="col-4">
+                    <div className="col">
                         <WeightChart measures={measures} />
                     </div>
                 </div>

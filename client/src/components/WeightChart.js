@@ -53,7 +53,7 @@ function WeightChart({ measures }) {
     };
   }); // Empty dependency array
 
-  return <canvas ref={chartRef} />;
+  return <canvas className='' ref={chartRef} />;
 }
 
 export default WeightChart;

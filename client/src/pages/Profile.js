@@ -1,4 +1,3 @@
-// Profile.js
 import React, { useState, useEffect } from 'react';
 import "./profile.css"
 const Profile = ({ token }) => {
@@ -46,9 +45,9 @@ const Profile = ({ token }) => {
 
   return (
     <div className="container mt-5">
-      <div className="row">
-        <div className="col-md-3">
-          <div className="rounded-circle profile-image mt-3 mb-5" onClick={() => console.log('Image clicked')}>
+      <div className="row justify-content-center"> {/* Horizontally center the col*/}
+        <div className="col">
+          <div className="float-end rounded-circle profile-image mt-3 mb-5 me-5" onClick={() => console.log('Image clicked')}>
             <img
               src={user.photo}
               alt="Profile"
@@ -59,7 +58,7 @@ const Profile = ({ token }) => {
             </div>
           </div>
         </div>
-        <div className="col-md-9">
+        <div className="col">
           <h2>{user.name}</h2>
           <p>@{user.username}</p>
           <p>Email: {user.email}</p>

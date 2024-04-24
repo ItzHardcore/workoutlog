@@ -14,7 +14,7 @@ const Calculator = () => {
     }, []);
 
     return (
-        <div id="inch-calculator-icw" className='border-0 mt-4' data-ct="bmr" data-cw="100%" data-ch="870" data-cv="MTE3MTM0NzkwNjA=">
+        <div id="inch-calculator-icw" className='border-0 mt-4' data-ct="bmr" data-cw="100%" data-ch="1000" data-cv="MTE3MTM0NzkwNjA=">
             <div id="inch-calculator-icwh">BMR Calculator</div>
             <div id="inch-calculator-icwf">
                 <a id="inch-calculator-icwi" href="https://www.inchcalculator.com/bmr-calculator/" target="_blank">

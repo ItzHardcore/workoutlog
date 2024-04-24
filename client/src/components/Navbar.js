@@ -1,9 +1,10 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
+import { GoSun, GoMoon } from "react-icons/go";
 
-const Navbar = ({ token, user, handleLogout }) => {
-
+const Navbar = ({ token, user, handleLogout, isDarkMode, toggleDarkMode }) => {
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+    <nav className={`navbar navbar-expand-lg border-bottom ${isDarkMode ? 'navbar-dark bg-dark' : 'navbar-light bg-light'}`}>
       <div className="container">
         <Link className="navbar-brand" to="/">
           WORKOUT LOGGER
@@ -65,7 +66,7 @@ const Navbar = ({ token, user, handleLogout }) => {
               </>
             ) : (
               <>
-              <li className="nav-item">
+                <li className="nav-item">
                   <Link className="nav-link" to="/calculator">
                     BMR Calculator
                   </Link>
@@ -82,6 +83,13 @@ const Navbar = ({ token, user, handleLogout }) => {
                 </li>
               </>
             )}
+            {/* Dark mode toggle button */}
+            <li className="nav-item">
+              <button className="nav-link btn btn-link" onClick={toggleDarkMode}>
+                {isDarkMode ? <GoSun />
+                  : <GoMoon />}
+              </button>
+            </li>
           </ul>
         </div>
       </div>
