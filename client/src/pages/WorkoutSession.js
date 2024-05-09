@@ -70,16 +70,16 @@ const WorkoutSession = ({ token }) => {
         workoutName: toBeSavedWorkout.name,
         exercises: toBeSavedWorkout.exercises.map((exerciseObject) => ({
           name: exerciseObject.exercise.name, // Access the exercise name
+          initialPower: exerciseObject.initialPower.initialPower,
           series: exerciseObject.series.map((series) => ({
             reps: series.reps,
             weight: series.weight,
             notes: series.notes,
-            effort: series.effort,
-            initialPower: series.initialPower
+            effort: series.effort
           }))
         }))
       };
-
+      console.log(updatedWorkout.exercises);
       const response = await fetch(`http://localhost:3001/workoutSession`, {
         method: 'POST',
         headers: {

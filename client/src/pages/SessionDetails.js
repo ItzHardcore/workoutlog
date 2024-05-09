@@ -57,7 +57,7 @@ const SessionDetails = ({ token }) => {
                     <p><strong>Weight:</strong> {series.weight} kg</p>
                     <p><strong>Notes:</strong> {series.notes}</p>
                     <p><strong>Effort:</strong> {series.effort}</p>
-                    <p><strong>Initial Power:</strong> {series.initialPower}</p>
+                    <p><strong>Initial Power:</strong> {exercise.initialPower}</p>
                     {/* Add more series details as needed */}
                   </li>
                 ))}
