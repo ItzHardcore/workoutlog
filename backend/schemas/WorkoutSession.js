@@ -9,13 +9,13 @@ const workoutSessionSchema = new Schema({
   exercises: [
     {
       name: String, // Embed exercise name directly
+      initialPower: Number,
       series: [
         {
           reps: Number,
           weight: Number,
           notes: String,
-          effort: Number,
-          initialPower: Number,
+          effort: Number
         }
       ]
     },

@@ -21,6 +21,7 @@ const Measure = require('./schemas/Measure');
 const WorkoutSession = require('./schemas/WorkoutSession');
 const BodyPhoto = require('./schemas/BodyPhoto');
 const BodyMeasure = require('./schemas/BodyMeasure');
+const { initialize } = require('passport');
 
 
 const app = express();
@@ -278,7 +279,7 @@ app.delete('/workouts/:workoutId', authenticateJWT, async (req, res) => {
   }
 });
 
-router.get('/workouts/:workoutId', authenticateJWT, async (req, res) => {
+app.get('/workouts/:workoutId', authenticateJWT, async (req, res) => {
   try {
     const workoutId = req.params.workoutId;
     const userId = req.user.userId; // Assuming you're using middleware to attach the user ID from the JWT
@@ -662,6 +663,7 @@ app.post('/workouts', authenticateJWT, async (req, res) => {
         console.error('Error finding exercise:', existingExercise);
         res.status(500).json({ error: 'Internal Server Error' });
       }
+
       // Create Series instances
       const seriesPromises = exercise.series.map(async (series) => {
         const newSeries = new Series(series);
@@ -675,6 +677,7 @@ app.post('/workouts', authenticateJWT, async (req, res) => {
 
       return {
         exerciseId: existingExercise._id,
+        initialPower: exercise.initialPower.initialPower, // Corrected line to retrieve initialPower
         seriesIds,
       };
     });
@@ -687,6 +690,7 @@ app.post('/workouts', authenticateJWT, async (req, res) => {
       name: workoutPayload.name,
       user: req.user.userId,
       exercises: exercisesData.map((exerciseData) => ({
+        initialPower: exerciseData.initialPower, // Assign initialPower from exerciseData
         exercise: exerciseData.exerciseId,
         series: exerciseData.seriesIds,
       })),
@@ -702,23 +706,21 @@ app.post('/workouts', authenticateJWT, async (req, res) => {
   }
 });
 
+
 // Update an existing workout
 app.put('/workouts/:id', authenticateJWT, async (req, res) => {
   try {
     const workoutId = req.params.id;
-
     const workoutPayload = req.body;
 
     // Update exercises and series
     const exercisesPromises = workoutPayload.exercises.map(async (exercise) => {
-
       const existingExercise = await Exercise.findOne({ name: exercise.exercise.name });
 
       if (!existingExercise) {
         console.error('Error finding exercise:', existingExercise);
         return res.status(500).json({ error: 'Internal Server Error' });
       }
-
 
       // Update Series instances or create new ones if needed
       const seriesPromises = exercise.series.map(async (series) => {
@@ -739,6 +741,7 @@ app.put('/workouts/:id', authenticateJWT, async (req, res) => {
 
       return {
         exerciseId: existingExercise._id,
+        initialPower: exercise.initialPower.initialPower, // Extracting initialPower correctly
         seriesIds,
       };
     });
@@ -750,6 +753,7 @@ app.put('/workouts/:id', authenticateJWT, async (req, res) => {
     await Workout.findByIdAndUpdate(workoutId, {
       name: workoutPayload.name,
       exercises: exercisesData.map((exerciseData) => ({
+        initialPower: exerciseData.initialPower, // Include initialPower in the update
         exercise: exerciseData.exerciseId,
         series: exerciseData.seriesIds,
       })),
@@ -761,6 +765,7 @@ app.put('/workouts/:id', authenticateJWT, async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -817,10 +822,6 @@ app.post('/upload-body-photos', authenticateJWT, upload.fields([
   }
 });
 
-
-
-
-
 app.get('/uploads/:filename', (req, res) => {
   const { filename } = req.params;
   const filePath = path.join(__dirname, 'uploads', filename);
@@ -858,8 +859,6 @@ app.get('/photos', authenticateJWT, async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
-
 
 
 // Start the server

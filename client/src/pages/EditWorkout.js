@@ -26,7 +26,7 @@ const EditWorkout = ({ token }) => {
         const fetchedWorkoutData = await response.json();
         const decodedToken = jwtDecode(token);
         const authenticatedUserId = decodedToken.userId;
-
+        console.log(fetchedWorkoutData);
         if (fetchedWorkoutData.user === authenticatedUserId) {
           setIsAuthorized(true);
           setWorkoutData(fetchedWorkoutData);

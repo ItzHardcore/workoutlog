@@ -28,6 +28,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
         setExerciseOptions(data);
 
         if (initialData) {
+          console.log(initialData);
           // Set workout name
           setWorkoutName(initialData.name);
 
@@ -41,12 +42,14 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
             }));
             return {
               name,
+              initialPower: exercise.initialPower,
               series: mappedSeries,
             };
           });
 
           // Set exercises
           setExercises(mappedExercises);
+          console.log(mappedExercises);
         }
       } catch (error) {
         console.error('Error fetching exercises:', error);
@@ -66,12 +69,12 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
 
     const newExercise = {
       name: selectedExercise,
+      initialPower: 1,
       series: [{
         reps: 0,  // You can set default values for the series fields
         weight: 0,
         notes: '',
-        effort: 1,
-        initialPower: 1
+        effort: 1
       }],
     };
 
@@ -94,8 +97,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
       reps: 0,
       weight: 0,
       notes: '',
-      effort: 1,
-      initialPower: 1
+      effort: 1
     };
 
     // Add the new series to the selected exercise
@@ -108,6 +110,12 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
   const handleSeriesChange = (exerciseIndex, seriesIndex, key, value) => {
     const newExercises = [...exercises];
     newExercises[exerciseIndex].series[seriesIndex][key] = value;
+    setExercises(newExercises);
+  };
+
+  const handleExerciseChange = (exerciseIndex, key, value) => {
+    const newExercises = [...exercises];
+    newExercises[exerciseIndex][key] = value;
     setExercises(newExercises);
   };
 
@@ -146,7 +154,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
         }
 
         for (const series of exercise.series) {
-          console.log(series);
+
           if (
             typeof series.reps === 'undefined' ||
             series.reps === '' ||
@@ -172,14 +180,15 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
         name: workoutName,
         user: userId,
         exercises: exercises.map((exercise) => {
-          const { name, series } = exercise;
+          const { name, series, initialPower } = exercise;
           return {
             exercise: { name },
+            initialPower: { initialPower },
             series: series.map((s) => ({ ...s, reps: parseInt(s.reps), weight: parseInt(s.weight) })),
           };
         }),
       };
-
+      console.log(workoutPayload);
       try {
         if (!onSave) {
           let response;
@@ -214,7 +223,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
           setSelectedExercise('');
           navigate('/dashboard');
         } else {
-          if(startBlankSession){
+          if (startBlankSession) {
             let responsee;
             responsee = await fetch('http://localhost:3001/workouts', {
               method: 'POST',
@@ -224,15 +233,15 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
               },
               body: JSON.stringify(workoutPayload),
             });
-          
 
-          if (!responsee.ok) {
-            setErrorMessage('Failed to save workout');
-          }
 
-          console.log('Workout created successfully');
+            if (!responsee.ok) {
+              setErrorMessage('Failed to save workout');
+            }
+
+            console.log('Workout created successfully');
             onSave(workoutPayload);
-          }else{
+          } else {
             onSave(workoutPayload);
           }
         }
@@ -276,6 +285,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
 
           <div className="card-header d-flex align-items-center justify-content-between py-2">
             <h4 className='mb-0'>{exercise.name}</h4>
+
             <button
               type="button"
               className="btn btn-danger"
@@ -287,26 +297,26 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
 
 
           <div className="card-body">
+            <div className="mb-4">
+              <label className="form-label">Initial Power:</label>
+              <select
+                className="form-select"
+                value={exercise.initialPower}
+                onChange={(e) => handleExerciseChange(exerciseIndex, 'initialPower', e.target.value)}
+                required
+              >
+                {[1, 2, 3, 4, 5].map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
             {exercise.series.map((series, seriesIndex) => (
               <div key={seriesIndex} className="mb-4 p-3 border rounded">
                 <div className="d-flex m-auto align-items-baseline mb-3">
-                  <div className="w-100">
-                    <label className="form-label">Initial Power:</label>
-                    <select
-                      className="form-select"
-                      value={series.initialPower}
-                      onChange={(e) => handleSeriesChange(exerciseIndex, seriesIndex, 'initialPower', e.target.value)}
-                      required
-                    >
-                      {[1, 2, 3, 4, 5].map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
 
-                  <div className="mx-3">
+                  <div className="me-3">
                     <label className="form-label">Reps:</label>
                     <input
                       type="number"
@@ -354,13 +364,21 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
                     onChange={(e) => handleSeriesChange(exerciseIndex, seriesIndex, 'notes', e.target.value)}
                   />
                 </div>
-                <button
-                  type="button"
-                  className="btn btn-warning"
-                  onClick={() => handleRemoveSeries(exerciseIndex, seriesIndex)}
-                >
-                  Remove Series
-                </button>
+                <div className='d-flex align-items-center'>
+
+
+                  <button
+                    type="button"
+                    className="btn btn-warning"
+                    onClick={() => handleRemoveSeries(exerciseIndex, seriesIndex)}
+                  >
+                    Remove Series
+                  </button>
+                  <div class="form-check form-switch ms-4" style={{ fontSize: "20px" }}>
+                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" />
+                    <label class="form-check-label" >✅</label>
+                  </div>
+                </div>
               </div>
             ))}
             <button
