@@ -48,7 +48,7 @@ const SessionDetails = ({ token }) => {
       <div>
         <h3>Exercises:</h3>
         {sessionData.exercises.map((exercise, index) => (
-          <div key={index} className="card mb-4 w-50">
+          <div key={index} className="card mb-4 ">
             <div className="card-body">
               <h4 className="card-title">{exercise.name}</h4>
               <ul className="list-group list-group-flush">

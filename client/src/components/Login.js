@@ -38,7 +38,7 @@ function Login({ onLogin }) {
   };
 
   return (
-    <div className="container w-50">
+    <div className="container ">
       <div className="row justify-content-center">
         <div className="col-md-6 mt-5">
           <h1 className="text-center">Login</h1>
