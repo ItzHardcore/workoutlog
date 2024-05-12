@@ -29,6 +29,7 @@ const router = express.Router();
 const PORT = process.env.PORT || 3001;
 
 const MONGODB_URI = process.env.MONGODB_URI;
+const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Middleware
