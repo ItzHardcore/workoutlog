@@ -6,8 +6,8 @@ const workoutSchema = Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   exercises: [
     {
-      exercise: { type: mongoose.Schema.Types.ObjectId, ref: 'Exercise' },
       initialPower: Number,
+      exercise: { type: mongoose.Schema.Types.ObjectId, ref: 'Exercise' },
       series: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Series' }],
     },
   ],

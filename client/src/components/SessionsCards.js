@@ -6,7 +6,7 @@ const SessionsCards = ({ token }) => {
 
     const fetchSessions = async () => {
         try {
-            const response = await fetch('http://localhost:3001/workoutSessions', {
+            const response = await fetch('http://localhost:3001/last10workoutSessions', {
                 method: 'GET',
                 headers: {
                     Authorization: `${token}`,
@@ -92,7 +92,7 @@ const SessionsCards = ({ token }) => {
                 <div className="row row-cols-1 row-cols-sm-2 g-4 d-flex flex-nowrap overflow-auto">
                     {sessions.map(session => (
                         <div key={session._id} className="col mb-3">
-                            <div className="card" style={{minHeight:"100%"}}>
+                            <div className="card" style={{ minHeight: "100%" }}>
                                 <div className="card-body">
                                     <h4 className="card-title mb-0 text-capitalize">{session.workoutName}</h4>
                                     <p className="card-text mb-0">{formatDate(session.startDate)}</p>
@@ -107,7 +107,7 @@ const SessionsCards = ({ token }) => {
                                             <h6 className="card-text mb-2" key={index}>{exercise.series.length} {exercise.series.length === 1 ? 'set' : 'sets'} of {exercise.name} @ Volume: {calculateVolume(exercise)} Kg</h6>
                                         ))}
                                     </div>
-                                    <Link to={`/session/${session._id}`} className="btn btn-primary" style={{position:"absolute", bottom:"0", marginBottom:"16px"}}>View Details</Link>
+                                    <Link to={`/session/${session._id}`} className="btn btn-primary" style={{ position: "absolute", bottom: "0", marginBottom: "16px" }}>View Details</Link>
                                 </div>
                             </div>
                         </div>

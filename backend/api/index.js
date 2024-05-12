@@ -13,14 +13,14 @@ const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 
 // Schemas
-const User = require('./schemas/User');
-const Workout = require('./schemas/Workout');
-const Series = require('./schemas/Series');
-const Exercise = require('./schemas/Exercise');
-const Measure = require('./schemas/Measure');
-const WorkoutSession = require('./schemas/WorkoutSession');
-const BodyPhoto = require('./schemas/BodyPhoto');
-const BodyMeasure = require('./schemas/BodyMeasure');
+const User = require('../schemas/User');
+const Workout = require('../schemas/Workout');
+const Series = require('../schemas/Series');
+const Exercise = require('../schemas/Exercise');
+const Measure = require('../schemas/Measure');
+const WorkoutSession = require('../schemas/WorkoutSession');
+const BodyPhoto = require('../schemas/BodyPhoto');
+const BodyMeasure = require('../schemas/BodyMeasure');
 const { initialize } = require('passport');
 
 
@@ -28,7 +28,7 @@ const app = express();
 const router = express.Router();
 const PORT = process.env.PORT || 3001;
 
-const MONGODB_URI = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@cluster0.pz22sm8.mongodb.net/?retryWrites=true&w=majority`;
+const MONGODB_URI = process.env.MONGODB_URI;
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Middleware
@@ -258,6 +258,25 @@ app.get('/workouts', authenticateJWT, async (req, res) => {
   }
 });
 
+app.get('/last10workouts', authenticateJWT, async (req, res) => {
+  try {
+    // Fetch workouts for the current user, limiting to the last 10 and ordering by most recent first
+    const userId = new ObjectId(req.user.userId);
+    const workouts = await Workout.find({ user: userId })
+      .sort({ endDate: -1 }) // Sort by endDate in descending order (most recent first)
+      .limit(10) // Limit to the last 10 workouts
+      .populate('exercises.exercise') // Populate only the exercise field
+      .populate('exercises.series')
+      .exec();
+
+    res.status(200).json(workouts);
+  } catch (error) {
+    console.error('Error fetching workouts:', error); // Log any errors
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 // DELETE endpoint to remove a workout
 app.delete('/workouts/:workoutId', authenticateJWT, async (req, res) => {
   try {
@@ -332,6 +351,20 @@ app.get('/workoutSessions', authenticateJWT, async (req, res) => {
     const sessions = await WorkoutSession.find({ user: req.user.userId })
       .sort({ startDate: -1 })
       .limit(10);
+
+    res.status(200).json(sessions); // Respond with the fetched workout sessions
+  } catch (error) {
+    console.error('Error fetching workout sessions:', error);
+    res.status(500).json({ error: 'Failed to fetch workout sessions' }); // Respond with an error message
+  }
+});
+
+app.get('/last10workoutSessions', authenticateJWT, async (req, res) => {
+  try {
+    // Retrieve workout sessions from the database, limiting to the last 10 and ordering by most recent first
+    const sessions = await WorkoutSession.find({ user: req.user.userId })
+      .sort({ startDate: -1 }) // Sort by startDate in descending order (most recent first)
+      .limit(10); // Limit to the last 10 workout sessions
 
     res.status(200).json(sessions); // Respond with the fetched workout sessions
   } catch (error) {
@@ -705,6 +738,7 @@ app.post('/workouts', authenticateJWT, async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 
 // Update an existing workout

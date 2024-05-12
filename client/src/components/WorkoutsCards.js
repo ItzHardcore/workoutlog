@@ -9,7 +9,7 @@ const WorkoutsCards = ({ token }) => {
 
     const fetchWorkouts = async (token) => {
         try {
-            const response = await fetch('http://localhost:3001/workouts', {
+            const response = await fetch('http://localhost:3001/last10workouts', {
                 method: 'GET',
                 headers: {
                     'Authorization': `${token}`,
@@ -70,7 +70,7 @@ const WorkoutsCards = ({ token }) => {
             {workouts.length === 0 ? (
                 <h5 className="text-danger">No workouts available</h5>
             ) : (
-                <div className='row row-cols-1 row-cols-sm-4 g-4 d-flex flex-wrap'>
+                <div className='row row-cols-1 row-cols-sm-4 g-4 d-flex flex-nowrap overflow-auto pb-3'>
                     {workouts.map(workout => (
                         <div key={workout._id} className="col" style={{ minHeight: "180px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                             <div className='card' style={{ flex: "1" }}>
@@ -84,12 +84,12 @@ const WorkoutsCards = ({ token }) => {
                                     ))}
                                 </div>
                                 <div className="d-flex m-2">
-                                <button className="btn btn-warning me-2" onClick={() => handleEditWorkout(workout._id)}>Edit</button>
-                                <button className="btn btn-danger me-2" onClick={() => removeWorkout(workout._id)}>Remove</button>
-                                <button className="btn btn-success" onClick={() => handleStartWorkout(workout._id)}>Start Workout</button>
+                                    <button className="btn btn-warning me-2" onClick={() => handleEditWorkout(workout._id)}>Edit</button>
+                                    <button className="btn btn-danger me-2" onClick={() => removeWorkout(workout._id)}>Remove</button>
+                                    <button className="btn btn-success" onClick={() => handleStartWorkout(workout._id)}>Start Workout</button>
+                                </div>
                             </div>
-                            </div>
-                            
+
                         </div>
                     ))}
                 </div>
