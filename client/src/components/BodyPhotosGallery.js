@@ -3,11 +3,12 @@ import React, { useState, useEffect } from 'react';
 function BodyPhotosGallery({ token }) {
     const [photosData, setPhotosData] = useState([]);
     const [error, setError] = useState(null);
+    const BASE_URL = require('./baseUrl');
 
     useEffect(() => {
         const fetchPhotos = async () => {
             try {
-                const response = await fetch('${REACT_APP_BACKEND_URL}/photos', {
+                const response = await fetch(`${BASE_URL}/photos`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `${token}`,
@@ -43,19 +44,19 @@ function BodyPhotosGallery({ token }) {
                             <div className='text-center'>
                                 <div className="d-lg-flex justify-content-center">
                                     <div className="m-2">
-                                        <img src={`${REACT_APP_BACKEND_URL}/uploads/${photoData.frontImage}`} alt={`Front view of body - ${index}`} style={{ height: '150px' }} />
+                                        <img src={`${BASE_URL} / uploads / ${photoData.frontImage}`} alt={`Front view of body - ${index}`} style={{ height: '150px' }} />
                                         <p className='mb-1'>Front Photo</p>
                                     </div>
                                     <div className="m-2">
-                                        <img src={`${REACT_APP_BACKEND_URL}/uploads/${photoData.backImage}`} alt={`Back view of body - ${index}`} style={{ height: '150px' }} />
+                                        <img src={`${BASE_URL} / uploads / ${photoData.backImage}`} alt={`Back view of body - ${index}`} style={{ height: '150px' }} />
                                         <p className='mb-1'>Back Photo</p>
                                     </div>
                                     <div className="m-2">
-                                        <img src={`${REACT_APP_BACKEND_URL}/uploads/${photoData.leftImage}`} alt={`Left view of body - ${index}`} style={{ height: '150px' }} />
+                                        <img src={`${BASE_URL} / uploads / ${photoData.leftImage}`} alt={`Left view of body - ${index}`} style={{ height: '150px' }} />
                                         <p className='mb-1'>Left Photo</p>
                                     </div>
                                     <div className="m-2">
-                                        <img src={`${REACT_APP_BACKEND_URL}/uploads/${photoData.rightImage}`} alt={`Right view of body - ${index}`} style={{ height: '150px' }} />
+                                        <img src={`${BASE_URL} / uploads / ${photoData.rightImage}`} alt={`Right view of body - ${index}`} style={{ height: '150px' }} />
                                         <p className='mb-1'>Right Photo</p>
                                     </div>
                                 </div>

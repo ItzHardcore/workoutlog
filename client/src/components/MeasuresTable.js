@@ -6,10 +6,11 @@ import WeightChart from './WeightChart';
 function MeasuresTable({ token }) {
     const [measures, setMeasures] = useState([]);
     const [saveMeasureError, setSaveMeasureError] = useState(null);
+    const BASE_URL = require('./baseUrl');
 
     const fetchMeasures = async (token) => {
         try {
-            const response = await fetch('${REACT_APP_BACKEND_URL}/measures', {
+            const response = await fetch(`${BASE_URL}/measures`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `${token}`,
@@ -54,7 +55,7 @@ function MeasuresTable({ token }) {
             try {
                 const updatedMeasure = { ...measures[measureIndex] };
 
-                const response = await fetch(`${REACT_APP_BACKEND_URL}/measures/${measureId}`, {
+                const response = await fetch(`${BASE_URL}/measures/${measureId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -117,7 +118,7 @@ function MeasuresTable({ token }) {
                 if (isConfirmed) {
                     try {
                         console.log(measureId);
-                        const response = await fetch(`${REACT_APP_BACKEND_URL}/measures/${measureId}`, {
+                        const response = await fetch(`${BASE_URL} / measures / ${measureId}`, {
                             method: 'DELETE',
                             headers: {
                                 'Authorization': `${token}`,
@@ -188,7 +189,7 @@ function MeasuresTable({ token }) {
                                             <td>
                                                 {measure.isEditing ? (
                                                     <DatePicker
-                                                        id={`date-${measure._id}`}
+                                                        id={`date - ${measure._id}`}
                                                         dateFormat="dd/MM/yyyy"
                                                         className='form-control'
                                                         selected={new Date(measure.date)}
@@ -201,7 +202,7 @@ function MeasuresTable({ token }) {
                                             <td>
                                                 {measure.isEditing ? (
                                                     <input
-                                                        id={`weight-${measure._id}`}
+                                                        id={`weight - ${measure._id}`}
                                                         className='form-control'
                                                         type="number"
                                                         value={measure.weight}
@@ -214,7 +215,7 @@ function MeasuresTable({ token }) {
                                             <td className="d-none d-md-table-cell">
                                                 {measure.isEditing ? (
                                                     <input
-                                                        id={`steps-${measure._id}`}
+                                                        id={`steps - ${measure._id}`}
                                                         className='form-control'
                                                         type="number"
                                                         value={measure.steps}
@@ -227,7 +228,7 @@ function MeasuresTable({ token }) {
                                             <td className="d-none d-md-table-cell">
                                                 {measure.isEditing ? (
                                                     <input
-                                                        id={`sleepHours-${measure._id}`}
+                                                        id={`sleepHours - ${measure._id}`}
                                                         className='form-control'
                                                         type="number"
                                                         value={measure.sleepHours}
@@ -240,7 +241,7 @@ function MeasuresTable({ token }) {
                                             <td className="d-none d-md-table-cell">
                                                 {measure.isEditing ? (
                                                     <select
-                                                        id={`energy-${measure._id}`}
+                                                        id={`energy - ${measure._id}`}
                                                         className='form-select'
                                                         value={measure.energy}
                                                         onChange={(e) => handleInputChange(measure._id, 'energy', e.target.value)}
@@ -256,7 +257,7 @@ function MeasuresTable({ token }) {
                                             <td className="d-none d-md-table-cell">
                                                 {measure.isEditing ? (
                                                     <select
-                                                        id={`hunger-${measure._id}`}
+                                                        id={`hunger - ${measure._id}`}
                                                         className='form-select'
                                                         value={measure.hunger}
                                                         onChange={(e) => handleInputChange(measure._id, 'hunger', e.target.value)}
@@ -272,7 +273,7 @@ function MeasuresTable({ token }) {
                                             <td className="d-none d-md-table-cell">
                                                 {measure.isEditing ? (
                                                     <select
-                                                        id={`stress-${measure._id}`}
+                                                        id={`stress - ${measure._id}`}
                                                         className='form-select'
                                                         value={measure.stress}
                                                         onChange={(e) => handleInputChange(measure._id, 'stress', e.target.value)}

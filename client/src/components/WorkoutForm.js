@@ -8,13 +8,13 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
   const [selectedExercise, setSelectedExercise] = useState('');
   const [saveloading, setSaveLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-
+  const BASE_URL = require('./baseUrl');
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchExercises = async () => {
       try {
-        const response = await fetch('${REACT_APP_BACKEND_URL}/exercises', {
+        const response = await fetch(`${BASE_URL}/exercises`, {
           headers: {
             'Authorization': `${token}`,
           },
@@ -193,7 +193,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
         if (!onSave) {
           let response;
           if (initialData) {
-            response = await fetch(`${REACT_APP_BACKEND_URL}/workouts/${initialData._id}`, {
+            response = await fetch(`${BASE_URL} / workouts / ${initialData._id}`, {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',
@@ -202,7 +202,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
               body: JSON.stringify(workoutPayload),
             });
           } else {
-            response = await fetch('${REACT_APP_BACKEND_URL}/workouts', {
+            response = await fetch(`${BASE_URL} / workouts`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -225,7 +225,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
         } else {
           if (startBlankSession) {
             let responsee;
-            responsee = await fetch('${REACT_APP_BACKEND_URL}/workouts', {
+            responsee = await fetch(`${BASE_URL} / workouts`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

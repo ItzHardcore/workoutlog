@@ -14,6 +14,7 @@ function RegistrationForm({ onSubmit, isButtonHidden, errorMessage, setErrorMess
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [timer, setTimer] = useState(5);
     const navigate = useNavigate();
+    const BASE_URL = require('./baseUrl');
 
     useEffect(() => {
         let timerInterval;
@@ -93,7 +94,7 @@ function RegistrationForm({ onSubmit, isButtonHidden, errorMessage, setErrorMess
             setIsSubmitting(true);
             setTimer(5);
 
-            const response = await fetch('${REACT_APP_BACKEND_URL}/register', {
+            const response = await fetch(`${BASE_URL}/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -8,11 +8,12 @@ const EditWorkout = ({ token }) => {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [workoutData, setWorkoutData] = useState(null);
   const navigate = useNavigate();
+  const BASE_URL = require('../components/baseUrl');
 
   useEffect(() => {
     const fetchWorkoutData = async () => {
       try {
-        const response = await fetch(`${REACT_APP_BACKEND_URL}/workouts/${workoutId}`, {
+        const response = await fetch(`${BASE_URL}/workouts/${workoutId}`, {
           method: 'GET',
           headers: {
             'Authorization': `${token}`,

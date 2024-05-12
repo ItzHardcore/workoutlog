@@ -16,6 +16,7 @@ function BodyMeasuresForm({ token, onClose }) {
     const [coxaDireita, setCoxaDireita] = useState('');
     const [coxaEsquerda, setCoxaEsquerda] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const BASE_URL = require('./baseUrl');
 
     const navigate = useNavigate();
 
@@ -72,7 +73,7 @@ function BodyMeasuresForm({ token, onClose }) {
         try {
             setErrorMessage('');
 
-            const response = await fetch('${REACT_APP_BACKEND_URL}/bodymeasures', { // Updated endpoint URL
+            const response = await fetch(`${BASE_URL}/bodymeasures`, { // Updated endpoint URL
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

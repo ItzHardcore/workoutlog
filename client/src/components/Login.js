@@ -6,12 +6,14 @@ function Login({ onLogin }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const BASE_URL = require('./baseUrl');
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await fetch('${REACT_APP_BACKEND_URL}/login', {
+      console.log(BASE_URL);
+      const response = await fetch(`${BASE_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

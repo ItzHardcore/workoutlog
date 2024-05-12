@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import "./profile.css"
 const Profile = ({ token }) => {
   const [user, setUser] = useState(null);
+  const BASE_URL = require('../components/baseUrl');
 
   useEffect(() => {
     // Fetch user data from the server
     const fetchUserData = async () => {
       try {
-        const response = await fetch('${REACT_APP_BACKEND_URL}/profile', {
+        const response = await fetch(`${BASE_URL}/profile`, {
           method: 'GET',
           headers: {
             'Authorization': `${token}`,

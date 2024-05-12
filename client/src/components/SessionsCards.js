@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom';
 
 const SessionsCards = ({ token }) => {
     const [sessions, setSessions] = useState([]);
+    const BASE_URL = require('./baseUrl');
 
     const fetchSessions = async () => {
         try {
-            const response = await fetch('${REACT_APP_BACKEND_URL}/last10workoutSessions', {
+            const response = await fetch(`${BASE_URL}/last10workoutSessions`, {
                 method: 'GET',
                 headers: {
                     Authorization: `${token}`,
@@ -107,7 +108,7 @@ const SessionsCards = ({ token }) => {
                                             <h6 className="card-text mb-2" key={index}>{exercise.series.length} {exercise.series.length === 1 ? 'set' : 'sets'} of {exercise.name} @ Volume: {calculateVolume(exercise)} Kg</h6>
                                         ))}
                                     </div>
-                                    <Link to={`/session/${session._id}`} className="btn btn-primary" style={{ position: "absolute", bottom: "0", marginBottom: "16px" }}>View Details</Link>
+                                    <Link to={`/ session / ${session._id}`} className="btn btn-primary" style={{ position: "absolute", bottom: "0", marginBottom: "16px" }}>View Details</Link>
                                 </div>
                             </div>
                         </div>

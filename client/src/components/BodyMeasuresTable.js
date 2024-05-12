@@ -5,10 +5,11 @@ import 'react-datepicker/dist/react-datepicker.css';
 function BodyMeasuresTable({ token }) {
     const [Bodymeasures, setBodyMeasures] = useState([]);
     const [saveBodyMeasureError, setSaveBodyMeasureError] = useState('');
+    const BASE_URL = require('./baseUrl');
 
     const fetchBodyMeasures = async (token) => {
         try {
-            const response = await fetch('${REACT_APP_BACKEND_URL}/bodymeasures', {
+            const response = await fetch(`${BASE_URL}/bodymeasures`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `${token}`,
@@ -58,7 +59,7 @@ function BodyMeasuresTable({ token }) {
             try {
                 const updatedMeasure = { ...Bodymeasures[measureIndex] };
 
-                const response = await fetch(`${REACT_APP_BACKEND_URL}/bodymeasures/${bodymeasureId}`, {
+                const response = await fetch(`${BASE_URL}/bodymeasures/${bodymeasureId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -113,7 +114,7 @@ function BodyMeasuresTable({ token }) {
         // If the user clicks "OK" in the confirmation dialog, proceed with removal
         if (isConfirmed) {
             try {
-                const response = await fetch(`${REACT_APP_BACKEND_URL}/bodymeasures/${bodymeasureId}`, {
+                const response = await fetch(`${BASE_URL}/bodymeasures/${bodymeasureId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `${token}`,

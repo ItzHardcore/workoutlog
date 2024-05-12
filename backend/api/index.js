@@ -165,7 +165,7 @@ app.post('/register', registerSpamMiddleware, async (req, res) => {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const defaultPhotoURL = '${REACT_APP_BACKEND_URL}/media/defaultUser.jpg';
+    const defaultPhotoURL = `${BASE_URL}/media/defaultUser.jpg`;
 
     // Create a new user
     const newUser = new User({
@@ -830,7 +830,7 @@ app.post('/upload-body-photos', authenticateJWT, upload.fields([
 
     for (let i = 0; i < 4; i++) {
       const files = req.files[imageFiles[i]];
-      const base64Data = req.body[`photoFileStep${i + 1}`];
+      const base64Data = req.body[`photoFileStep${i + 1} `];
       if (files && files.length > 0) {
         images[imageNames[i]] = files[0].filename;
       } else if (base64Data) {

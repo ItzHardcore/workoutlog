@@ -12,6 +12,7 @@ function MeasuresForm({ token, onClose }) {
   const [stress, setStress] = useState(3);
   const [date, setDate] = useState(new Date());
   const [errorMessage, setErrorMessage] = useState('');
+  const BASE_URL = require('./baseUrl');
 
   const navigate = useNavigate();
 
@@ -52,7 +53,7 @@ function MeasuresForm({ token, onClose }) {
       setErrorMessage('');
 
       // Send a POST request to your server to save the measures data
-      const response = await fetch('${REACT_APP_BACKEND_URL}/measures', {
+      const response = await fetch(`${BASE_URL}/measures`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -99,7 +100,7 @@ function MeasuresForm({ token, onClose }) {
           selected={date}
           dateFormat="dd/MM/yyyy"
           onChange={(selectedDate) => setDate(selectedDate)}
-          className={`form-control ${errorMessage && !date ? 'is-invalid' : ''}`}
+          className={`form - control ${errorMessage && !date ? 'is-invalid' : ''}`}
         />
         {errorMessage && !date && (
           <div className="invalid-feedback">Please select a date.</div>
@@ -112,7 +113,7 @@ function MeasuresForm({ token, onClose }) {
           <input
             type="number"
             id="weight"
-            className={`form-control ${errorMessage && !weight ? 'is-invalid' : ''}`}
+            className={`form - control ${errorMessage && !weight ? 'is-invalid' : ''} `}
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
           />
@@ -128,7 +129,7 @@ function MeasuresForm({ token, onClose }) {
         <input
           type="text"
           id="steps"
-          className={`form-control ${errorMessage && !steps ? 'is-invalid' : ''}`}
+          className={`form - control ${errorMessage && !steps ? 'is-invalid' : ''} `}
           value={steps}
           onChange={(e) => setSteps(e.target.value)}
         />
@@ -142,7 +143,7 @@ function MeasuresForm({ token, onClose }) {
         <input
           type="text"
           id="sleepHours"
-          className={`form-control ${errorMessage && !sleepHours ? 'is-invalid' : ''}`}
+          className={`form - control ${errorMessage && !sleepHours ? 'is-invalid' : ''} `}
           value={sleepHours}
           onChange={(e) => setSleepHours(e.target.value)}
         />

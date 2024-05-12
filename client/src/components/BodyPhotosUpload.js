@@ -18,6 +18,7 @@ const BodyPhotosUpload = ({ token }) => {
   const [weight, setWeight] = useState('');
   const [showCamera, setShowCamera] = useState(false); // State to toggle camera display
   const [errorMessage, setErrorMessage] = useState('');
+  const BASE_URL = require('./baseUrl');
 
   const handlePhotoCaptureStep = (dataUri, step) => {
     switch (step) {
@@ -110,7 +111,7 @@ const BodyPhotosUpload = ({ token }) => {
       formData.append('date', date.toISOString());
       formData.append('weight', weight);
 
-      const response = await fetch('${REACT_APP_BACKEND_URL}/upload-body-photos', {
+      const response = await fetch(`${BASE_URL}/upload-body-photos`, {
         method: 'POST',
         headers: {
           'Authorization': `${token}`,

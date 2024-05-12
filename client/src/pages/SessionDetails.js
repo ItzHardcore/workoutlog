@@ -5,11 +5,12 @@ const SessionDetails = ({ token }) => {
   const { sessionId } = useParams();
   const [sessionData, setSessionData] = useState(null);
   const navigate = useNavigate();
+  const BASE_URL = require('../components/baseUrl');
 
   useEffect(() => {
     const fetchSessionDetails = async () => {
       try {
-        const response = await fetch(`${REACT_APP_BACKEND_URL}/workoutSessions/${sessionId}`, {
+        const response = await fetch(`${BASE_URL}/workoutSessions/${sessionId}`, {
           method: 'GET',
           headers: {
             Authorization: `${token}`, // Use appropriate authorization header with Bearer prefix

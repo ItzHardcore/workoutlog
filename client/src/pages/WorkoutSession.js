@@ -12,11 +12,12 @@ const WorkoutSession = ({ token }) => {
   const [duration, setDuration] = useState(''); // Initialize duration state
   const [username, setUsername] = useState('');
   const navigate = useNavigate();
+  const BASE_URL = require('../components/baseUrl');
 
   useEffect(() => {
     const fetchWorkoutData = async () => {
       try {
-        const response = await fetch(`${REACT_APP_BACKEND_URL}/workouts/${workoutId}`, {
+        const response = await fetch(`${BASE_URL}/workouts/${workoutId}`, {
           method: 'GET',
           headers: {
             Authorization: `${token}`, // Use appropriate authorization header with Bearer prefix
@@ -80,7 +81,7 @@ const WorkoutSession = ({ token }) => {
         }))
       };
       console.log(updatedWorkout.exercises);
-      const response = await fetch(`${REACT_APP_BACKEND_URL}/workoutSession`, {
+      const response = await fetch(`${BASE_URL}/workoutSession`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`, // Use the correct authorization header format
