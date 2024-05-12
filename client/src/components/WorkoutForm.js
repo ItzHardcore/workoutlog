@@ -14,7 +14,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
   useEffect(() => {
     const fetchExercises = async () => {
       try {
-        const response = await fetch('http://localhost:3001/exercises', {
+        const response = await fetch('${REACT_APP_BACKEND_URL}/exercises', {
           headers: {
             'Authorization': `${token}`,
           },
@@ -193,7 +193,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
         if (!onSave) {
           let response;
           if (initialData) {
-            response = await fetch(`http://localhost:3001/workouts/${initialData._id}`, {
+            response = await fetch(`${REACT_APP_BACKEND_URL}/workouts/${initialData._id}`, {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',
@@ -202,7 +202,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
               body: JSON.stringify(workoutPayload),
             });
           } else {
-            response = await fetch('http://localhost:3001/workouts', {
+            response = await fetch('${REACT_APP_BACKEND_URL}/workouts', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -225,7 +225,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
         } else {
           if (startBlankSession) {
             let responsee;
-            responsee = await fetch('http://localhost:3001/workouts', {
+            responsee = await fetch('${REACT_APP_BACKEND_URL}/workouts', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

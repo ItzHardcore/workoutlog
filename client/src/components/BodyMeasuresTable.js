@@ -8,7 +8,7 @@ function BodyMeasuresTable({ token }) {
 
     const fetchBodyMeasures = async (token) => {
         try {
-            const response = await fetch('http://localhost:3001/bodymeasures', {
+            const response = await fetch('${REACT_APP_BACKEND_URL}/bodymeasures', {
                 method: 'GET',
                 headers: {
                     'Authorization': `${token}`,
@@ -58,7 +58,7 @@ function BodyMeasuresTable({ token }) {
             try {
                 const updatedMeasure = { ...Bodymeasures[measureIndex] };
 
-                const response = await fetch(`http://localhost:3001/bodymeasures/${bodymeasureId}`, {
+                const response = await fetch(`${REACT_APP_BACKEND_URL}/bodymeasures/${bodymeasureId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ function BodyMeasuresTable({ token }) {
         // If the user clicks "OK" in the confirmation dialog, proceed with removal
         if (isConfirmed) {
             try {
-                const response = await fetch(`http://localhost:3001/bodymeasures/${bodymeasureId}`, {
+                const response = await fetch(`${REACT_APP_BACKEND_URL}/bodymeasures/${bodymeasureId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `${token}`,
@@ -293,17 +293,17 @@ function BodyMeasuresTable({ token }) {
                                     )}
                                 </td>
                                 <td>
-                                {bodymeasure.isEditing ? (
-                                                    <>
-                                                        <button className="btn btn-success mb-2 me-2" onClick={() => handleSaveBodyMeasure(bodymeasure._id)}>Save</button>
-                                                        <button className="btn btn-warning mb-2 me-2" onClick={() => handleEditBodyMeasure(bodymeasure._id)}>Cancel</button> {/* Change to Cancel button */}
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <button className="btn btn-warning mb-2 me-2" onClick={() => handleEditBodyMeasure(bodymeasure._id)}>Edit</button>
-                                                        <button className="btn btn-danger mb-2" onClick={() => handleRemoveBodyMeasure(bodymeasure._id)}>Delete</button>
-                                                    </>
-                                                )}
+                                    {bodymeasure.isEditing ? (
+                                        <>
+                                            <button className="btn btn-success mb-2 me-2" onClick={() => handleSaveBodyMeasure(bodymeasure._id)}>Save</button>
+                                            <button className="btn btn-warning mb-2 me-2" onClick={() => handleEditBodyMeasure(bodymeasure._id)}>Cancel</button> {/* Change to Cancel button */}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button className="btn btn-warning mb-2 me-2" onClick={() => handleEditBodyMeasure(bodymeasure._id)}>Edit</button>
+                                            <button className="btn btn-danger mb-2" onClick={() => handleRemoveBodyMeasure(bodymeasure._id)}>Delete</button>
+                                        </>
+                                    )}
                                 </td>
                             </tr>
                         ))}

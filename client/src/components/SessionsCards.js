@@ -6,7 +6,7 @@ const SessionsCards = ({ token }) => {
 
     const fetchSessions = async () => {
         try {
-            const response = await fetch('http://localhost:3001/last10workoutSessions', {
+            const response = await fetch('${REACT_APP_BACKEND_URL}/last10workoutSessions', {
                 method: 'GET',
                 headers: {
                     Authorization: `${token}`,

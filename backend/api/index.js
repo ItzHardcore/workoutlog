@@ -165,7 +165,7 @@ app.post('/register', registerSpamMiddleware, async (req, res) => {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const defaultPhotoURL = 'http://localhost:3001/media/defaultUser.jpg';
+    const defaultPhotoURL = '${REACT_APP_BACKEND_URL}/media/defaultUser.jpg';
 
     // Create a new user
     const newUser = new User({

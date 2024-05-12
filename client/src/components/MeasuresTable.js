@@ -9,7 +9,7 @@ function MeasuresTable({ token }) {
 
     const fetchMeasures = async (token) => {
         try {
-            const response = await fetch('http://localhost:3001/measures', {
+            const response = await fetch('${REACT_APP_BACKEND_URL}/measures', {
                 method: 'GET',
                 headers: {
                     'Authorization': `${token}`,
@@ -54,7 +54,7 @@ function MeasuresTable({ token }) {
             try {
                 const updatedMeasure = { ...measures[measureIndex] };
 
-                const response = await fetch(`http://localhost:3001/measures/${measureId}`, {
+                const response = await fetch(`${REACT_APP_BACKEND_URL}/measures/${measureId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -117,7 +117,7 @@ function MeasuresTable({ token }) {
                 if (isConfirmed) {
                     try {
                         console.log(measureId);
-                        const response = await fetch(`http://localhost:3001/measures/${measureId}`, {
+                        const response = await fetch(`${REACT_APP_BACKEND_URL}/measures/${measureId}`, {
                             method: 'DELETE',
                             headers: {
                                 'Authorization': `${token}`,

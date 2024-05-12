@@ -11,7 +11,7 @@ function Login({ onLogin }) {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:3001/login', {
+      const response = await fetch('${REACT_APP_BACKEND_URL}/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ function Login({ onLogin }) {
       <div className="row justify-content-center">
         <div className="col-md-6 mt-5">
           <h1 className="text-center">Login</h1>
-          
+
           <form onSubmit={handleLogin}>
             <div className="mb-3">
               <label htmlFor="username" className="form-label">

@@ -3,7 +3,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigate } from 'react-router-dom';
 
-function BodyMeasuresForm({ token , onClose }) {
+function BodyMeasuresForm({ token, onClose }) {
     const [weight, setWeight] = useState('');
     const [date, setDate] = useState(new Date());
     const [fase, setFase] = useState('Maintenance');
@@ -29,11 +29,11 @@ function BodyMeasuresForm({ token , onClose }) {
 
     const handleCancel = () => {
         if (onClose) {
-          onClose(); // Call onClose if defined
+            onClose(); // Call onClose if defined
         } else {
-          navigate('/mybody'); // Navigate to '/mybody' if onClose is not defined
+            navigate('/mybody'); // Navigate to '/mybody' if onClose is not defined
         }
-      };
+    };
 
     const handleAddMeasures = async (e) => {
         e.preventDefault();
@@ -71,8 +71,8 @@ function BodyMeasuresForm({ token , onClose }) {
 
         try {
             setErrorMessage('');
-            
-            const response = await fetch('http://localhost:3001/bodymeasures', { // Updated endpoint URL
+
+            const response = await fetch('${REACT_APP_BACKEND_URL}/bodymeasures', { // Updated endpoint URL
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -101,11 +101,11 @@ function BodyMeasuresForm({ token , onClose }) {
 
             console.log("Body Measure created!");
 
-            if(onClose){
+            if (onClose) {
                 handleCancel();
-              }else{
+            } else {
                 navigate('/mybody')
-              }
+            }
 
             // Optionally, you can handle success actions here
         } catch (error) {

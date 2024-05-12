@@ -9,7 +9,7 @@ const SessionDetails = ({ token }) => {
   useEffect(() => {
     const fetchSessionDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/workoutSessions/${sessionId}`, {
+        const response = await fetch(`${REACT_APP_BACKEND_URL}/workoutSessions/${sessionId}`, {
           method: 'GET',
           headers: {
             Authorization: `${token}`, // Use appropriate authorization header with Bearer prefix

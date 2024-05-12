@@ -52,7 +52,7 @@ function MeasuresForm({ token, onClose }) {
       setErrorMessage('');
 
       // Send a POST request to your server to save the measures data
-      const response = await fetch('http://localhost:3001/measures', {
+      const response = await fetch('${REACT_APP_BACKEND_URL}/measures', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -76,9 +76,9 @@ function MeasuresForm({ token, onClose }) {
       setStress(3);
       setDate(new Date());
 
-      if(onClose){
+      if (onClose) {
         handleCancel();
-      }else{
+      } else {
         navigate('/mybody')
       }
       // Optionally, you can handle success actions here

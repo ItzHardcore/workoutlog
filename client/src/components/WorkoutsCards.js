@@ -9,7 +9,7 @@ const WorkoutsCards = ({ token }) => {
 
     const fetchWorkouts = async (token) => {
         try {
-            const response = await fetch('http://localhost:3001/last10workouts', {
+            const response = await fetch('${REACT_APP_BACKEND_URL}/last10workouts', {
                 method: 'GET',
                 headers: {
                     'Authorization': `${token}`,
@@ -42,7 +42,7 @@ const WorkoutsCards = ({ token }) => {
         }
 
         try {
-            const response = await fetch(`http://localhost:3001/workouts/${workoutId}`, {
+            const response = await fetch(`${REACT_APP_BACKEND_URL}/workouts/${workoutId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `${token}`,

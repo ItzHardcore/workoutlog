@@ -110,7 +110,7 @@ const BodyPhotosUpload = ({ token }) => {
       formData.append('date', date.toISOString());
       formData.append('weight', weight);
 
-      const response = await fetch('http://localhost:3001/upload-body-photos', {
+      const response = await fetch('${REACT_APP_BACKEND_URL}/upload-body-photos', {
         method: 'POST',
         headers: {
           'Authorization': `${token}`,

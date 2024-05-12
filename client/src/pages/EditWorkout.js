@@ -12,7 +12,7 @@ const EditWorkout = ({ token }) => {
   useEffect(() => {
     const fetchWorkoutData = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/workouts/${workoutId}`, {
+        const response = await fetch(`${REACT_APP_BACKEND_URL}/workouts/${workoutId}`, {
           method: 'GET',
           headers: {
             'Authorization': `${token}`,

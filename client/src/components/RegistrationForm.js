@@ -93,7 +93,7 @@ function RegistrationForm({ onSubmit, isButtonHidden, errorMessage, setErrorMess
             setIsSubmitting(true);
             setTimer(5);
 
-            const response = await fetch('http://localhost:3001/register', {
+            const response = await fetch('${REACT_APP_BACKEND_URL}/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

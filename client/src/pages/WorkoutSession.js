@@ -16,7 +16,7 @@ const WorkoutSession = ({ token }) => {
   useEffect(() => {
     const fetchWorkoutData = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/workouts/${workoutId}`, {
+        const response = await fetch(`${REACT_APP_BACKEND_URL}/workouts/${workoutId}`, {
           method: 'GET',
           headers: {
             Authorization: `${token}`, // Use appropriate authorization header with Bearer prefix
@@ -80,7 +80,7 @@ const WorkoutSession = ({ token }) => {
         }))
       };
       console.log(updatedWorkout.exercises);
-      const response = await fetch(`http://localhost:3001/workoutSession`, {
+      const response = await fetch(`${REACT_APP_BACKEND_URL}/workoutSession`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`, // Use the correct authorization header format

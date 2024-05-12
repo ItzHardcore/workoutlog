@@ -7,7 +7,7 @@ const Profile = ({ token }) => {
     // Fetch user data from the server
     const fetchUserData = async () => {
       try {
-        const response = await fetch('http://localhost:3001/profile', {
+        const response = await fetch('${REACT_APP_BACKEND_URL}/profile', {
           method: 'GET',
           headers: {
             'Authorization': `${token}`,
@@ -54,7 +54,7 @@ const Profile = ({ token }) => {
               className="img-fluid"
             />
             <div className="edit-icon">
-            💾
+              💾
             </div>
           </div>
         </div>
@@ -64,7 +64,7 @@ const Profile = ({ token }) => {
           <p>Email: {user.email}</p>
           <p>Phone: {user.phoneNumber}</p>
           <p>Email Verified: {user.emailVerified ? 'Yes' : 'No'}</p>
-          
+
           <button className="btn btn-primary" onClick={handleEditProfile}>
             Edit Profile
           </button>
