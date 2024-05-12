@@ -12,7 +12,6 @@ function Login({ onLogin }) {
     e.preventDefault();
 
     try {
-      console.log(BASE_URL);
       const response = await fetch(`${BASE_URL}/login`, {
         method: 'POST',
         headers: {
