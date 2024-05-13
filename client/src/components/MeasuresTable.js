@@ -118,7 +118,7 @@ function MeasuresTable({ token }) {
                 if (isConfirmed) {
                     try {
                         console.log(measureId);
-                        const response = await fetch(`${BASE_URL} / measures / ${measureId}`, {
+                        const response = await fetch(`${BASE_URL}/measures/${measureId}`, {
                             method: 'DELETE',
                             headers: {
                                 'Authorization': `${token}`,

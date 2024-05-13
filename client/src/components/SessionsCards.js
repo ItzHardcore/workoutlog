@@ -108,7 +108,7 @@ const SessionsCards = ({ token }) => {
                                             <h6 className="card-text mb-2" key={index}>{exercise.series.length} {exercise.series.length === 1 ? 'set' : 'sets'} of {exercise.name} @ Volume: {calculateVolume(exercise)} Kg</h6>
                                         ))}
                                     </div>
-                                    <Link to={`/ session / ${session._id}`} className="btn btn-primary" style={{ position: "absolute", bottom: "0", marginBottom: "16px" }}>View Details</Link>
+                                    <Link to={`/ session/${session._id}`} className="btn btn-primary" style={{ position: "absolute", bottom: "0", marginBottom: "16px" }}>View Details</Link>
                                 </div>
                             </div>
                         </div>
