@@ -26,11 +26,11 @@ function Login({ onLogin }) {
 
       const data = await response.json();
       //console.log(data);
-      //onLogin(data.token, data.user.name); // Pass the entire user object
+      //onLogin(data.token, data.user.name);//Pass the entire user object
       console.log("LOGGED IN");
     } catch (error) {
       console.error('Login failed:', error);
-      setSnackbarVisible(true); // Show error message
+      setSnackbarVisible(true);//Show error message
     }
   };
 
@@ -57,7 +57,7 @@ function Login({ onLogin }) {
         <Snackbar
           visible={snackbarVisible}
           onDismiss={() => setSnackbarVisible(false)}
-          duration={3000} // Adjust as needed
+          duration={3000}//Adjust as needed
         >
           Login failed. Please try again.
         </Snackbar>

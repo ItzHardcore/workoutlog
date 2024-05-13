@@ -8,7 +8,7 @@ const App = () => {
   const [token, setToken] = useState(localStorage.getItem('token') || '');
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Retrieve the dark mode state from localStorage, or default to false if not found
+    //Retrieve the dark mode state from localStorage, or default to false if not found
     const savedMode = JSON.parse(localStorage.getItem('isDarkMode'));
     return savedMode !== null ? savedMode : false;
   });
@@ -37,14 +37,14 @@ const App = () => {
   const toggleDarkMode = () => {
     setIsDarkMode(prevMode => {
       const newMode = !prevMode;
-      // Save the new dark mode state in localStorage
+      //Save the new dark mode state in localStorage
       localStorage.setItem('isDarkMode', JSON.stringify(newMode));
       return newMode;
     });
   };
 
   useEffect(() => {
-    // Update HTML attribute based on dark mode state
+    //Update HTML attribute based on dark mode state
     document.querySelector('html').setAttribute('data-bs-theme', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
 

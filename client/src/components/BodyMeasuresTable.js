@@ -33,26 +33,26 @@ function BodyMeasuresTable({ token }) {
     }, [token]);
 
     const toggleBodyEditMode = (bodymeasureId) => {
-        // Find the index of the measure to toggle edit mode
+        //Find the index of the measure to toggle edit mode
         const measureIndex = Bodymeasures.findIndex((bodymeasure) => bodymeasure._id === bodymeasureId);
 
         if (measureIndex !== -1) {
-            // Create a copy of the measures array to avoid mutating state directly
+            //Create a copy of the measures array to avoid mutating state directly
             const updatedMeasures = [...Bodymeasures];
 
-            // Toggle the isEditing property of the measure at the specified index
+            //Toggle the isEditing property of the measure at the specified index
             updatedMeasures[measureIndex] = {
                 ...updatedMeasures[measureIndex],
                 isEditing: !updatedMeasures[measureIndex].isEditing
             };
 
-            // Update the state with the measures array with the toggled measure
+            //Update the state with the measures array with the toggled measure
             setBodyMeasures(updatedMeasures);
         }
     };
 
     const handleSaveBodyMeasure = async (bodymeasureId) => {
-        // Find the index of the measure to save
+        //Find the index of the measure to save
         const measureIndex = Bodymeasures.findIndex((Bodymeasure) => Bodymeasure._id === bodymeasureId);
 
         if (measureIndex !== -1) {
@@ -69,17 +69,17 @@ function BodyMeasuresTable({ token }) {
                 });
 
                 if (!response.ok) {
-                    const errorData = await response.json(); // Parse the error response
+                    const errorData = await response.json();//Parse the error response
                     throw new Error(errorData.error || 'Failed to save measure');
                 }
 
-                // Update the measures array with the saved measure
+                //Update the measures array with the saved measure
                 const updatedMeasures = [...Bodymeasures];
                 updatedMeasures[measureIndex] = updatedMeasure;
                 setBodyMeasures(updatedMeasures);
                 console.log('Measure saved successfully');
 
-                // Exit edit mode
+                //Exit edit mode
                 toggleBodyEditMode(bodymeasureId);
             } catch (error) {
                 console.error('Error saving measure:', error);
@@ -89,29 +89,29 @@ function BodyMeasuresTable({ token }) {
     };
 
     const handleEditBodyMeasure = (bodymeasureId) => {
-        // Find the index of the measure to edit
+        //Find the index of the measure to edit
         const measureIndex = Bodymeasures.findIndex((Bodymeasure) => Bodymeasure._id === bodymeasureId);
 
         if (measureIndex !== -1) {
-            // Create a copy of the measures array to avoid mutating state directly
+            //Create a copy of the measures array to avoid mutating state directly
             const updatedMeasures = [...Bodymeasures];
 
-            // Set the measure at the specified index to be in edit mode
+            //Set the measure at the specified index to be in edit mode
             updatedMeasures[measureIndex] = {
                 ...updatedMeasures[measureIndex],
-                isEditing: !updatedMeasures[measureIndex].isEditing // Toggle isEditing property
+                isEditing: !updatedMeasures[measureIndex].isEditing//Toggle isEditing property
             };
 
-            // Update the state with the measures array with the edited measure
+            //Update the state with the measures array with the edited measure
             setBodyMeasures(updatedMeasures);
         }
     };
 
     const handleRemoveBodyMeasure = async (bodymeasureId) => {
-        // Show the confirmation dialog
+        //Show the confirmation dialog
         const isConfirmed = window.confirm('Are you sure you want to delete this measure?');
 
-        // If the user clicks "OK" in the confirmation dialog, proceed with removal
+        //If the user clicks "OK" in the confirmation dialog, proceed with removal
         if (isConfirmed) {
             try {
                 const response = await fetch(`${BASE_URL}/bodymeasures/${bodymeasureId}`, {
@@ -131,7 +131,7 @@ function BodyMeasuresTable({ token }) {
                 console.log('Measure removed successfully');
             } catch (error) {
                 console.error('Error removing measure:', error);
-                // You can handle errors, e.g., show an error message
+                //You can handle errors, e.g., show an error message
             }
         }
     };
@@ -143,7 +143,7 @@ function BodyMeasuresTable({ token }) {
             const updatedMeasures = [...Bodymeasures];
             updatedMeasures[measureIndex] = {
                 ...updatedMeasures[measureIndex],
-                [field]: value, // Update the field value
+                [field]: value,//Update the field value
             };
             setter(updatedMeasures);
         }

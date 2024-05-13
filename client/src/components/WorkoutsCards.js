@@ -29,12 +29,12 @@ const WorkoutsCards = ({ token }) => {
     };
 
     const handleStartWorkout = (workoutId) => {
-        navigate(`/ start - session/${workoutId}`);
+        navigate(`/start - session/${workoutId}`);
         setShowModal(false);
     };
 
     const handleEditWorkout = (workoutId) => {
-        navigate(`/ edit/${workoutId}`);
+        navigate(`/edit/${workoutId}`);
     };
 
     const removeWorkout = async (workoutId) => {

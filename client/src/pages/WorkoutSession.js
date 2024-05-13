@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import WorkoutForm from '../components/WorkoutForm'; // Assuming WorkoutForm is imported correctly
+import WorkoutForm from '../components/WorkoutForm';//Assuming WorkoutForm is imported correctly
 import { jwtDecode } from 'jwt-decode';
 import TimerPopup from '../components/TimerPopup';
 
 const WorkoutSession = ({ token }) => {
-  const { workoutId } = useParams(); // Extract workout ID from route parameters
+  const { workoutId } = useParams();//Extract workout ID from route parameters
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [workoutData, setWorkoutData] = useState(null);
-  const [seconds, setSeconds] = useState(0); // Initialize timer state
-  const [duration, setDuration] = useState(''); // Initialize duration state
+  const [seconds, setSeconds] = useState(0);//Initialize timer state
+  const [duration, setDuration] = useState('');//Initialize duration state
   const [username, setUsername] = useState('');
   const navigate = useNavigate();
   const BASE_URL = require('../components/baseUrl');
@@ -20,7 +20,7 @@ const WorkoutSession = ({ token }) => {
         const response = await fetch(`${BASE_URL}/workouts/${workoutId}`, {
           method: 'GET',
           headers: {
-            Authorization: `${token}`, // Use appropriate authorization header with Bearer prefix
+            Authorization: `${token}`,//Use appropriate authorization header with Bearer prefix
           },
         });
 
@@ -45,32 +45,32 @@ const WorkoutSession = ({ token }) => {
     fetchWorkoutData();
   }, [token, workoutId, navigate]);
 
-  // Timer logic (adapt according to your specific requirements)
+  //Timer logic (adapt according to your specific requirements)
   useEffect(() => {
     const intervalId = setInterval(() => {
       setSeconds(prevSeconds => prevSeconds + 1);
 
-      // Calculate and update duration based on seconds
+      //Calculate and update duration based on seconds
       const hours = Math.floor(seconds / 3600);
       const minutes = Math.floor((seconds % 3600) / 60);
       const remainingSeconds = seconds % 60;
-      setDuration(`${hours}h ${minutes}min ${remainingSeconds}s`); // Update duration
+      setDuration(`${hours}h ${minutes}min ${remainingSeconds}s`);//Update duration
     }, 1000);
 
     return () => clearInterval(intervalId);
-  }, [seconds]); // Run timer effect only once
+  }, [seconds]);//Run timer effect only once
 
 
   const handleSave = async (toBeSavedWorkout) => {
     try {
-      const startDate = new Date(Date.now() - seconds * 1000); // Use the current date as the start date
+      const startDate = new Date(Date.now() - seconds * 1000);//Use the current date as the start date
       const updatedWorkout = {
         startDate,
         endDate: new Date(),
         user: toBeSavedWorkout.user,
         workoutName: toBeSavedWorkout.name,
         exercises: toBeSavedWorkout.exercises.map((exerciseObject) => ({
-          name: exerciseObject.exercise.name, // Access the exercise name
+          name: exerciseObject.exercise.name,//Access the exercise name
           initialPower: exerciseObject.initialPower.initialPower,
           series: exerciseObject.series.map((series) => ({
             reps: series.reps,
@@ -84,7 +84,7 @@ const WorkoutSession = ({ token }) => {
       const response = await fetch(`${BASE_URL}/workoutSession`, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`, // Use the correct authorization header format
+          Authorization: `Bearer ${token}`,//Use the correct authorization header format
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(updatedWorkout),
@@ -101,7 +101,7 @@ const WorkoutSession = ({ token }) => {
       alert('Session saved successfully!');
     } catch (error) {
       console.error('Error saving workout data:', error);
-      // Handle error (e.g., display an error message)
+      //Handle error (e.g., display an error message)
       alert('An error occurred while saving the workout. Please try again.');
     }
   };
@@ -116,7 +116,7 @@ const WorkoutSession = ({ token }) => {
         <WorkoutForm
           userId={workoutData.user}
           token={token}
-          initialData={workoutData} // Assuming 'exercises' is the array name
+          initialData={workoutData}//Assuming 'exercises' is the array name
           onSave={handleSave}
 
         />

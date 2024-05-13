@@ -30,16 +30,16 @@ function BodyMeasuresForm({ token, onClose }) {
 
     const handleCancel = () => {
         if (onClose) {
-            onClose(); // Call onClose if defined
+            onClose();//Call onClose if defined
         } else {
-            navigate('/mybody'); // Navigate to '/mybody' if onClose is not defined
+            navigate('/mybody');//Navigate to '/mybody' if onClose is not defined
         }
     };
 
     const handleAddMeasures = async (e) => {
         e.preventDefault();
 
-        // Validate form data
+        //Validate form data
 
         if (!validateField(weight, 'Weight is required and must be a positive number.')) return;
         if (!validateField(kcal, 'Kcal is required and must be a positive number.')) return;
@@ -73,7 +73,7 @@ function BodyMeasuresForm({ token, onClose }) {
         try {
             setErrorMessage('');
 
-            const response = await fetch(`${BASE_URL}/bodymeasures`, { // Updated endpoint URL
+            const response = await fetch(`${BASE_URL}/bodymeasures`, {//Updated endpoint URL
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -88,7 +88,7 @@ function BodyMeasuresForm({ token, onClose }) {
                 return;
             }
 
-            // After successfully submitting the data, you can also reset the form fields
+            //After successfully submitting the data, you can also reset the form fields
             setWeight('');
             setDate(new Date());
             setKcal('');
@@ -108,9 +108,9 @@ function BodyMeasuresForm({ token, onClose }) {
                 navigate('/mybody')
             }
 
-            // Optionally, you can handle success actions here
+            //Optionally, you can handle success actions here
         } catch (error) {
-            // Handle any errors that occur during the submission
+            //Handle any errors that occur during the submission
         }
     };
 

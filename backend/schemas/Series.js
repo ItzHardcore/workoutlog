@@ -8,7 +8,7 @@ const seriesSchema = new Schema({
   effort: Number,
   execution: Number,
   type: String,
-  // Add any other series-related fields as needed
+  //Add any other series-related fields as needed
 });
 
 const Series = mongoose.model('Series', seriesSchema);

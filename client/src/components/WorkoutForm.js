@@ -29,15 +29,15 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
 
         if (initialData) {
           console.log(initialData);
-          // Set workout name
+          //Set workout name
           setWorkoutName(initialData.name);
 
-          // Map exercises to set series with default values
+          //Map exercises to set series with default values
           const mappedExercises = initialData.exercises.map((exercise) => {
             const { exercise: { name }, series } = exercise;
             const mappedSeries = series.map((s) => ({
               ...s,
-              reps: s.reps.toString(), // Convert to string to handle number input
+              reps: s.reps.toString(),//Convert to string to handle number input
               weight: s.weight.toString(),
             }));
             return {
@@ -47,7 +47,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
             };
           });
 
-          // Set exercises
+          //Set exercises
           setExercises(mappedExercises);
           console.log(mappedExercises);
         }
@@ -71,7 +71,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
       name: selectedExercise,
       initialPower: 1,
       series: [{
-        reps: 0,  // You can set default values for the series fields
+        reps: 0, //You can set default values for the series fields
         weight: 0,
         notes: '',
         effort: 1
@@ -92,7 +92,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
       return;
     }
 
-    // Create a new series with empty values
+    //Create a new series with empty values
     const newSeries = {
       reps: 0,
       weight: 0,
@@ -100,10 +100,10 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
       effort: 1
     };
 
-    // Add the new series to the selected exercise
+    //Add the new series to the selected exercise
     selectedExercise.series.push(newSeries);
 
-    // Update the state
+    //Update the state
     setExercises(newExercises);
   };
 
@@ -133,7 +133,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
 
   const handleSave = async () => {
     if (saveloading) {
-      // Do nothing if already in the process of saving
+      //Do nothing if already in the process of saving
       return;
     }
 
@@ -420,7 +420,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
           type="button"
           className="btn btn-primary me-2"
           onClick={handleSave}
-          disabled={saveloading} // Disable the button when loading
+          disabled={saveloading}//Disable the button when loading
         >
           {saveloading ? 'Saving...' : 'Save'}
         </button>

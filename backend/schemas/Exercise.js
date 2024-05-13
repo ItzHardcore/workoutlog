@@ -9,7 +9,7 @@ const exerciseSchema = new Schema({
   primaryMuscle: String,
   secondaryMuscle: String,
   howTo: String,
-  // Add any other exercise-related fields as needed
+  //Add any other exercise-related fields as needed
 });
 
 const Exercise = mongoose.model('Exercise', exerciseSchema);

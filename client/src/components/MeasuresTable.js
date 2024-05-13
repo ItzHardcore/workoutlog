@@ -40,7 +40,7 @@ function MeasuresTable({ token }) {
             const updatedMeasures = [...measures];
             updatedMeasures[measureIndex] = {
                 ...updatedMeasures[measureIndex],
-                [field]: value, // Update the field value
+                [field]: value,//Update the field value
             };
             setMeasures(updatedMeasures);
         }
@@ -48,7 +48,7 @@ function MeasuresTable({ token }) {
 
 
     const handleSaveMeasure = async (measureId) => {
-        // Find the index of the measure to save
+        //Find the index of the measure to save
         const measureIndex = measures.findIndex((measure) => measure._id === measureId);
 
         if (measureIndex !== -1) {
@@ -65,17 +65,17 @@ function MeasuresTable({ token }) {
                 });
 
                 if (!response.ok) {
-                    const errorData = await response.json(); // Parse the error response
+                    const errorData = await response.json();//Parse the error response
                     throw new Error(errorData.error || 'Failed to save measure');
                 }
 
-                // Update the measures array with the saved measure
+                //Update the measures array with the saved measure
                 const updatedMeasures = [...measures];
                 updatedMeasures[measureIndex] = updatedMeasure;
                 setMeasures(updatedMeasures);
                 console.log('Measure saved successfully');
 
-                // Exit edit mode
+                //Exit edit mode
                 toggleEditMode(measureId);
             } catch (error) {
                 console.error('Error saving measure:', error);
@@ -85,36 +85,36 @@ function MeasuresTable({ token }) {
     };
 
     const handleEditMeasure = (measureId) => {
-        // Find the index of the measure to edit
+        //Find the index of the measure to edit
         const measureIndex = measures.findIndex((measure) => measure._id === measureId);
 
         if (measureIndex !== -1) {
-            // Create a copy of the measures array to avoid mutating state directly
+            //Create a copy of the measures array to avoid mutating state directly
             const updatedMeasures = [...measures];
 
-            // Set the measure at the specified index to be in edit mode
+            //Set the measure at the specified index to be in edit mode
             updatedMeasures[measureIndex] = {
                 ...updatedMeasures[measureIndex],
-                isEditing: !updatedMeasures[measureIndex].isEditing // Toggle isEditing property
+                isEditing: !updatedMeasures[measureIndex].isEditing//Toggle isEditing property
             };
 
-            // Update the state with the measures array with the edited measure
+            //Update the state with the measures array with the edited measure
             setMeasures(updatedMeasures);
         }
     };
 
     const handleRemoveMeasure = async (measureId) => {
-        // Find the index of the measure to remove
+        //Find the index of the measure to remove
         const measureIndex = measures.findIndex((measure) => measure._id === measureId);
         if (measureIndex !== -1) {
             if (measures[measureIndex].isEditing) {
-                // If in edit mode, exit edit mode
+                //If in edit mode, exit edit mode
                 toggleEditMode(measureId);
             } else {
-                // Show the confirmation dialog only if not in edit mode
+                //Show the confirmation dialog only if not in edit mode
                 const isConfirmed = window.confirm('Are you sure you want to delete this measure?');
 
-                // If the user clicks "OK" in the confirmation dialog, proceed with removal
+                //If the user clicks "OK" in the confirmation dialog, proceed with removal
                 if (isConfirmed) {
                     try {
                         console.log(measureId);
@@ -135,7 +135,7 @@ function MeasuresTable({ token }) {
                         console.log('Measure removed successfully');
                     } catch (error) {
                         console.error('Error removing measure:', error);
-                        // You can handle errors, e.g., show an error message
+                        //You can handle errors, e.g., show an error message
                     }
                 }
             }
@@ -143,20 +143,20 @@ function MeasuresTable({ token }) {
     };
 
     const toggleEditMode = (measureId) => {
-        // Find the index of the measure to toggle edit mode
+        //Find the index of the measure to toggle edit mode
         const measureIndex = measures.findIndex((measure) => measure._id === measureId);
 
         if (measureIndex !== -1) {
-            // Create a copy of the measures array to avoid mutating state directly
+            //Create a copy of the measures array to avoid mutating state directly
             const updatedMeasures = [...measures];
 
-            // Toggle the isEditing property of the measure at the specified index
+            //Toggle the isEditing property of the measure at the specified index
             updatedMeasures[measureIndex] = {
                 ...updatedMeasures[measureIndex],
                 isEditing: !updatedMeasures[measureIndex].isEditing
             };
 
-            // Update the state with the measures array with the toggled measure
+            //Update the state with the measures array with the toggled measure
             setMeasures(updatedMeasures);
         }
     };

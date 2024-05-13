@@ -5,8 +5,8 @@ const WorkoutsModal = ({ onClose, workouts, handleStartWorkoutFromModal }) => {
 
   const handleStart = () => {
     if (selectedWorkoutId) {
-      handleStartWorkoutFromModal(selectedWorkoutId); // Call the function passed as props
-      onClose(); // Close the modal
+      handleStartWorkoutFromModal(selectedWorkoutId);//Call the function passed as props
+      onClose();//Close the modal
     }
   };
 

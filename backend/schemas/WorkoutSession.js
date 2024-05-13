@@ -8,7 +8,7 @@ const workoutSessionSchema = new Schema({
   workoutName: String,
   exercises: [
     {
-      name: String, // Embed exercise name directly
+      name: String,//Embed exercise name directly
       initialPower: Number,
       series: [
         {

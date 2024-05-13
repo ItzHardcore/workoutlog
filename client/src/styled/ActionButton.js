@@ -7,8 +7,8 @@ const LargeButtonWithBackgroundImage = styled.button`
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  width: 200px; /* Adjust width as needed */
-  height: 100px; /* Adjust height as needed */
+  width: 200px;/* Adjust width as needed */
+  height: 100px;/* Adjust height as needed */
   border: none;
   border-radius: 20px;
   color: white;
@@ -19,8 +19,8 @@ const LargeButtonWithBackgroundImage = styled.button`
   justify-content: center;
   align-items: center;
   transition: all 0.6s ease;
-  /* Add any additional styling here */
-  
+ /* Add any additional styling here */
+
   &::after {
     content: '';
     position: absolute;
@@ -29,14 +29,14 @@ const LargeButtonWithBackgroundImage = styled.button`
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
-    opacity: 0.4; /* Initially hidden */
+    background-color: rgba(0, 0, 0, 0.5);/* Semi-transparent black overlay */
+    opacity: 0.4;/* Initially hidden */
     transition: opacity 0.3s ease;
 
   }
 
   &:hover::after {
-    opacity: 0.8; /* Show overlay on hover */
+    opacity: 0.8;/* Show overlay on hover */
   }
 
 `;
@@ -50,13 +50,13 @@ font-size: 25px;
 `;
 
 const ActionButton = ({ text, onClick, backgroundImage }) => {
-    return (
-        <div className='my-4 me-4'>
-            <LargeButtonWithBackgroundImage onClick={onClick} backgroundImage={backgroundImage}>
-                <ButtonText>{text}</ButtonText>
-            </LargeButtonWithBackgroundImage>
-        </div>
-    );
+  return (
+    <div className='my-4 me-4'>
+      <LargeButtonWithBackgroundImage onClick={onClick} backgroundImage={backgroundImage}>
+        <ButtonText>{text}</ButtonText>
+      </LargeButtonWithBackgroundImage>
+    </div>
+  );
 };
 
 export default ActionButton;

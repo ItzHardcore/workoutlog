@@ -13,7 +13,7 @@ const SessionDetails = ({ token }) => {
         const response = await fetch(`${BASE_URL}/workoutSessions/${sessionId}`, {
           method: 'GET',
           headers: {
-            Authorization: `${token}`, // Use appropriate authorization header with Bearer prefix
+            Authorization: `${token}`,//Use appropriate authorization header with Bearer prefix
           },
         });
 
@@ -25,7 +25,7 @@ const SessionDetails = ({ token }) => {
         setSessionData(sessionData);
       } catch (error) {
         console.error('Error fetching session details:', error);
-        // Handle error, e.g., display an error message to the user
+        //Handle error, e.g., display an error message to the user
       }
     };
 

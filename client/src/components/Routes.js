@@ -20,19 +20,19 @@ import BMRCalculator from './BMRCalculator';
 const AppRoutes = ({ token, handleLogout, handleLogin, handleRegister }) => {
   return (
     <Routes>
-      <Route path="/" element={<LandingPage/>} />
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login onLogin={handleLogin} />} />
       <Route path="/register" element={<Register onRegister={handleRegister} />} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/calculator" element={<BMRCalculator />} />
       <Route path="/dashboard" element={<PrivateRoute token={token} component={Dashboard} handleLogout={handleLogout} />} />
       <Route path="/edit/:workoutId" element={<PrivateRoute token={token} component={EditWorkout} />} />
-      <Route path="/profile" element={<PrivateRoute token={token} handleLogin={handleLogin} component={Profile}/>} />
+      <Route path="/profile" element={<PrivateRoute token={token} handleLogin={handleLogin} component={Profile} />} />
       <Route path="/start-session/:workoutId" element={<PrivateRoute component={WorkoutSession} token={token} />} />
       <Route path="/start-session/" element={<PrivateRoute component={WorkoutSession} token={token} />} />
       <Route path="/session/:sessionId" element={<PrivateRoute component={SessionDetails} token={token} />} />
       <Route path="/mybody" element={<PrivateRoute component={MyBody} token={token} />} />
-      {/* <Route path="/measures" element={<PrivateRoute component={AddMeasuresPhotos} token={token} />} /> */}
+      {/* <Route path="/measures" element={<PrivateRoute component={AddMeasuresPhotos} token={token}/>}/> */}
       <Route path="/new-workout" element={<PrivateRoute component={NewWorkout} token={token} />} />
       <Route path="*" element={<ErrorPage />} />
     </Routes>

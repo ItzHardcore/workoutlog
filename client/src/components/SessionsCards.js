@@ -28,11 +28,11 @@ const SessionsCards = ({ token }) => {
 
     useEffect(() => {
         fetchSessions();
-    }, [token]); // Call fetchSessions on component mount
+    }, [token]);//Call fetchSessions on component mount
 
     const calculateVolume = exercise => {
         let volume = 0;
-        // Iterate through each series of the exercise and calculate volume
+        //Iterate through each series of the exercise and calculate volume
         exercise.series.forEach(series => {
             volume += series.reps * series.weight;
         });
@@ -43,18 +43,18 @@ const SessionsCards = ({ token }) => {
         const start = new Date(startDate);
         const end = new Date(endDate);
 
-        // Calculate the difference in milliseconds
+        //Calculate the difference in milliseconds
         const durationMs = end - start;
 
-        // Convert milliseconds to hours, minutes, and seconds
+        //Convert milliseconds to hours, minutes, and seconds
         const hours = Math.floor(durationMs / (1000 * 60 * 60));
         const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((durationMs % (1000 * 60)) / 1000);
 
-        // Initialize an empty array to store non-zero duration components
+        //Initialize an empty array to store non-zero duration components
         const durationComponents = [];
 
-        // Add non-zero components to the array
+        //Add non-zero components to the array
         if (hours > 0) {
             durationComponents.push(`${hours}h`);
         }
@@ -65,13 +65,13 @@ const SessionsCards = ({ token }) => {
             durationComponents.push(`${seconds}s`);
         }
 
-        // Join the components with a space separator
+        //Join the components with a space separator
         return durationComponents.join(' ');
     };
 
     const calculateTotalVolume = exercises => {
         let totalVolume = 0;
-        // Iterate through each exercise and calculate volume
+        //Iterate through each exercise and calculate volume
         exercises.forEach(exercise => {
             totalVolume += calculateVolume(exercise);
         });
@@ -108,7 +108,7 @@ const SessionsCards = ({ token }) => {
                                             <h6 className="card-text mb-2" key={index}>{exercise.series.length} {exercise.series.length === 1 ? 'set' : 'sets'} of {exercise.name} @ Volume: {calculateVolume(exercise)} Kg</h6>
                                         ))}
                                     </div>
-                                    <Link to={`/ session/${session._id}`} className="btn btn-primary" style={{ position: "absolute", bottom: "0", marginBottom: "16px" }}>View Details</Link>
+                                    <Link to={`/session/${session._id}`} className="btn btn-primary" style={{ position: "absolute", bottom: "0", marginBottom: "16px" }}>View Details</Link>
                                 </div>
                             </div>
                         </div>

@@ -16,7 +16,7 @@ const BodyPhotosUpload = ({ token }) => {
   const [fileStep4, setFileStep4] = useState(null);
   const [date, setDate] = useState(new Date());
   const [weight, setWeight] = useState('');
-  const [showCamera, setShowCamera] = useState(false); // State to toggle camera display
+  const [showCamera, setShowCamera] = useState(false);//State to toggle camera display
   const [errorMessage, setErrorMessage] = useState('');
   const BASE_URL = require('./baseUrl');
 
@@ -37,7 +37,7 @@ const BodyPhotosUpload = ({ token }) => {
       default:
         break;
     }
-    setShowCamera(false); // Hide camera when photo is captured
+    setShowCamera(false);//Hide camera when photo is captured
   };
 
   const handleFileChangeStep = (e, step) => {
@@ -45,7 +45,7 @@ const BodyPhotosUpload = ({ token }) => {
     switch (step) {
       case 1:
         setFileStep1(selectedFile);
-        // Preview the selected file
+        //Preview the selected file
         const reader1 = new FileReader();
         reader1.onloadend = () => {
           setPhotoStep1(reader1.result);
@@ -54,7 +54,7 @@ const BodyPhotosUpload = ({ token }) => {
         break;
       case 2:
         setFileStep2(selectedFile);
-        // Preview the selected file
+        //Preview the selected file
         const reader2 = new FileReader();
         reader2.onloadend = () => {
           setPhotoStep2(reader2.result);
@@ -63,7 +63,7 @@ const BodyPhotosUpload = ({ token }) => {
         break;
       case 3:
         setFileStep3(selectedFile);
-        // Preview the selected file
+        //Preview the selected file
         const reader3 = new FileReader();
         reader3.onloadend = () => {
           setPhotoStep3(reader3.result);
@@ -72,7 +72,7 @@ const BodyPhotosUpload = ({ token }) => {
         break;
       case 4:
         setFileStep4(selectedFile);
-        // Preview the selected file
+        //Preview the selected file
         const reader4 = new FileReader();
         reader4.onloadend = () => {
           setPhotoStep4(reader4.result);
@@ -85,11 +85,11 @@ const BodyPhotosUpload = ({ token }) => {
   };
 
   const handleTakePhoto = () => {
-    setShowCamera(true); // Show camera when "Take Photo" button is clicked
+    setShowCamera(true);//Show camera when "Take Photo" button is clicked
   };
 
   const handleSubmit = async () => {
-    // Move to the next step
+    //Move to the next step
     if (step < 4) {
       setStep(step + 1);
       return;
@@ -122,7 +122,7 @@ const BodyPhotosUpload = ({ token }) => {
         throw new Error('Failed to upload files');
       }
       //for (const pair of formData.entries()) {
-      //  console.log(pair[0] + ', ' + pair[1]);
+      // console.log(pair[0] + ', ' + pair[1]);
       //}
       alert('Files uploaded successfully');
     } catch (error) {
@@ -140,7 +140,7 @@ const BodyPhotosUpload = ({ token }) => {
   };
 
   const handleGoBack = () => {
-    setStep(step - 1); // Go back to the previous step
+    setStep(step - 1);//Go back to the previous step
   };
 
   return (

@@ -1,10 +1,10 @@
 const PasswordStrengthMeter = ({ password }) => {
   const calculateStrength = () => {
     const patterns = [
-      /[A-Z]/, // Uppercase letter
-      /[!@#$%^&*(),.?":{}|<>]/, // Symbol
-      /[0-9]/, // Number
-      /.{9,}/, // Length greater than 8 characters
+      /[A-Z]/,//Uppercase letter
+      /[!@#$%^&*(),.?":{}|<>]/,//Symbol
+      /[0-9]/,//Number
+      /.{9,}/,//Length greater than 8 characters
     ];
 
     return patterns.reduce((score, pattern) => (pattern.test(password) ? score + 1 : score), 0);

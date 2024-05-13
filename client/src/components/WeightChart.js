@@ -3,16 +3,16 @@ import Chart from 'chart.js/auto';
 
 function WeightChart({ measures }) {
   const chartRef = useRef(null);
-  const chartInstance = useRef(null); // Reference to the Chart instance
+  const chartInstance = useRef(null);//Reference to the Chart instance
 
   useEffect(() => {
     if (!chartRef.current || !measures || measures.length === 0) return;
 
-    const labels = measures.map((measure) => new Date(measure.date).toLocaleDateString()).reverse(); // Reverse the labels array
-    const weights = measures.map((measure) => measure.weight).reverse(); // Reverse the weights array
+    const labels = measures.map((measure) => new Date(measure.date).toLocaleDateString()).reverse();//Reverse the labels array
+    const weights = measures.map((measure) => measure.weight).reverse();//Reverse the weights array
 
     if (chartInstance.current) {
-      chartInstance.current.destroy(); // Destroy the existing chart instance
+      chartInstance.current.destroy();//Destroy the existing chart instance
     }
 
     const ctx = chartRef.current.getContext('2d');
@@ -38,7 +38,7 @@ function WeightChart({ measures }) {
             beginAtZero: false,
             ticks: {
               callback: function (value) {
-                return value + ' Kg'; // Add 'Kg' to the tick label
+                return value + ' Kg';//Add 'Kg' to the tick label
               }
             }
           },
@@ -48,10 +48,10 @@ function WeightChart({ measures }) {
 
     return () => {
       if (chartInstance.current) {
-        chartInstance.current.destroy(); // Cleanup: destroy the chart when the component unmounts
+        chartInstance.current.destroy();//Cleanup: destroy the chart when the component unmounts
       }
     };
-  }); // Empty dependency array
+  });//Empty dependency array
 
   return <canvas className='' ref={chartRef} />;
 }

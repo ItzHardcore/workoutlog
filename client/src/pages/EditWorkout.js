@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import WorkoutForm from '../components/WorkoutForm'; // Update the import path based on your file structure
+import WorkoutForm from '../components/WorkoutForm';//Update the import path based on your file structure
 
 const EditWorkout = ({ token }) => {
   const { workoutId } = useParams();
@@ -33,11 +33,11 @@ const EditWorkout = ({ token }) => {
           setWorkoutData(fetchedWorkoutData);
         } else {
           setIsAuthorized(false);
-          // navigate('/unauthorized');
+          //navigate('/unauthorized');
         }
       } catch (error) {
         console.error('Error fetching workout data:', error);
-        // Handle error, e.g., redirect to an error page
+        //Handle error, e.g., redirect to an error page
       }
     };
 
@@ -56,7 +56,7 @@ const EditWorkout = ({ token }) => {
         <WorkoutForm
           userId={workoutData.user}
           token={token}
-          initialData={workoutData} // Pass the exercises array from the fetched data
+          initialData={workoutData}//Pass the exercises array from the fetched data
         />
       )}
     </div>

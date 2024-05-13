@@ -1,4 +1,4 @@
-// Register.js
+//Register.js
 import React, { useState } from 'react';
 import RegistrationForm from './RegistrationForm';
 

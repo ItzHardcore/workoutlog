@@ -18,16 +18,16 @@ function MeasuresForm({ token, onClose }) {
 
   const handleCancel = () => {
     if (onClose) {
-      onClose(); // Call onClose if defined
+      onClose();//Call onClose if defined
     } else {
-      navigate('/mybody'); // Navigate to '/mybody' if onClose is not defined
+      navigate('/mybody');//Navigate to '/mybody' if onClose is not defined
     }
   };
 
   const handleAddMeasures = async (e) => {
     e.preventDefault();
 
-    // Validate form data
+    //Validate form data
     if (!weight || isNaN(weight) || weight <= 0) {
       setErrorMessage('Weight is required and must be a positive number.');
       return;
@@ -49,10 +49,10 @@ function MeasuresForm({ token, onClose }) {
     };
 
     try {
-      // Clear error message
+      //Clear error message
       setErrorMessage('');
 
-      // Send a POST request to your server to save the measures data
+      //Send a POST request to your server to save the measures data
       const response = await fetch(`${BASE_URL}/measures`, {
         method: 'POST',
         headers: {
@@ -68,7 +68,7 @@ function MeasuresForm({ token, onClose }) {
         return;
       }
 
-      // After successfully submitting the data, you can also reset the form fields
+      //After successfully submitting the data, you can also reset the form fields
       setWeight('');
       setSteps(10000);
       setSleepHours(8);
@@ -82,9 +82,9 @@ function MeasuresForm({ token, onClose }) {
       } else {
         navigate('/mybody')
       }
-      // Optionally, you can handle success actions here
+      //Optionally, you can handle success actions here
     } catch (error) {
-      // Handle any errors that occur during the submission
+      //Handle any errors that occur during the submission
       setErrorMessage(error.message || 'Failed to save measures. Please try again.');
     }
   };

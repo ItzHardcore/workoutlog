@@ -29,7 +29,7 @@ function Login({ onLogin }) {
 
       const data = await response.json();
       console.log(data);
-      onLogin(data.token, data.user.name); // Pass the entire user object
+      onLogin(data.token, data.user.name);//Pass the entire user object
       navigate('/dashboard');
     } catch (error) {
       console.error('Login failed:', error);

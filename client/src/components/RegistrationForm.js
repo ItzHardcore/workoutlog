@@ -1,4 +1,4 @@
-// RegistrationForm.js
+//RegistrationForm.js
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import PasswordStrengthMeter from './PasswordStrengthMeter';

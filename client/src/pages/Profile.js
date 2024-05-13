@@ -5,7 +5,7 @@ const Profile = ({ token }) => {
   const BASE_URL = require('../components/baseUrl');
 
   useEffect(() => {
-    // Fetch user data from the server
+    //Fetch user data from the server
     const fetchUserData = async () => {
       try {
         const response = await fetch(`${BASE_URL}/profile`, {
@@ -30,17 +30,17 @@ const Profile = ({ token }) => {
   }, [token]);
 
   const handleEditProfile = () => {
-    // Handle the logic for editing the profile
+    //Handle the logic for editing the profile
     console.log('Edit profile button clicked');
   };
 
   const handleEditPassword = () => {
-    // Handle the logic for editing the password
+    //Handle the logic for editing the password
     console.log('Edit password button clicked');
   };
 
   if (!user) {
-    // Display a loading indicator or return null while waiting for user data
+    //Display a loading indicator or return null while waiting for user data
     return <p>Loading...</p>;
   }
 

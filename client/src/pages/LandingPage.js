@@ -11,7 +11,7 @@ function LandingPage() {
       <div className="row">
         <div className="col">
           <img
-            src={backgroundImage} // Replace with your image URL
+            src={backgroundImage}//Replace with your image URL
             className="img-fluid"
             alt="Workout"
           />
