@@ -100,7 +100,7 @@ function MeasuresForm({ token, onClose }) {
           selected={date}
           dateFormat="dd/MM/yyyy"
           onChange={(selectedDate) => setDate(selectedDate)}
-          className={`form - control ${errorMessage && !date ? 'is-invalid' : ''}`}
+          className={`form-control ${errorMessage && !date ? 'is-invalid' : ''}`}
         />
         {errorMessage && !date && (
           <div className="invalid-feedback">Please select a date.</div>
@@ -113,7 +113,7 @@ function MeasuresForm({ token, onClose }) {
           <input
             type="number"
             id="weight"
-            className={`form - control ${errorMessage && !weight ? 'is-invalid' : ''} `}
+            className={`form-control ${errorMessage && !weight ? 'is-invalid' : ''} `}
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
           />
@@ -129,7 +129,7 @@ function MeasuresForm({ token, onClose }) {
         <input
           type="text"
           id="steps"
-          className={`form - control ${errorMessage && !steps ? 'is-invalid' : ''} `}
+          className={`form-control ${errorMessage && !steps ? 'is-invalid' : ''} `}
           value={steps}
           onChange={(e) => setSteps(e.target.value)}
         />
@@ -143,7 +143,7 @@ function MeasuresForm({ token, onClose }) {
         <input
           type="text"
           id="sleepHours"
-          className={`form - control ${errorMessage && !sleepHours ? 'is-invalid' : ''} `}
+          className={`form-control ${errorMessage && !sleepHours ? 'is-invalid' : ''} `}
           value={sleepHours}
           onChange={(e) => setSleepHours(e.target.value)}
         />
