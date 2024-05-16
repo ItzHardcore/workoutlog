@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const SessionsCards = ({ token }) => {
     const [sessions, setSessions] = useState([]);
     const BASE_URL = require('./baseUrl');
+    const navigate = useNavigate();
 
     const fetchSessions = async () => {
         try {
@@ -37,6 +39,35 @@ const SessionsCards = ({ token }) => {
             volume += series.reps * series.weight;
         });
         return volume;
+    };
+
+    const handleStartWorkout = (workoutId) => {
+        navigate(`/start-session/${workoutId}`);
+    };
+
+    const removeWorkout = async (workoutId) => {
+        if (!window.confirm('Are you sure you want to remove this session?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`${BASE_URL}/workoutSession/${workoutId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to remove Session');
+            }
+
+            setSessions(prevSessions => prevSessions.filter(session => session._id !== workoutId));
+
+            console.log('WorkoutSession removed successfully');
+        } catch (error) {
+            console.error('Error removing workout:', error);
+        }
     };
 
     const calculateDuration = (startDate, endDate) => {
@@ -108,7 +139,9 @@ const SessionsCards = ({ token }) => {
                                             <h6 className="card-text mb-2" key={index}>{exercise.series.length} {exercise.series.length === 1 ? 'set' : 'sets'} of {exercise.name} @ Volume: {calculateVolume(exercise)} Kg</h6>
                                         ))}
                                     </div>
-                                    <Link to={`/session/${session._id}`} className="btn btn-primary" style={{ position: "absolute", bottom: "0", marginBottom: "16px" }}>View Details</Link>
+                                    <Link to={`/session/${session._id}`} className="btn btn-primary me-2" >View Details</Link>
+                                    <button className="btn btn-danger me-2" onClick={() => removeWorkout(session._id)}>Remove</button>
+                                    <button className="btn btn-success me-2" onClick={() => handleStartWorkout(session._id)}>Start Workout</button>
                                 </div>
                             </div>
                         </div>

@@ -30,7 +30,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
         if (initialData) {
           console.log(initialData);
           //Set workout name
-          setWorkoutName(initialData.name);
+          setWorkoutName(initialData.name !== null && initialData.name !== undefined ? initialData.name : initialData.workoutName);
 
           //Map exercises to set series with default values
           const mappedExercises = initialData.exercises.map((exercise) => {
@@ -53,7 +53,6 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
         }
       } catch (error) {
         console.error('Error fetching exercises:', error);
-        setErrorMessage('Error fetching exercises:', error);
       }
     };
 

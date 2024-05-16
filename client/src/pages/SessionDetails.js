@@ -37,7 +37,7 @@ const SessionDetails = ({ token }) => {
   }
 
   return (
-    <div>
+    <div style={{ width: "fit-content" }}>
       <h2>Session Details</h2>
       <div>
         <p><strong>Workout:</strong> {sessionData.workoutName}</p>

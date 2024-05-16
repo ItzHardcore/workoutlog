@@ -20,12 +20,12 @@ const WorkoutSession = ({ token }) => {
         const response = await fetch(`${BASE_URL}/workouts/${workoutId}`, {
           method: 'GET',
           headers: {
-            Authorization: `${token}`,//Use appropriate authorization header with Bearer prefix
+            Authorization: `${token}`,
           },
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch workout data');
+          throw new Error('Failed to fetch workout session data');
         }
 
         const fetchedWorkoutData = await response.json();
@@ -37,13 +37,36 @@ const WorkoutSession = ({ token }) => {
           setWorkoutData(fetchedWorkoutData);
         }
       } catch (error) {
-        console.error('Error fetching workout data:', error);
+
+        try {
+          const response = await fetch(`${BASE_URL}/workoutSessions/${workoutId}`, {
+            method: 'GET',
+            headers: {
+              Authorization: `${token}`,
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch workout session data');
+          }
+
+          const fetchedWorkoutData = await response.json();
+          const decodedToken = jwtDecode(token);
+          const authenticatedUserId = decodedToken.userId;
+
+          if (fetchedWorkoutData.user === authenticatedUserId) {
+            setIsAuthorized(true);
+            setWorkoutData(fetchedWorkoutData);
+          }
+        } catch (error) {
+          console.error('Error fetching workout data from /workoutSessions:', error);
+        }
       }
     };
-    const decodedToken = jwtDecode(token);
-    setUsername(decodedToken.userId);
+
     fetchWorkoutData();
-  }, [token, workoutId, navigate]);
+  }, [workoutId, token, setIsAuthorized, setWorkoutData]);
+
 
   //Timer logic (adapt according to your specific requirements)
   useEffect(() => {
@@ -80,7 +103,7 @@ const WorkoutSession = ({ token }) => {
           }))
         }))
       };
-      console.log(updatedWorkout.exercises);
+
       const response = await fetch(`${BASE_URL}/workoutSession`, {
         method: 'POST',
         headers: {

@@ -395,6 +395,26 @@ app.get('/workoutSessions/:id', authenticateJWT, async (req, res) => {
   }
 });
 
+app.delete('/workoutSessions/:id', authenticateJWT, async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const workoutSession = await WorkoutSession.findOne({ _id: id, user: req.user.userId });
+
+    if (!workoutSession) {
+      return res.status(404).json({ error: 'WorkoutSession not found' });
+    }
+
+    // Remove the workoutSession
+    await WorkoutSession.deleteOne({ _id: id });
+
+    res.json({ message: 'WorkoutSession removed successfully' });
+  } catch (error) {
+    console.error('Error removing workoutSession:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 app.get('/exercises', authenticateJWT, async (req, res) => {
   try {
     // Fetch exercises for the current user
