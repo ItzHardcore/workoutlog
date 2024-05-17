@@ -418,7 +418,7 @@ app.delete('/workoutSessions/:id', authenticateJWT, async (req, res) => {
 app.get('/exercises', authenticateJWT, async (req, res) => {
   try {
     // Fetch exercises for the current user
-    const exercises = await Exercise.find();
+    const exercises = await Exercise.find().sort({ name: 1 });
 
     res.status(200).json(exercises);
   } catch (error) {
