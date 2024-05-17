@@ -167,10 +167,10 @@ function MeasuresTable({ token }) {
             {measures.length === 0 ? (
                 <h5 className="text-danger">You have no measures</h5>
             ) : (
-                <div className="row gap-5">
+                <div className="row gap-2">
                     <div className="col">
-                        <div className='table-responsive'>
-                            <table className="table">
+                        <div className='table-responsive' style={{ maxHeight: "392px" }}>
+                            <table className="table table-striped">
                                 <thead>
                                     <tr>
                                         <th>Date</th>

@@ -157,8 +157,8 @@ function BodyMeasuresTable({ token }) {
             <h2 className="mt-3">Body Measures</h2>
             {Bodymeasures.length === 0 ? (
                 <h5 className="text-danger">You have no body measures</h5>
-            ) : (<div className='table-responsive'>
-                <table className="table">
+            ) : (<div className='table-responsive' style={{ maxHeight: "392px" }}>
+                <table className="table table-striped">
                     <thead>
                         <tr>
                             <th>Date</th>

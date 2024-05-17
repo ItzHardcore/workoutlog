@@ -41,17 +41,17 @@ const SessionsCards = ({ token }) => {
         return volume;
     };
 
-    const handleStartWorkout = (workoutId) => {
+    const handleStartSession = (workoutId) => {
         navigate(`/start-session/${workoutId}`);
     };
 
-    const removeWorkout = async (workoutId) => {
+    const removeSession = async (workoutId) => {
         if (!window.confirm('Are you sure you want to remove this session?')) {
             return;
         }
 
         try {
-            const response = await fetch(`${BASE_URL}/workoutSession/${workoutId}`, {
+            const response = await fetch(`${BASE_URL}/workoutSessions/${workoutId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `${token}`,
@@ -140,8 +140,8 @@ const SessionsCards = ({ token }) => {
                                         ))}
                                     </div>
                                     <Link to={`/session/${session._id}`} className="btn btn-primary me-2" >View Details</Link>
-                                    <button className="btn btn-danger me-2" onClick={() => removeWorkout(session._id)}>Remove</button>
-                                    <button className="btn btn-success me-2" onClick={() => handleStartWorkout(session._id)}>Start Workout</button>
+                                    <button className="btn btn-danger me-2" onClick={() => removeSession(session._id)}>Remove</button>
+                                    <button className="btn btn-success me-2" onClick={() => handleStartSession(session._id)}>Start Workout</button>
                                 </div>
                             </div>
                         </div>
