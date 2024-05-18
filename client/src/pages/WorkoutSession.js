@@ -63,8 +63,9 @@ const WorkoutSession = ({ token }) => {
         }
       }
     };
-
-    fetchWorkoutData();
+    if (workoutId) {
+      fetchWorkoutData();
+    }
   }, [workoutId, token, setIsAuthorized, setWorkoutData]);
 
 

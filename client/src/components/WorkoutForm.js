@@ -8,6 +8,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
   const [selectedExercise, setSelectedExercise] = useState('');
   const [saveloading, setSaveLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [checkedSeries, setCheckedSeries] = useState({});
   const BASE_URL = require('./baseUrl');
   const navigate = useNavigate();
 
@@ -104,6 +105,14 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
 
     //Update the state
     setExercises(newExercises);
+  };
+
+  // Function to handle checkbox toggle
+  const handleCheckboxToggle = (seriesIndex) => {
+    setCheckedSeries((prevState) => ({
+      ...prevState,
+      [seriesIndex]: !prevState[seriesIndex], // Toggle the state of the series at seriesIndex
+    }));
   };
 
   const handleSeriesChange = (exerciseIndex, seriesIndex, key, value) => {
@@ -312,7 +321,9 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
               </select>
             </div>
             {exercise.series.map((series, seriesIndex) => (
-              <div key={seriesIndex} className="mb-4 p-3 border rounded">
+              <div key={seriesIndex} className="mb-4 p-3 border rounded" style={{
+                background: checkedSeries[seriesIndex] ? 'rgb(22, 198, 12, 0.29)' : 'none', // Apply specific background color if series is checked
+              }}>
                 <div className="d-flex m-auto align-items-baseline mb-3">
 
                   <div className="me-3">
@@ -368,14 +379,14 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
 
                   <button
                     type="button"
-                    className="btn btn-warning"
+                    className="btn btn-danger"
                     onClick={() => handleRemoveSeries(exerciseIndex, seriesIndex)}
                   >
                     Remove Series
                   </button>
-                  <div class="form-check form-switch ms-4" style={{ fontSize: "20px" }}>
-                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" />
-                    <label class="form-check-label" >✅</label>
+                  <div className="form-check form-switch ms-4" style={{ fontSize: "20px" }}>
+                    <input className="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onChange={() => handleCheckboxToggle(seriesIndex)} />
+                    <label> 💪</label>
                   </div>
                 </div>
               </div>
