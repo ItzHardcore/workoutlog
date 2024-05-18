@@ -386,7 +386,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
                   </button>
                   <div className="form-check form-switch ms-4" style={{ fontSize: "20px" }}>
                     <input className="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onChange={() => handleCheckboxToggle(seriesIndex)} />
-                    <label> 💪</label>
+                    <label>Done? 💪</label>
                   </div>
                 </div>
               </div>
