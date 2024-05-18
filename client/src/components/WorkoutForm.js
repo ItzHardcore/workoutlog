@@ -108,10 +108,13 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
   };
 
   // Function to handle checkbox toggle
-  const handleCheckboxToggle = (seriesIndex) => {
+  const handleCheckboxToggle = (exerciseIndex, seriesIndex) => {
     setCheckedSeries((prevState) => ({
       ...prevState,
-      [seriesIndex]: !prevState[seriesIndex], // Toggle the state of the series at seriesIndex
+      [exerciseIndex]: {
+        ...prevState[exerciseIndex],
+        [seriesIndex]: !prevState[exerciseIndex]?.[seriesIndex], // Toggle the state of the series at seriesIndex within exerciseIndex
+      },
     }));
   };
 
@@ -322,7 +325,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
             </div>
             {exercise.series.map((series, seriesIndex) => (
               <div key={seriesIndex} className="mb-4 p-3 border rounded" style={{
-                background: checkedSeries[seriesIndex] ? 'rgb(22, 198, 12, 0.29)' : 'none', // Apply specific background color if series is checked
+                background: checkedSeries[exerciseIndex]?.[seriesIndex] ? 'rgb(22, 198, 12, 0.29)' : 'none', // Apply specific background color if series is checked
               }}>
                 <div className="d-flex m-auto align-items-baseline mb-3">
 
@@ -385,7 +388,7 @@ const WorkoutForm = ({ userId, token, initialData, onCancel, onSave, startBlankS
                     Remove Series
                   </button>
                   <div className="form-check form-switch ms-4" style={{ fontSize: "20px" }}>
-                    <input className="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onChange={() => handleCheckboxToggle(seriesIndex)} />
+                    <input className="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onChange={() => handleCheckboxToggle(exerciseIndex, seriesIndex)} />
                     <label>Done? 💪</label>
                   </div>
                 </div>
