@@ -1,164 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchMeasures, saveMeasure, removeMeasure, toggleEditMode, updateMeasure } from '../reducers/measuresSlice';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import WeightChart from './WeightChart';
 
 function MeasuresTable({ token }) {
-    const [measures, setMeasures] = useState([]);
-    const [saveMeasureError, setSaveMeasureError] = useState(null);
-    const BASE_URL = require('./baseUrl');
-
-    const fetchMeasures = async (token) => {
-        try {
-            const response = await fetch(`${BASE_URL}/measures`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch measures');
-            }
-
-            const data = await response.json();
-            setMeasures(data);
-        } catch (error) {
-            console.error('Failed to fetch measures:', error);
-            setSaveMeasureError('Failed to fetch measures');
-        }
-    };
+    const dispatch = useDispatch();
+    const measures = useSelector((state) => state.measures.measures);
+    const error = useSelector((state) => state.measures.error);
 
     useEffect(() => {
-        fetchMeasures(token);
-    }, [token]);
+        dispatch(fetchMeasures(token));
+    }, [dispatch, token]);
 
-
-    const handleInputChange = (measureId, field, value, setter) => {
-        const measureIndex = measures.findIndex((measure) => measure._id === measureId);
-        if (measureIndex !== -1) {
-            const updatedMeasures = [...measures];
-            updatedMeasures[measureIndex] = {
-                ...updatedMeasures[measureIndex],
-                [field]: value,//Update the field value
-            };
-            setMeasures(updatedMeasures);
-        }
+    const handleInputChange = (measureId, field, value) => {
+        dispatch(updateMeasure({ measureId, field, value }));
     };
 
-
-    const handleSaveMeasure = async (measureId) => {
-        //Find the index of the measure to save
-        const measureIndex = measures.findIndex((measure) => measure._id === measureId);
-
-        if (measureIndex !== -1) {
-            try {
-                const updatedMeasure = { ...measures[measureIndex] };
-
-                const response = await fetch(`${BASE_URL}/measures/${measureId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `${token}`,
-                    },
-                    body: JSON.stringify(updatedMeasure),
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();//Parse the error response
-                    throw new Error(errorData.error || 'Failed to save measure');
-                }
-
-                //Update the measures array with the saved measure
-                const updatedMeasures = [...measures];
-                updatedMeasures[measureIndex] = updatedMeasure;
-                setMeasures(updatedMeasures);
-                console.log('Measure saved successfully');
-
-                //Exit edit mode
-                toggleEditMode(measureId);
-            } catch (error) {
-                console.error('Error saving measure:', error);
-                setSaveMeasureError(error.message || 'Failed to save measure');
-            }
-        }
+    const handleSaveMeasure = (measureId) => {
+        const measure = measures.find((m) => m._id === measureId);
+        dispatch(saveMeasure({ measure, token }));
     };
 
     const handleEditMeasure = (measureId) => {
-        //Find the index of the measure to edit
-        const measureIndex = measures.findIndex((measure) => measure._id === measureId);
-
-        if (measureIndex !== -1) {
-            //Create a copy of the measures array to avoid mutating state directly
-            const updatedMeasures = [...measures];
-
-            //Set the measure at the specified index to be in edit mode
-            updatedMeasures[measureIndex] = {
-                ...updatedMeasures[measureIndex],
-                isEditing: !updatedMeasures[measureIndex].isEditing//Toggle isEditing property
-            };
-
-            //Update the state with the measures array with the edited measure
-            setMeasures(updatedMeasures);
-        }
+        dispatch(toggleEditMode(measureId));
     };
 
-    const handleRemoveMeasure = async (measureId) => {
-        //Find the index of the measure to remove
-        const measureIndex = measures.findIndex((measure) => measure._id === measureId);
-        if (measureIndex !== -1) {
-            if (measures[measureIndex].isEditing) {
-                //If in edit mode, exit edit mode
-                toggleEditMode(measureId);
-            } else {
-                //Show the confirmation dialog only if not in edit mode
-                const isConfirmed = window.confirm('Are you sure you want to delete this measure?');
-
-                //If the user clicks "OK" in the confirmation dialog, proceed with removal
-                if (isConfirmed) {
-                    try {
-                        console.log(measureId);
-                        const response = await fetch(`${BASE_URL}/measures/${measureId}`, {
-                            method: 'DELETE',
-                            headers: {
-                                'Authorization': `${token}`,
-                            },
-                        });
-
-                        if (!response.ok) {
-                            throw new Error('Failed to remove measure');
-                        }
-
-                        setMeasures((prevMeasures) =>
-                            prevMeasures.filter((measure) => measure._id !== measureId)
-                        );
-                        console.log('Measure removed successfully');
-                    } catch (error) {
-                        console.error('Error removing measure:', error);
-                        //You can handle errors, e.g., show an error message
-                    }
-                }
-            }
-        }
-    };
-
-    const toggleEditMode = (measureId) => {
-        //Find the index of the measure to toggle edit mode
-        const measureIndex = measures.findIndex((measure) => measure._id === measureId);
-
-        if (measureIndex !== -1) {
-            //Create a copy of the measures array to avoid mutating state directly
-            const updatedMeasures = [...measures];
-
-            //Toggle the isEditing property of the measure at the specified index
-            updatedMeasures[measureIndex] = {
-                ...updatedMeasures[measureIndex],
-                isEditing: !updatedMeasures[measureIndex].isEditing
-            };
-
-            //Update the state with the measures array with the toggled measure
-            setMeasures(updatedMeasures);
-        }
+    const handleRemoveMeasure = (measureId) => {
+        dispatch(removeMeasure({ measureId, token }));
     };
 
     return (
@@ -189,7 +59,7 @@ function MeasuresTable({ token }) {
                                             <td>
                                                 {measure.isEditing ? (
                                                     <DatePicker
-                                                        id={`date - ${measure._id}`}
+                                                        id={`date-${measure._id}`}
                                                         dateFormat="dd/MM/yyyy"
                                                         className='form-control'
                                                         selected={new Date(measure.date)}
@@ -202,7 +72,7 @@ function MeasuresTable({ token }) {
                                             <td>
                                                 {measure.isEditing ? (
                                                     <input
-                                                        id={`weight - ${measure._id}`}
+                                                        id={`weight-${measure._id}`}
                                                         className='form-control'
                                                         type="number"
                                                         value={measure.weight}
@@ -215,7 +85,7 @@ function MeasuresTable({ token }) {
                                             <td className="d-none d-md-table-cell">
                                                 {measure.isEditing ? (
                                                     <input
-                                                        id={`steps - ${measure._id}`}
+                                                        id={`steps-${measure._id}`}
                                                         className='form-control'
                                                         type="number"
                                                         value={measure.steps}
@@ -228,7 +98,7 @@ function MeasuresTable({ token }) {
                                             <td className="d-none d-md-table-cell">
                                                 {measure.isEditing ? (
                                                     <input
-                                                        id={`sleepHours - ${measure._id}`}
+                                                        id={`sleepHours-${measure._id}`}
                                                         className='form-control'
                                                         type="number"
                                                         value={measure.sleepHours}
@@ -241,7 +111,7 @@ function MeasuresTable({ token }) {
                                             <td className="d-none d-md-table-cell">
                                                 {measure.isEditing ? (
                                                     <select
-                                                        id={`energy - ${measure._id}`}
+                                                        id={`energy-${measure._id}`}
                                                         className='form-select'
                                                         value={measure.energy}
                                                         onChange={(e) => handleInputChange(measure._id, 'energy', e.target.value)}
@@ -257,7 +127,7 @@ function MeasuresTable({ token }) {
                                             <td className="d-none d-md-table-cell">
                                                 {measure.isEditing ? (
                                                     <select
-                                                        id={`hunger - ${measure._id}`}
+                                                        id={`hunger-${measure._id}`}
                                                         className='form-select'
                                                         value={measure.hunger}
                                                         onChange={(e) => handleInputChange(measure._id, 'hunger', e.target.value)}
@@ -273,7 +143,7 @@ function MeasuresTable({ token }) {
                                             <td className="d-none d-md-table-cell">
                                                 {measure.isEditing ? (
                                                     <select
-                                                        id={`stress - ${measure._id}`}
+                                                        id={`stress-${measure._id}`}
                                                         className='form-select'
                                                         value={measure.stress}
                                                         onChange={(e) => handleInputChange(measure._id, 'stress', e.target.value)}
@@ -289,25 +159,32 @@ function MeasuresTable({ token }) {
                                             <td>
                                                 {measure.isEditing ? (
                                                     <>
-                                                        <button className="btn btn-success mb-2 me-2" onClick={() => handleSaveMeasure(measure._id)}>Save</button>
-                                                        <button className="btn btn-warning mb-2 me-2" onClick={() => handleEditMeasure(measure._id)}>Cancel</button> {/* Change to Cancel button */}
+                                                        <button className="btn btn-success mb-2 me-2" onClick={() => handleSaveMeasure(measure._id)}>
+                                                            Save
+                                                        </button>
+                                                        <button className="btn btn-warning mb-2 me-2" onClick={() => handleEditMeasure(measure._id)}>
+                                                            Cancel
+                                                        </button>
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <button className="btn btn-warning mb-2 me-2" onClick={() => handleEditMeasure(measure._id)}>Edit</button>
-                                                        <button className="btn btn-danger mb-2" onClick={() => handleRemoveMeasure(measure._id)}>Delete</button>
+                                                        <button className="btn btn-warning mb-2 me-2" onClick={() => handleEditMeasure(measure._id)}>
+                                                            Edit
+                                                        </button>
+                                                        <button className="btn btn-danger mb-2" onClick={() => handleRemoveMeasure(measure._id)}>
+                                                            Delete
+                                                        </button>
                                                     </>
                                                 )}
-
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
                         </div>
-                        {saveMeasureError && (
+                        {error && (
                             <div className="alert alert-danger mt-2" role="alert">
-                                {saveMeasureError}
+                                {error}
                             </div>
                         )}
                     </div>
@@ -316,7 +193,6 @@ function MeasuresTable({ token }) {
                     </div>
                 </div>
             )}
-
         </div>
     );
 }

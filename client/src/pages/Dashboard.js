@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+// Dashboard.js
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { jwtDecode } from 'jwt-decode';
 import SessionsCards from '../components/SessionsCards';
 import WorkoutsCards from '../components/WorkoutsCards';
@@ -8,26 +10,27 @@ import ActionButton from '../styled/ActionButton';
 import { useNavigate } from 'react-router-dom';
 import MeasuresForm from '../components/MeasuresForm';
 import FormModal from '../components/FormModal';
+import { setUser } from '../reducers/userSlice';
 
 function Dashboard({ token }) {
-  const [username, setUsername] = useState('');
+  const dispatch = useDispatch();
+  const username = useSelector((state) => state.user.username);
   const navigate = useNavigate();
 
   useEffect(() => {
     const decodedToken = jwtDecode(token);
-    setUsername(decodedToken.username);
-  }, [token]);
+    dispatch(setUser(decodedToken.username));
+    // Fetch sessions, workouts, measures data and dispatch appropriate actions
+  }, [token, dispatch]);
 
   return (
     <div className="container mt-3">
       <h2>Dashboard</h2>
       <p>Welcome to the dashboard, {username}!</p>
-      <div className='d-flex overflow-auto'>
-
+      <div className="d-flex overflow-auto">
         <ActionButton text="New Workout" backgroundImage="https://blogs.nottingham.ac.uk/sport/files/2020/04/Workout-Plan_6x4_Blog.jpg" onClick={() => navigate('/new-workout')} />
         <ActionButton text="Start Empty Session" backgroundImage="https://i.shgcdn.com/059ec0a7-74c9-43a9-9b3f-47808a5410bd/-/format/auto/-/preview/3000x3000/-/quality/lighter/" onClick={() => navigate('/start-session')} />
         <FormModal buttonComponent={<ActionButton text="Set Weight" backgroundImage="https://as2.ftcdn.net/v2/jpg/05/80/51/67/1000_F_580516754_4Pgrqwiq1ykLjRXJUqSbIgHN07z0hCFW.jpg" />} formComponent={<MeasuresForm token={token} />} />
-
       </div>
 
       <TimerPopup />

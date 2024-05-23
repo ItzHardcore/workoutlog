@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigate } from 'react-router-dom';
+import { createMeasure } from '../reducers/measuresSlice';
+import { useDispatch } from 'react-redux';
 
 function MeasuresForm({ token, onClose }) {
+  const dispatch = useDispatch();
   const [weight, setWeight] = useState('');
   const [steps, setSteps] = useState(10000);
   const [sleepHours, setSleepHours] = useState(8);
@@ -12,7 +15,6 @@ function MeasuresForm({ token, onClose }) {
   const [stress, setStress] = useState(3);
   const [date, setDate] = useState(new Date());
   const [errorMessage, setErrorMessage] = useState('');
-  const BASE_URL = require('./baseUrl');
 
   const navigate = useNavigate();
 
@@ -52,37 +54,27 @@ function MeasuresForm({ token, onClose }) {
       //Clear error message
       setErrorMessage('');
 
-      //Send a POST request to your server to save the measures data
-      const response = await fetch(`${BASE_URL}/measures`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `${token}`,
-        },
-        body: JSON.stringify(measuresData),
-      });
+      dispatch(createMeasure({ measuresData, token }))
+        .then((action) => {
+          // Handle the fulfilled state if needed
+          if (action.type === createMeasure.fulfilled.type) {
+            // Optionally, handle success actions here
+            if (onClose) {
+              handleCancel();
+            } else {
+              navigate('/mybody');
+            }
+          }
+          if (action.type === createMeasure.rejected.type) {
+            // Optionally, handle success actions here
+            setErrorMessage(action.payload || 'Failed to save measures. Please try again.');
+          }
+        })
+        .catch((error) => {
+          // Handle the rejected state
 
-      if (!response.ok) {
-        const data = await response.json();
-        setErrorMessage(data.error || 'Failed to save measures. Please try again.');
-        return;
-      }
-
-      //After successfully submitting the data, you can also reset the form fields
-      setWeight('');
-      setSteps(10000);
-      setSleepHours(8);
-      setEnergy(3);
-      setHunger(3);
-      setStress(3);
-      setDate(new Date());
-
-      if (onClose) {
-        handleCancel();
-      } else {
-        navigate('/mybody')
-      }
-      //Optionally, you can handle success actions here
+          // Optionally, handle error actions here
+        });
     } catch (error) {
       //Handle any errors that occur during the submission
       setErrorMessage(error.message || 'Failed to save measures. Please try again.');
